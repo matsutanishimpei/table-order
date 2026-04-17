@@ -2,4 +2,4 @@ build/
 .settings/
 .classpath
 .project
-src/main/java/database/DBManager.java
+src/main/java/database.properties
