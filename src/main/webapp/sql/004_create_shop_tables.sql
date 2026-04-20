@@ -1,0 +1,4 @@
+CREATE TABLE shop_tables (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    table_name VARCHAR(50) NOT NULL UNIQUE
+);

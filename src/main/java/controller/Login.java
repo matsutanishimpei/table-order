@@ -41,7 +41,18 @@ public class Login extends HttpServlet {
             // ログイン成功時：セッションにユーザー情報を保存してリダイレクト
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            response.sendRedirect("Menu");
+            
+            if (user.isAdmin()) {
+                response.sendRedirect("Admin/Home");
+            } else if (user.isKitchen()) {
+                response.sendRedirect("Kitchen/Home");
+            } else if (user.isHall()) {
+                response.sendRedirect("Hall/Home");
+            } else if (user.isCashier()) {
+                response.sendRedirect("Cashier/Home");
+            } else {
+                response.sendRedirect("Menu");
+            }
         } else {
             // ログイン失敗時：エラーメッセージをセットして画面再表示
             request.setAttribute("error", "ユーザーIDまたはパスワードが正しくありません。");

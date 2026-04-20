@@ -1,0 +1,105 @@
+:root {
+    /* Color Palette */
+    --primary: #2c3e50;
+    --primary-light: #34495e;
+    --accent: #e67e22;
+    --accent-dark: #d35400;
+    --success: #27ae60;
+    --warning: #f1c40f;
+    --danger: #e74c3c;
+    
+    /* Backgrounds */
+    --bg-body: #f5f6fa;
+    --bg-card: #ffffff;
+    --bg-dark: #1a1a2e;
+    
+    /* Text */
+    --text-main: #2c3e50;
+    --text-sub: #7f8c8d;
+    --text-white: #ffffff;
+    
+    /* Border */
+    --border: #dcdde1;
+    
+    /* Spacing */
+    --sidebar-w: 240px;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+}
+
+/* Layout Utilities */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-grow-1 { flex-grow: 1; }
+.h-100vh { height: 100vh; }
+.overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* Admin/Dashboard Sidebar */
+.sidebar {
+    width: var(--sidebar-w);
+    background-color: var(--primary);
+    color: white;
+    padding-top: 20px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-item {
+    padding: 15px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar-item:hover, .sidebar-item.active {
+    background-color: var(--primary-light);
+    color: white;
+}
+
+/* Card Styles */
+.card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--accent); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}

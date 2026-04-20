@@ -21,7 +21,7 @@ public class UserDAO {
      */
     public User login(String id, String password) {
         User user = null;
-        String sql = "SELECT id, password, role FROM users WHERE id = ? AND password = ?";
+        String sql = "SELECT id, password, role, table_id FROM users WHERE id = ? AND password = ?";
 
         // DBManagerから接続を取得
         try (Connection con = DBManager.getConnection();
@@ -39,6 +39,7 @@ public class UserDAO {
                     user.setId(rs.getString("id"));
                     user.setPassword(rs.getString("password"));
                     user.setRole(rs.getInt("role"));
+                    user.setTableId((Integer) rs.getObject("table_id"));
                 }
             }
 
