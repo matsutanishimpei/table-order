@@ -7,10 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商品注文 - Table Order</title>
-    <title>商品注文 - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         body { display: flex; height: 100vh; overflow: hidden; }
+        .product-card { cursor: pointer; transition: transform 0.2s; text-decoration: none; color: inherit; display: block; background: var(--bg-card); padding: 15px; border-radius: 12px; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .product-card:active { transform: scale(0.98); }
 
         /* サイドバー（カテゴリ一覧） */
         .sidebar { width: 200px; background-color: var(--primary); color: white; flex-shrink: 0; }
@@ -21,7 +23,6 @@
         /* メインコンテンツ（商品一覧） */
         .main-content { flex-grow: 1; padding: 20px; overflow-y: auto; background-color: var(--bg-body); }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .product-card { background: var(--bg-card); padding: 15px; border-radius: 12px; }
         .product-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; }
         .product-price { color: var(--accent); font-weight: bold; margin-bottom: 15px; }
 
@@ -45,6 +46,9 @@
                 <c:out value="${cat.name}" />
             </a>
         </c:forEach>
+        <div style="margin-top: auto; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1)">
+            <a href="OrderHistory" class="sidebar-item" style="background: rgba(255,255,255,0.1); border-radius: 8px; text-align: center; color: white;">注文履歴を表示</a>
+        </div>
     </div>
 
     <!-- メインコンテンツ: 商品表示 -->
@@ -61,19 +65,12 @@
 
         <div class="product-grid">
             <c:forEach var="p" items="${products}">
-                <div class="product-card">
+                <a href="ProductDetail?productId=${p.id}&categoryId=${selectedCategoryId}" class="product-card">
                     <div class="product-name text-clamp-2" title="<c:out value='${p.name}' />">
                         <c:out value="${p.name}" />
                     </div>
                     <div class="product-price">¥<fmt:formatNumber value="${p.price}" /></div>
-                    <form action="Cart" method="post">
-                        <input type="hidden" name="csrf_token" value="${csrf_token}">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="productId" value="${p.id}">
-                        <input type="hidden" name="categoryId" value="${selectedCategoryId}">
-                        <button type="submit" class="add-btn">カートに追加</button>
-                    </form>
-                </div>
+                </a>
             </c:forEach>
         </div>
     </div>
