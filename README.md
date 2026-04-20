@@ -18,31 +18,49 @@
 - **商品・カテゴリー管理**: メニューの登録、編集、および品切れ設定。
 - **売上統計分析**: 累計売上、日次トレンド、商品別ランキングの可視化。
 
-## 🛡️ システムの特徴
-- **堅牢なセキュリティ**: `AuthFilter` によるロールベースのアクセス制御（管理者・厨房・配膳・レジ・客席）。
-- **信頼性の高い設計**: マジックナンバーを排除した定数管理、例外処理済みの安全なデータアクセス、サーバーサイド・バリデーションの徹底。
-- **モダンなデザイン**: CSS変数を活用したダークモード対応のデザインシステム。
+## 🛡️ システムの堅牢性・安全性
+商用レベルの運用に耐えうる、高度なセキュリティ基盤を構築しています。
+
+- **多層防御のパスワード保護**: SHA-256 + 10,000回ストレッチング + **個別ソルト** + **共通ペッパー** を組み合わせ、DB流出時も極めて高い保護性能を発揮。
+- **包括的なWebセキュリティ**:
+  - **XSS保護**: 全動的出力へのエスケープ処理を徹底。
+  - **CSRF保護**: ワンタイムトークンによる不正なリクエストの遮断。
+  - **セッション安全**: ログイン時のセッションID更新によるセッション固定攻撃の防止。
+- **ロールベースアクセス制御**: `AuthFilter` による厳格な権限管理（管理者・厨房・配膳・レジ・客席）。
+- **標準化されたロギング**: `java.util.logging` (JUL) を採用し、エラーやビジネスイベント（ログイン試行等）を体系的に記録。
+
+## 🌟 プレミアムなユーザー体験
+- **洗練されたデザインシステム**: CSS変数を駆使したダークモード対応のビジュアル。
+- **動的マイクロアニメーション**: ユーザー操作に追従する滑らかなフィードバックと hover 効果。
+- **レスポンシブファースト**: PC、タブレット、スマートフォンすべてで最適化されたプレミアム・レイアウト。
 
 ## 🚀 技術スタック
 - **Backend**: Java (Jakarta EE 10+), Servlet/JSP
-- **Frontend**: Vanilla CSS (Modern CSS Variables), HTML5
-- **Database**: MySQL / MariaDB / Oracle (DBManagerによるマルチ対応)
+- **Logging**: java.util.logging (JUL)
+- **Frontend**: Vanilla HTML5, Modern CSS (Variables/Gradients/Flexbox/Grid)
+- **Database**: MySQL / MariaDB / Oracle (マルチ対応)
 - **Server**: Apache Tomcat 11+
-- **Tooling**: JDBC, RiP (Rip-and-Paste) Refactoring Pattern
 
 ## 🛠️ セットアップ方法
 
-1. **データベースの構築**:
-   `src/main/webapp/sql/` ディレクトリ内のSQLファイルを以下の順で実行してください。
+1. **前提条件**:
+   - JDK 17+
+   - Apache Tomcat 11+
+   - MySQL (推奨)
+
+2. **データベースの構築**:
+   `src/main/webapp/sql/` のファイルを以下の順で実行してください。
    - `000_create_database.sql`
    - `schema.sql` (テーブル定義一括)
-   - `seed.sql` (初期データ。管理者ID: `admin`, パスワード: `admin123`)
+   - `seed.sql` (初期データ。各ロールのパスワードは **`pass`** に設定されています)
 
-2. **設定ファイルの編集**:
-   `src/main/java/database.properties` を作成または編集し、DB接続情報を自身の環境に合わせて設定してください。
+3. **設定ファイルの編集**:
+   `src/main/java/database.properties` を作成または編集してください。
+   - DB接続情報を設定。
+   - `app.security.pepper` に、アプリケーション固有の秘密鍵（Pepper）を定義してください。
 
-3. **ビルドと実行**:
-   IDE（Pleiades/Eclipse等）でプロジェクトをインポートし、Tomcatにデプロイして起動してください。
+4. **ビルドと実行**:
+   IDE（Pleiades/Eclipse等）でインポートし、Tomcatにデプロイして起動。
 
 ---
 
