@@ -4,48 +4,61 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.User;
+import util.PasswordUtil;
 
 /**
  * ユーザー情報のデータベース操作を行うDAOクラスです。
  */
 public class UserDAO {
+    private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
 
     /**
      * ログイン認証を行い、ユーザー情報を取得します。
      * 
      * @param id ユーザーID
-     * @param password パスワード
+     * @param password 入力されたパスワード（平文）
      * @return 認証成功時はUserインスタンス、失敗した場合はnull
      */
     public User login(String id, String password) {
         User user = null;
-        String sql = "SELECT id, password, role, table_id FROM users WHERE id = ? AND password = ?";
+        String sql = "SELECT id, password, salt, role, table_id FROM users WHERE id = ?";
 
-        // DBManagerから接続を取得
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // SQLパラメータの設定
             ps.setString(1, id);
-            ps.setString(2, password);
 
-            // クエリの実行
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // 検索結果がある場合、Userインスタンスを生成
-                    user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setPassword(rs.getString("password"));
-                    user.setRole(rs.getInt("role"));
-                    user.setTableId((Integer) rs.getObject("table_id"));
+                    String storedHash = rs.getString("password");
+                    String salt = rs.getString("salt");
+                    String pepper = DBManager.getPepper();
+                    
+                    // ソルトとペッパーを使用してハッシュを計算（パスワード移行期を考慮しsalt有無で分岐）
+                    String inputHash = (salt != null) ? PasswordUtil.hashPassword(password, salt, pepper) : password;
+
+                    if (storedHash.equals(inputHash)) {
+                        user = new User();
+                        user.setId(rs.getString("id"));
+                        user.setPassword(storedHash);
+                        user.setRole(rs.getInt("role"));
+                        user.setTableId((Integer) rs.getObject("table_id"));
+                        
+                        logger.info("ログイン成功: ユーザーID=" + id);
+                    } else {
+                        logger.warning("ログイン失敗（パスワード不一致）: ユーザーID=" + id);
+                    }
+                } else {
+                    logger.warning("ログイン失敗（ユーザー未登録）: ユーザーID=" + id);
                 }
             }
 
         } catch (SQLException e) {
-            System.err.println("ログイン処理中にエラーが発生しました。");
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "ログイン処理中にデータベースエラーが発生しました。ID=" + id, e);
         }
 
         return user;

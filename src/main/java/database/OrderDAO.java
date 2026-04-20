@@ -1,12 +1,11 @@
 package database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.CartItem;
 import model.OrderConstants;
@@ -17,6 +16,7 @@ import model.TableOrderSummary;
  * 注文情報のデータベース操作を行うDAOクラスです。
  */
 public class OrderDAO {
+    private static final Logger logger = Logger.getLogger(OrderDAO.class.getName());
     /**
      * 注文を登録します。orders と order_items への登録をトランザクション内で行います。
      * @param tableId 座席ID
@@ -69,9 +69,9 @@ public class OrderDAO {
 
         } catch (SQLException e) {
             if (con != null) {
-                try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+                try { con.rollback(); } catch (SQLException ex) { logger.log(Level.SEVERE, "注文登録のロールバック中にエラーが発生しました。", ex); }
             }
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "注文登録処理中にエラーが発生しました。tableId=" + tableId, e);
             return false;
         } finally {
             if (psOrder != null) try { psOrder.close(); } catch (SQLException e) {}
@@ -109,7 +109,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "アクティブ注文明細の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -125,7 +125,7 @@ public class OrderDAO {
             ps.setInt(2, itemId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "注文明細のステータス更新中にエラーが発生しました。itemId=" + itemId, e);
             return false;
         }
     }
@@ -159,7 +159,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "配膳待ち明細の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -187,7 +187,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "未会計座席一覧の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -228,7 +228,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "座席注文サマリーの取得中にエラーが発生しました。tableId=" + tableId, e);
         }
         summary.setTableId(tableId);
         summary.setItems(items);
@@ -266,8 +266,8 @@ public class OrderDAO {
             con.commit();
             return true;
         } catch (SQLException e) {
-            if (con != null) try { con.rollback(); } catch (SQLException ex) {}
-            e.printStackTrace();
+            if (con != null) try { con.rollback(); } catch (SQLException ex) { logger.log(Level.SEVERE, "会計完了のロールバック中にエラーが発生しました。", ex); }
+            logger.log(Level.SEVERE, "会計完了処理中にエラーが発生しました。tableId=" + tableId, e);
             return false;
         } finally {
             if (con != null) try { con.close(); } catch (SQLException e) {}
@@ -319,7 +319,7 @@ public class OrderDAO {
                 list.add(view);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "全テーブルステータス取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -338,7 +338,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "累計売上高の取得中にエラーが発生しました。", e);
         }
         return 0;
     }
@@ -368,7 +368,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "日次売上集計の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -396,7 +396,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "商品別売上ランキングの取得中にエラーが発生しました。", e);
         }
         return list;
     }

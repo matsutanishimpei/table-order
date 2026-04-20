@@ -6,12 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import model.Category;
 
 /**
  * カテゴリ情報のデータベース操作を行うDAOクラスです。
  */
 public class CategoryDAO {
+    private static final Logger logger = Logger.getLogger(CategoryDAO.class.getName());
     public List<Category> findAll() {
         List<Category> list = new ArrayList<>();
         String sql = "SELECT id, name FROM categories ORDER BY id";
@@ -27,7 +31,7 @@ public class CategoryDAO {
                 list.add(c);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "全カテゴリ取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -42,7 +46,7 @@ public class CategoryDAO {
             ps.setString(1, name);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "カテゴリ登録中にエラーが発生しました。name=" + name, e);
             return false;
         }
     }

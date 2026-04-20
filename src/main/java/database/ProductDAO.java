@@ -6,12 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import model.Product;
 
 /**
  * 商品情報のデータベース操作を行うDAOクラスです。
  */
 public class ProductDAO {
+    private static final Logger logger = Logger.getLogger(ProductDAO.class.getName());
     /**
      * 指定されたカテゴリの販売中の商品を取得します。
      */
@@ -35,7 +39,7 @@ public class ProductDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "カテゴリ別商品取得中にエラーが発生しました。categoryId=" + categoryId, e);
         }
         return list;
     }
@@ -62,7 +66,7 @@ public class ProductDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "商品取得(findById)中にエラーが発生しました。id=" + id, e);
         }
         return p;
     }
@@ -123,7 +127,7 @@ public class ProductDAO {
             ps.setInt(2, productId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "商品状態更新中にエラーが発生しました。productId=" + productId, e);
             return false;
         }
     }

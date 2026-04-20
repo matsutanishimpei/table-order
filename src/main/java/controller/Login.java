@@ -8,7 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.logging.Logger;
 import model.User;
 
 /**
@@ -17,6 +17,7 @@ import model.User;
 @WebServlet("/Login")
 public class Login extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(Login.class.getName());
 
     /**
      * ログイン画面を表示します。
@@ -57,7 +58,8 @@ public class Login extends HttpServlet {
                 response.sendRedirect("Menu");
             }
         } else {
-            // ログイン失敗時：エラーメッセージをセットして画面再表示
+            // ログイン失敗時
+            logger.warning("ログイン失敗試行: ID=" + id);
             request.setAttribute("error", "ユーザーIDまたはパスワードが正しくありません。");
             request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }

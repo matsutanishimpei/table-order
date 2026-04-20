@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * データベース接続を管理するクラスです。
  * 機密情報は database.properties から読み込みます。
  */
 public class DBManager {
+    private static final Logger logger = Logger.getLogger(DBManager.class.getName());
 
     // プロパティファイル(database.properties)の読み込み
     private static final ResourceBundle rb = ResourceBundle.getBundle("database");
@@ -49,13 +52,19 @@ public class DBManager {
                 con = DriverManager.getConnection(MYSQL_URL, MYSQL_USER, MYSQL_PASS);
             }
         } catch (ClassNotFoundException e) {
-            System.err.println("JDBCドライバのロードに失敗しました。");
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "JDBCドライバのロードに失敗しました。", e);
         } catch (SQLException e) {
-            System.err.println("データベース接続の取得に失敗しました。");
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "データベース接続の取得に失敗しました。", e);
         }
         return con;
+    }
+
+    /**
+     * アプリケーション共通の秘密鍵（Pepper）を返します。
+     * @return Pepper文字列
+     */
+    public static String getPepper() {
+        return rb.getString("app.security.pepper");
     }
 
     /**
@@ -68,7 +77,7 @@ public class DBManager {
             try {
                 con.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "データベース接続のクローズ中にエラーが発生しました。", e);
             }
         }
     }
