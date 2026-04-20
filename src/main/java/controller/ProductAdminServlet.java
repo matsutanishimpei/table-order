@@ -43,6 +43,8 @@ public class ProductAdminServlet extends HttpServlet {
         String name = request.getParameter("name");
         Integer categoryId = util.ValidationUtil.parseIntOrNull(request.getParameter("categoryId"));
         Integer price = util.ValidationUtil.parseIntOrNull(request.getParameter("price"));
+        String description = request.getParameter("description");
+        String allergyInfo = request.getParameter("allergyInfo");
         boolean isAvailable = request.getParameter("isAvailable") != null;
 
         // バリデーション
@@ -62,6 +64,8 @@ public class ProductAdminServlet extends HttpServlet {
         p.setName(name.trim());
         p.setCategoryId(categoryId);
         p.setPrice(price);
+        p.setDescription(description != null ? description.trim() : "");
+        p.setAllergyInfo(allergyInfo != null ? allergyInfo.trim() : "");
         p.setAvailable(isAvailable);
         p.setImagePath(""); // 今回は無し
 

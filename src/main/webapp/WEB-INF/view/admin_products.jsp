@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商品管理（管理者） - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
     <style>
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
         label { font-weight: bold; margin-bottom: 5px; }
@@ -58,7 +59,7 @@
                         <input type="text" id="name" name="name" required placeholder="例：カルビ焼肉" maxlength="100">
                     </div>
                     <div class="form-group">
-                        <label for="categoryId">カテゴリー <a href="${pageContext.request.contextPath}/Admin/Categories" style="font-size: 0.8rem; font-weight: normal; margin-left: 5px;">[新規追加]</a></label>
+                        <label for="categoryId">カテゴリー</label>
                         <select id="categoryId" name="categoryId" required>
                             <c:forEach var="cat" items="${categoryList}">
                                 <option value="${cat.id}"><c:out value="${cat.name}" /></option>
@@ -68,6 +69,16 @@
                     <div class="form-group">
                         <label for="price">価格（税抜）</label>
                         <input type="number" id="price" name="price" required min="0" placeholder="0">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label for="description">商品説明</label>
+                        <textarea id="description" name="description" rows="2" placeholder="詳細画面に表示される説明文を入力してください。" style="padding:10px; border-radius:6px; border:1px solid var(--border); font-family:inherit;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="allergyInfo">アレルギー情報</label>
+                        <input type="text" id="allergyInfo" name="allergyInfo" placeholder="例：小麦、乳、卵">
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
@@ -85,10 +96,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 60px;">ID</th>
-                        <th style="max-width: 250px;">商品名</th>
-                        <th>カテゴリ</th>
-                        <th style="width: 100px;">価格</th>
+                        <th style="width: 50px;">ID</th>
+                        <th style="width: 150px;">商品名</th>
+                        <th style="width: 100px;">カテゴリ</th>
+                        <th style="width: 80px;">価格</th>
+                        <th>説明 / アレルギー</th>
                         <th style="width: 80px;">状態</th>
                     </tr>
                 </thead>
@@ -96,15 +108,21 @@
                     <c:forEach var="p" items="${productList}">
                         <tr>
                             <td>${p.id}</td>
-                            <td class="text-truncate" style="max-width: 250px;">
+                            <td>
                                 <strong title="<c:out value='${p.name}' />"><c:out value="${p.name}" /></strong>
                             </td>
                             <td>
                                 <c:forEach var="cat" items="${categoryList}">
-                                    <c:if test="${p.categoryId == cat.id}"><c:out value="${cat.name}" /></c:if>
+                                    <c:if test="${p.categoryId == cat.id}"><span style="font-size: 0.9rem;"><c:out value="${cat.name}" /></span></c:if>
                                 </c:forEach>
                             </td>
                             <td>¥<fmt:formatNumber value="${p.price}" /></td>
+                            <td>
+                                <div style="font-size: 0.85rem; color: #555;">
+                                    <c:out value="${p.description}" /><br>
+                                    <small style="color: var(--accent);">[アレルギー: <c:out value="${empty p.allergyInfo ? 'なし' : p.allergyInfo}" />]</small>
+                                </div>
+                            </td>
                             <td>
                                 <span class="status-badge ${p.available ? 'status-on' : 'status-off'}">
                                     ${p.available ? '販売中' : '売切'}

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${product.name} - 商品詳細</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
     <style>
         .detail-container {
             max-width: 800px;
@@ -81,15 +82,30 @@
 
         <div class="info-section">
             <span class="section-label">Description</span>
-            <p style="color: #999; font-style: italic;">
-                ※商品説明は準備中です。
-                （ここにアレルギー情報やこだわりの説明文が入る予定です）
+            <p>
+                <c:choose>
+                    <c:when test="${not empty product.description}">
+                        <c:out value="${product.description}" />
+                    </c:when>
+                    <c:otherwise>
+                        <span style="color: #999; font-style: italic;">商品説明は準備中です。</span>
+                    </c:otherwise>
+                </c:choose>
             </p>
         </div>
 
         <div class="info-section">
             <span class="section-label">Allergy Information</span>
-            <p style="color: #999;">情報なし</p>
+            <p>
+                <c:choose>
+                    <c:when test="${not empty product.allergyInfo}">
+                        <c:out value="${product.allergyInfo}" />
+                    </c:when>
+                    <c:otherwise>
+                        <span style="color: #999;">情報なし</span>
+                    </c:otherwise>
+                </c:choose>
+            </p>
         </div>
 
         <div class="btn-group">

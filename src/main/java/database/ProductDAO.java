@@ -21,7 +21,7 @@ public class ProductDAO {
      */
     public List<Product> findByCategory(int categoryId) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, image_path, is_available FROM products WHERE category_id = ? AND is_available = 1";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE category_id = ? AND is_available = 1";
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -33,6 +33,8 @@ public class ProductDAO {
                     p.setCategoryId(rs.getInt("category_id"));
                     p.setName(rs.getString("name"));
                     p.setPrice(rs.getInt("price"));
+                    p.setDescription(rs.getString("description"));
+                    p.setAllergyInfo(rs.getString("allergy_info"));
                     p.setImagePath(rs.getString("image_path"));
                     p.setAvailable(rs.getBoolean("is_available"));
                     list.add(p);
@@ -49,7 +51,7 @@ public class ProductDAO {
      */
     public Product findById(int id) {
         Product p = null;
-        String sql = "SELECT id, category_id, name, price, image_path, is_available FROM products WHERE id = ?";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE id = ?";
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -61,6 +63,8 @@ public class ProductDAO {
                     p.setCategoryId(rs.getInt("category_id"));
                     p.setName(rs.getString("name"));
                     p.setPrice(rs.getInt("price"));
+                    p.setDescription(rs.getString("description"));
+                    p.setAllergyInfo(rs.getString("allergy_info"));
                     p.setImagePath(rs.getString("image_path"));
                     p.setAvailable(rs.getBoolean("is_available"));
                 }
@@ -76,7 +80,7 @@ public class ProductDAO {
      */
     public List<Product> findAll() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, image_path, is_available FROM products ORDER BY id DESC";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products ORDER BY id DESC";
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -87,6 +91,8 @@ public class ProductDAO {
                 p.setCategoryId(rs.getInt("category_id"));
                 p.setName(rs.getString("name"));
                 p.setPrice(rs.getInt("price"));
+                p.setDescription(rs.getString("description"));
+                p.setAllergyInfo(rs.getString("allergy_info"));
                 p.setImagePath(rs.getString("image_path"));
                 p.setAvailable(rs.getBoolean("is_available"));
                 list.add(p);
@@ -101,17 +107,40 @@ public class ProductDAO {
      * 商品を新規登録します。
      */
     public boolean insert(Product p) {
-        String sql = "INSERT INTO products (category_id, name, price, image_path, is_available) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (category_id, name, price, description, allergy_info, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.getCategoryId());
             ps.setString(2, p.getName());
             ps.setInt(3, p.getPrice());
-            ps.setString(4, p.getImagePath());
-            ps.setBoolean(5, p.isAvailable());
+            ps.setString(4, p.getDescription());
+            ps.setString(5, p.getAllergyInfo());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isAvailable());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 商品情報を更新します。
+     */
+    public boolean update(Product p) {
+        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, description = ?, allergy_info = ?, image_path = ? WHERE id = ?";
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, p.getCategoryId());
+            ps.setString(2, p.getName());
+            ps.setInt(3, p.getPrice());
+            ps.setString(4, p.getDescription());
+            ps.setString(5, p.getAllergyInfo());
+            ps.setString(6, p.getImagePath());
+            ps.setInt(7, p.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "商品更新中にエラーが発生しました。productId=" + p.getId(), e);
             return false;
         }
     }

@@ -27,7 +27,12 @@ public class OrderHistory extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-        int tableId = user.getId(); // User ID が Table ID に相当
+        Integer tableId = user.getTableId();
+
+        if (tableId == null) {
+            response.sendRedirect("Menu");
+            return;
+        }
 
         // 注文履歴サマリーを取得
         OrderDAO oDao = new OrderDAO();
