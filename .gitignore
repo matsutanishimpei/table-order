@@ -3,3 +3,4 @@ build/
 .classpath
 .project
 src/main/java/database.properties
+src/main/webapp/sql/seed.sql
