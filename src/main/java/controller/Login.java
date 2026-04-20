@@ -38,7 +38,10 @@ public class Login extends HttpServlet {
         User user = dao.login(id, pw);
 
         if (user != null) {
-            // ログイン成功時：セッションにユーザー情報を保存してリダイレクト
+            // ログイン成功時：セッション固定攻撃対策としてIDを更新
+            request.changeSessionId();
+            
+            // セッションにユーザー情報を保存してリダイレクト
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             

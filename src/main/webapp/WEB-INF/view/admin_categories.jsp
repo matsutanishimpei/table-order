@@ -39,6 +39,7 @@
         <div class="card">
             <h2>新規カテゴリー追加</h2>
             <form action="Categories" method="post" class="form-group">
+                <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <input type="text" name="name" placeholder="例：サイドメニュー" required autofocus>
                 <button type="submit" class="submit-btn">追加</button>
             </form>
@@ -58,7 +59,7 @@
                     <c:forEach var="cat" items="${categoryList}">
                         <tr>
                             <td>${cat.id}</td>
-                            <td><strong>${cat.name}</strong></td>
+                            <td><strong><c:out value="${cat.name}" /></strong></td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty categoryList}">

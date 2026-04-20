@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>レジ精算システム - Table Order</title>
-    <title>レジ精算システム - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         body { display: flex; height: 100vh; overflow: hidden; }
@@ -67,7 +66,7 @@
         <div class="table-list">
             <c:forEach var="t" items="${unsettledTables}">
                 <a href="Home?tableId=${t.tableId}" class="table-btn ${t.tableId == selectedSummary.tableId ? 'active' : ''}">
-                    ${t.tableName}
+                    <c:out value="${t.tableName}" />
                 </a>
             </c:forEach>
             <c:if test="${empty unsettledTables}">
@@ -75,7 +74,7 @@
             </c:if>
         </div>
         <div class="logout-panel">
-            <a href="${pageContext.request.contextPath}/Login" style="color: #666; text-decoration: none; font-size: 0.9rem;">ログアウト</a>
+            <a href="${pageContext.request.contextPath}/Logout" style="color: #666; text-decoration: none; font-size: 0.9rem;">ログアウト</a>
         </div>
     </div>
 
@@ -85,7 +84,7 @@
             <c:when test="${not empty selectedSummary}">
                 <div class="summary-card">
                     <div class="summary-header">
-                        <h2>${selectedSummary.tableName} 様</h2>
+                        <h2><c:out value="${selectedSummary.tableName}" /> 様</h2>
                         <span style="color: #7f8c8d;">注文数: ${selectedSummary.items.size()}点</span>
                     </div>
 
@@ -93,7 +92,7 @@
                         <c:forEach var="item" items="${selectedSummary.items}">
                             <div class="item-row">
                                 <div>
-                                    <span style="font-weight: bold;">${item.productName}</span>
+                                    <span style="font-weight: bold;"><c:out value="${item.productName}" /></span>
                                     <span style="color: #7f8c8d; margin-left: 10px;">@¥${item.unitPrice}</span>
                                 </div>
                                 <div>
@@ -110,6 +109,7 @@
                     </div>
 
                     <form action="Home" method="post">
+                        <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="checkout">
                         <input type="hidden" name="tableId" value="${selectedSummary.tableId}">
                         <button type="submit" class="checkout-btn" onclick="return confirm('精算を完了しますか？');">

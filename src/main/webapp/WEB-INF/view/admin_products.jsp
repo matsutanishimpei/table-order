@@ -48,6 +48,7 @@
         <div class="card">
             <h2>新規商品登録</h2>
             <form action="Products" method="post">
+                <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                     <div class="form-group">
                         <label for="name">商品名</label>
@@ -57,7 +58,7 @@
                         <label for="categoryId">カテゴリー <a href="${pageContext.request.contextPath}/Admin/Categories" style="font-size: 0.8rem; font-weight: normal; margin-left: 5px;">[新規追加]</a></label>
                         <select id="categoryId" name="categoryId" required>
                             <c:forEach var="cat" items="${categoryList}">
-                                <option value="${cat.id}">${cat.name}</option>
+                                <option value="${cat.id}"><c:out value="${cat.name}" /></option>
                             </c:forEach>
                         </select>
                     </div>
@@ -92,10 +93,10 @@
                     <c:forEach var="p" items="${productList}">
                         <tr>
                             <td>${p.id}</td>
-                            <td><strong>${p.name}</strong></td>
+                            <td><strong><c:out value="${p.name}" /></strong></td>
                             <td>
                                 <c:forEach var="cat" items="${categoryList}">
-                                    <c:if test="${p.categoryId == cat.id}">${cat.name}</c:if>
+                                    <c:if test="${p.categoryId == cat.id}"><c:out value="${cat.name}" /></c:if>
                                 </c:forEach>
                             </td>
                             <td>¥<fmt:formatNumber value="${p.price}" /></td>

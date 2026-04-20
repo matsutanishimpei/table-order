@@ -73,8 +73,8 @@
         <div class="monitor-grid">
             <c:forEach var="t" items="${tableList}">
                 <div class="table-card status-${t.statusCode}">
-                    <div class="table-id">${t.tableName}</div>
-                    <div class="table-status-label">${t.statusLabel}</div>
+                    <div class="table-id"><c:out value="${t.tableName}" /></div>
+                    <div class="table-status-label"><c:out value="${t.statusLabel}" /></div>
                     
                     <div class="item-info">
                         注文アイテム：<span class="item-count">${t.orderCount}</span> 点<br>

@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>配膳管理パネル - Table Order</title>
-    <title>配膳管理パネル - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         .ready-grid {
@@ -38,7 +37,7 @@
 <body>
     <header>
         <h1>配膳管理パネル</h1>
-        <a href="${pageContext.request.contextPath}/Login" class="logout-link">ログアウト</a>
+        <a href="${pageContext.request.contextPath}/Logout" class="logout-link">ログアウト</a>
     </header>
 
     <div class="container">
@@ -46,14 +45,15 @@
             <c:forEach var="item" items="${readyItems}">
                 <div class="ready-card">
                     <div class="table-info">DELIVER TO</div>
-                    <div class="table-name">${item.tableName}</div>
+                    <div class="table-name"><c:out value="${item.tableName}" /></div>
                     
                     <div class="product-info">
-                        <div class="product-name">${item.productName}</div>
+                        <div class="product-name"><c:out value="${item.productName}" /></div>
                         <div class="quantity">数量: ${item.quantity}</div>
                     </div>
 
                     <form action="Home" method="post">
+                        <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="serve">
                         <input type="hidden" name="itemId" value="${item.orderItemId}">
                         <button type="submit" class="btn-serve">配膳完了</button>

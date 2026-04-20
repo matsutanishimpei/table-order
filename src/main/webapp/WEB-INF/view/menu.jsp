@@ -42,7 +42,7 @@
         </div>
         <c:forEach var="cat" items="${categories}">
             <a href="Menu?categoryId=${cat.id}" class="category-item ${selectedCategoryId == cat.id ? 'active' : ''}">
-                ${cat.name}
+                <c:out value="${cat.name}" />
             </a>
         </c:forEach>
     </div>
@@ -62,9 +62,10 @@
         <div class="product-grid">
             <c:forEach var="p" items="${products}">
                 <div class="product-card">
-                    <div class="product-name">${p.name}</div>
+                    <div class="product-name"><c:out value="${p.name}" /></div>
                     <div class="product-price">¥<fmt:formatNumber value="${p.price}" /></div>
                     <form action="Cart" method="post">
+                        <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="add">
                         <input type="hidden" name="productId" value="${p.id}">
                         <input type="hidden" name="categoryId" value="${selectedCategoryId}">
@@ -86,12 +87,13 @@
                     <c:forEach var="item" items="${sessionScope.cart}">
                         <div class="cart-item">
                             <div>
-                                <strong>${item.name}</strong><br>
+                                <strong><c:out value="${item.name}" /></strong><br>
                                 ¥<fmt:formatNumber value="${item.unitPrice}" /> × ${item.quantity}
                             </div>
                             <div style="text-align: right;">
                                 ¥<fmt:formatNumber value="${item.subtotal}" /><br>
                                 <form action="Cart" method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="${csrf_token}">
                                     <input type="hidden" name="action" value="remove">
                                     <input type="hidden" name="productId" value="${item.productId}">
                                     <input type="hidden" name="categoryId" value="${selectedCategoryId}">
@@ -114,6 +116,7 @@
                 <span>¥<fmt:formatNumber value="${total != null ? total : 0}" /></span>
             </div>
             <form action="Order" method="post">
+                <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <button type="submit" class="order-btn" ${empty sessionScope.cart ? 'disabled' : ''}>
                     注文を確定する
                 </button>

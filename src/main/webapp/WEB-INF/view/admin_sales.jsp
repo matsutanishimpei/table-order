@@ -119,7 +119,7 @@
                         <c:forEach var="p" items="${productRanking}" varStatus="status">
                             <tr>
                                 <td>${status.index + 1}</td>
-                                <td><strong>${p.productName}</strong></td>
+                                <td><strong><c:out value="${p.productName}" /></strong></td>
                                 <td>${p.totalQuantity} 個</td>
                                 <td>¥<fmt:formatNumber value="${p.totalAmount}" /></td>
                             </tr>

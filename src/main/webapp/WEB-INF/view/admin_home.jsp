@@ -85,7 +85,7 @@
             </a>
         </div>
 
-        <a href="${pageContext.request.contextPath}/Login" class="logout-link">ログアウトして戻る</a>
+        <a href="${pageContext.request.contextPath}/Logout" class="logout-link">ログアウトして戻る</a>
     </div>
 </body>
 </html>

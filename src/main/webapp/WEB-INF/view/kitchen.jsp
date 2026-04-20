@@ -119,8 +119,9 @@
         <div class="product-list">
             <c:forEach var="p" items="${allProducts}">
                 <div class="product-item">
-                    <span>${p.name}</span>
+                    <span><c:out value="${p.name}" /></span>
                     <form action="Home" method="post" style="margin: 0;">
+                        <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="toggle_availability">
                         <input type="hidden" name="productId" value="${p.id}">
                         <input type="hidden" name="currentAvailable" value="${p.available}">
@@ -132,7 +133,7 @@
             </c:forEach>
         </div>
         <div style="padding: 20px; text-align: center;">
-            <a href="${pageContext.request.contextPath}/Login" class="logout-btn">ログアウト</a>
+            <a href="${pageContext.request.contextPath}/Logout" class="logout-btn">ログアウト</a>
         </div>
     </div>
 
@@ -149,19 +150,20 @@
             <c:forEach var="item" items="${activeItems}">
                 <div class="order-card">
                     <div class="order-info">
-                        <span class="table-name">${item.tableName}</span>
+                        <span class="table-name"><c:out value="${item.tableName}" /></span>
                         <span class="order-time">
                             <fmt:formatDate value="${item.orderedAt}" pattern="HH:mm" />
                         </span>
                     </div>
                     <div class="product-name">
-                        ${item.productName}
+                        <c:out value="${item.productName}" />
                     </div>
                     <div class="quantity">
                         数量: ${item.quantity}
                     </div>
                     
                     <form action="Home" method="post">
+                        <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="complete">
                         <input type="hidden" name="itemId" value="${item.orderItemId}">
                         <button type="submit" class="btn-complete">調理完了</button>
