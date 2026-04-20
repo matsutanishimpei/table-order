@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>キッチン管理パネル - Table Order</title>
-    <title>キッチン管理パネル - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         body { 
@@ -119,7 +118,9 @@
         <div class="product-list">
             <c:forEach var="p" items="${allProducts}">
                 <div class="product-item">
-                    <span><c:out value="${p.name}" /></span>
+                    <span class="text-truncate" style="max-width: 130px;" title="<c:out value='${p.name}' />">
+                        <c:out value="${p.name}" />
+                    </span>
                     <form action="Home" method="post" style="margin: 0;">
                         <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="toggle_availability">
@@ -155,7 +156,7 @@
                             <fmt:formatDate value="${item.orderedAt}" pattern="HH:mm" />
                         </span>
                     </div>
-                    <div class="product-name">
+                    <div class="product-name word-break">
                         <c:out value="${item.productName}" />
                     </div>
                     <div class="quantity">

@@ -62,7 +62,9 @@
         <div class="product-grid">
             <c:forEach var="p" items="${products}">
                 <div class="product-card">
-                    <div class="product-name"><c:out value="${p.name}" /></div>
+                    <div class="product-name text-clamp-2" title="<c:out value='${p.name}' />">
+                        <c:out value="${p.name}" />
+                    </div>
                     <div class="product-price">¥<fmt:formatNumber value="${p.price}" /></div>
                     <form action="Cart" method="post">
                         <input type="hidden" name="csrf_token" value="${csrf_token}">
@@ -86,8 +88,8 @@
                     <c:set var="total" value="0" />
                     <c:forEach var="item" items="${sessionScope.cart}">
                         <div class="cart-item">
-                            <div>
-                                <strong><c:out value="${item.name}" /></strong><br>
+                            <div class="text-truncate" style="max-width: 180px;">
+                                <strong title="<c:out value='${item.name}' />"><c:out value="${item.name}" /></strong><br>
                                 ¥<fmt:formatNumber value="${item.unitPrice}" /> × ${item.quantity}
                             </div>
                             <div style="text-align: right;">

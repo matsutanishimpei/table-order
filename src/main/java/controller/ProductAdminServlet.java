@@ -50,6 +50,12 @@ public class ProductAdminServlet extends HttpServlet {
             response.sendRedirect("Products?msg=invalid");
             return;
         }
+        
+        // 文字数制限チェック（DB制約：100文字）
+        if (!util.ValidationUtil.isWithinLength(name, 100)) {
+            response.sendRedirect("Products?msg=toolong");
+            return;
+        }
 
         // モデル作成
         Product p = new Product();

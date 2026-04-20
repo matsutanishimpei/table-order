@@ -36,6 +36,12 @@ public class CategoryAdminServlet extends HttpServlet {
         String name = request.getParameter("name");
 
         if (util.ValidationUtil.isNotBlank(name)) {
+            // 文字数制限チェック（DB制約：50文字）
+            if (!util.ValidationUtil.isWithinLength(name, 50)) {
+                response.sendRedirect("Categories?msg=toolong");
+                return;
+            }
+
             CategoryDAO dao = new CategoryDAO();
             boolean success = dao.insert(name.trim());
             if (success) {

@@ -40,6 +40,9 @@
         <c:if test="${param.msg == 'invalid'}">
             <div class="alert alert-danger">入力内容が正しくありません（名前、価格、カテゴリーを確認してください）。</div>
         </c:if>
+        <c:if test="${param.msg == 'toolong'}">
+            <div class="alert alert-danger">商品名が長すぎます（最大100文字以内で入力してください）。</div>
+        </c:if>
         <c:if test="${param.msg == 'error'}">
             <div class="alert alert-danger">サーバーエラーにより登録に失敗しました。</div>
         </c:if>
@@ -51,8 +54,8 @@
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                     <div class="form-group">
-                        <label for="name">商品名</label>
-                        <input type="text" id="name" name="name" required placeholder="例：カルビ焼肉">
+                        <label for="name">商品名 <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-sub);">(最大100文字)</span></label>
+                        <input type="text" id="name" name="name" required placeholder="例：カルビ焼肉" maxlength="100">
                     </div>
                     <div class="form-group">
                         <label for="categoryId">カテゴリー <a href="${pageContext.request.contextPath}/Admin/Categories" style="font-size: 0.8rem; font-weight: normal; margin-left: 5px;">[新規追加]</a></label>
@@ -82,18 +85,20 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>商品名</th>
+                        <th style="width: 60px;">ID</th>
+                        <th style="max-width: 250px;">商品名</th>
                         <th>カテゴリ</th>
-                        <th>価格</th>
-                        <th>状態</th>
+                        <th style="width: 100px;">価格</th>
+                        <th style="width: 80px;">状態</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach var="p" items="${productList}">
                         <tr>
                             <td>${p.id}</td>
-                            <td><strong><c:out value="${p.name}" /></strong></td>
+                            <td class="text-truncate" style="max-width: 250px;">
+                                <strong title="<c:out value='${p.name}' />"><c:out value="${p.name}" /></strong>
+                            </td>
                             <td>
                                 <c:forEach var="cat" items="${categoryList}">
                                     <c:if test="${p.categoryId == cat.id}"><c:out value="${cat.name}" /></c:if>

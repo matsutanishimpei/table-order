@@ -91,9 +91,9 @@
                     <div class="items-list">
                         <c:forEach var="item" items="${selectedSummary.items}">
                             <div class="item-row">
-                                <div>
+                                <div class="word-break" style="max-width: 300px;">
                                     <span style="font-weight: bold;"><c:out value="${item.productName}" /></span>
-                                    <span style="color: #7f8c8d; margin-left: 10px;">@¥${item.unitPrice}</span>
+                                    <span style="color: #7f8c8d; margin-left: 10px;">@¥<fmt:formatNumber value="${item.unitPrice}" /></span>
                                 </div>
                                 <div>
                                     <span style="margin-right: 20px;">× ${item.quantity}</span>

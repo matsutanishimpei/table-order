@@ -46,4 +46,17 @@ public class ValidationUtil {
     public static boolean isNotBlank(String value) {
         return value != null && !value.trim().isEmpty();
     }
+
+    /**
+     * 文字列が指定された最大長以内であるかチェックします。
+     * @param value チェック対象
+     * @param maxLength 最大長
+     * @return 範囲内（または null）の場合は true
+     */
+    public static boolean isWithinLength(String value, int maxLength) {
+        if (value == null) {
+            return true;
+        }
+        return value.length() <= maxLength;
+    }
 }

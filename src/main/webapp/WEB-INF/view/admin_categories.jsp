@@ -31,6 +31,9 @@
         <c:if test="${param.msg == 'empty'}">
             <div class="alert alert-danger">カテゴリー名を入力してください。</div>
         </c:if>
+        <c:if test="${param.msg == 'toolong'}">
+            <div class="alert alert-danger">カテゴリー名が長すぎます（最大50文字以内で入力してください）。</div>
+        </c:if>
         <c:if test="${param.msg == 'error'}">
             <div class="alert alert-danger">処理中にエラーが発生しました。</div>
         </c:if>
@@ -40,7 +43,7 @@
             <h2>新規カテゴリー追加</h2>
             <form action="Categories" method="post" class="form-group">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
-                <input type="text" name="name" placeholder="例：サイドメニュー" required autofocus>
+                <input type="text" name="name" placeholder="例：サイドメニュー（最大50文字）" required autofocus maxlength="50">
                 <button type="submit" class="submit-btn">追加</button>
             </form>
         </div>
