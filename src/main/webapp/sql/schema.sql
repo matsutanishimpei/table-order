@@ -9,7 +9,8 @@ CREATE TABLE shop_tables (
 -- 2. ユーザー情報 (users)
 CREATE TABLE users (
     id VARCHAR(20) PRIMARY KEY,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    salt VARCHAR(100),
     role INT NOT NULL,
     table_id INT,
     FOREIGN KEY (table_id) REFERENCES shop_tables(id)
