@@ -8,64 +8,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>配膳管理パネル - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <style>
-        .ready-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .ready-card {
-            background: var(--bg-card);
-            padding: 24px;
-            border-top: 6px solid var(--success);
-            color: var(--text-main);
-        }
-
-        .table-info { font-size: 0.9rem; color: var(--text-sub); font-weight: bold; margin-bottom: 10px; }
-        .table-name { font-size: 2rem; margin-bottom: 15px; border-bottom: 2px solid var(--bg-body); padding-bottom: 10px; }
-        .product-name { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; }
-        .quantity { font-size: 1.2rem; color: var(--accent); font-weight: bold; }
-        
-        .no-items {
-            text-align: center; padding: 80px 20px; background: var(--bg-card); border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); grid-column: 1 / -1;
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
 </head>
 <body>
-    <header>
-        <h1>配膳管理パネル</h1>
-        <a href="${pageContext.request.contextPath}/Logout" class="logout-link">ログアウト</a>
-    </header>
-
     <div class="container">
-        <div class="ready-grid">
+        <header class="page-header">
+            <h1>配膳管理パネル</h1>
+            <a href="${pageContext.request.contextPath}/Logout" class="link-back">ログアウト</a>
+        </header>
+
+        <div class="monitor-grid">
             <c:forEach var="item" items="${readyItems}">
-                <div class="ready-card">
-                    <div class="table-info">DELIVER TO</div>
-                    <div class="table-name"><c:out value="${item.tableName}" /></div>
+                <div class="table-card status-ready">
+                    <div style="font-size: 0.9rem; color: var(--text-sub); font-weight: bold; margin-bottom: 8px;">DELIVER TO</div>
+                    <div class="table-id"><c:out value="${item.tableName}" /></div>
                     
-                    <div class="product-info">
-                        <div class="product-name"><c:out value="${item.productName}" /></div>
-                        <div class="quantity">数量: ${item.quantity}</div>
+                    <div class="card-content" style="margin-bottom: 20px;">
+                        <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 8px;"><c:out value="${item.productName}" /></div>
+                        <div style="font-size: 1.2rem; color: var(--accent); font-weight: bold;">数量: ${item.quantity}</div>
                     </div>
 
                     <form action="Home" method="post">
                         <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="serve">
                         <input type="hidden" name="itemId" value="${item.orderItemId}">
-                        <button type="submit" class="btn-serve">配膳完了</button>
+                        <button type="submit" class="btn btn-success btn-block">配膳完了</button>
                     </form>
                 </div>
             </c:forEach>
 
             <c:if test="${empty readyItems}">
-                <div class="no-items">
-                    <h2>待機中の料理はありません</h2>
-                    <p style="color: #888;">注文が調理完了になるとここに表示されます。</p>
-                    <button onclick="location.reload()" style="background: none; border: 1px solid #ccc; padding: 10px 20px; border-radius: 4px; cursor: pointer; color: #666; margin-top: 20px;">
+                <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <h2 style="border: none; padding: 0;">待機中の料理はありません</h2>
+                    <p style="color: #888; margin-bottom: 24px;">注文が調理完了になるとここに表示されます。</p>
+                    <button onclick="location.reload()" class="btn btn-outline">
                         最新の情報に更新
                     </button>
                 </div>

@@ -7,22 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>カテゴリー管理（管理者） - Table Order</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <style>
-        .form-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex-grow: 1; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--primary); color: white; }
-        
-        .back-link { text-decoration: none; color: var(--accent); font-weight: bold; }
-    </style>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
 </head>
 <body>
     <div class="container">
-        <header>
+        <header class="page-header">
             <h1>カテゴリー管理</h1>
-            <a href="${pageContext.request.contextPath}/Admin/Home" class="back-link">← 管理メニューへ戻る</a>
+            <a href="${pageContext.request.contextPath}/Admin/Home" class="link-back">← 管理メニューへ戻る</a>
         </header>
 
         <c:if test="${param.msg == 'success'}">
@@ -41,17 +32,19 @@
         <!-- 登録フォーム -->
         <div class="card">
             <h2>新規カテゴリー追加</h2>
-            <form action="Categories" method="post" class="form-group">
+            <form action="Categories" method="post" class="form-inline">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
-                <input type="text" name="name" placeholder="例：サイドメニュー（最大50文字）" required autofocus maxlength="50">
-                <button type="submit" class="submit-btn">追加</button>
+                <div class="flex-grow-1">
+                    <input type="text" name="name" class="form-control" placeholder="例：サイドメニュー（最大50文字）" required autofocus maxlength="50">
+                </div>
+                <button type="submit" class="btn btn-primary">カテゴリーを追加</button>
             </form>
         </div>
 
         <!-- 一覧表示 -->
         <div class="card">
             <h2>カテゴリー一覧</h2>
-            <table>
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th style="width: 80px;">ID</th>
@@ -67,7 +60,7 @@
                     </c:forEach>
                     <c:if test="${empty categoryList}">
                         <tr>
-                            <td colspan="2" style="text-align: center; color: #999;">カテゴリーがありません。</td>
+                            <td colspan="2" style="text-align: center; color: #999; padding: 40px;">カテゴリーがありません。</td>
                         </tr>
                     </c:if>
                 </tbody>

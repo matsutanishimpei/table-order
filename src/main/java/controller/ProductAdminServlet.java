@@ -23,10 +23,28 @@ public class ProductAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // データの取得
+        String action = request.getParameter("action");
         ProductDAO pDao = new ProductDAO();
         CategoryDAO cDao = new CategoryDAO();
         
+        // 編集モードの場合
+        if ("edit".equals(action)) {
+            Integer id = util.ValidationUtil.parseIntOrNull(request.getParameter("id"));
+            if (id != null) {
+                Product p = pDao.findById(id);
+                if (p != null) {
+                    List<model.Category> categoryList = cDao.findAll();
+                    request.setAttribute("product", p);
+                    request.setAttribute("categoryList", categoryList);
+                    request.getRequestDispatcher("/WEB-INF/view/admin_product_edit.jsp").forward(request, response);
+                    return;
+                }
+            }
+            response.sendRedirect("Products?msg=notfound");
+            return;
+        }
+
+        // 通常の一覧表示
         List<Product> productList = pDao.findAll();
         List<Category> categoryList = cDao.findAll();
 
@@ -40,6 +58,7 @@ public class ProductAdminServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         // フォームからデータ取得
+        Integer id = util.ValidationUtil.parseIntOrNull(request.getParameter("id")); // 編集時は存在する
         String name = request.getParameter("name");
         Integer categoryId = util.ValidationUtil.parseIntOrNull(request.getParameter("categoryId"));
         Integer price = util.ValidationUtil.parseIntOrNull(request.getParameter("price"));
@@ -49,32 +68,53 @@ public class ProductAdminServlet extends HttpServlet {
 
         // バリデーション
         if (!util.ValidationUtil.isNotBlank(name) || categoryId == null || price == null || price < 0) {
-            response.sendRedirect("Products?msg=invalid");
+            String redirectUrl = (id == null) ? "Products?msg=invalid" : "Products?action=edit&id=" + id + "&msg=invalid";
+            response.sendRedirect(redirectUrl);
             return;
         }
         
-        // 文字数制限チェック（DB制約：100文字）
+        // 文字数制限チェック
         if (!util.ValidationUtil.isWithinLength(name, 100)) {
-            response.sendRedirect("Products?msg=toolong");
+            String redirectUrl = (id == null) ? "Products?msg=toolong" : "Products?action=edit&id=" + id + "&msg=toolong";
+            response.sendRedirect(redirectUrl);
             return;
         }
 
-        // モデル作成
-        Product p = new Product();
-        p.setName(name.trim());
-        p.setCategoryId(categoryId);
-        p.setPrice(price);
-        p.setDescription(description != null ? description.trim() : "");
-        p.setAllergyInfo(allergyInfo != null ? allergyInfo.trim() : "");
-        p.setAvailable(isAvailable);
-        p.setImagePath(""); // 今回は無し
-
-        // DAOで保存
+        // DAOの準備
         ProductDAO dao = new ProductDAO();
-        boolean success = dao.insert(p);
+        Product p;
+        boolean success;
+
+        if (id != null) {
+            // 更新（Update）
+            p = dao.findById(id);
+            if (p == null) {
+                response.sendRedirect("Products?msg=notfound");
+                return;
+            }
+            p.setName(name.trim());
+            p.setCategoryId(categoryId);
+            p.setPrice(price);
+            p.setDescription(description != null ? description.trim() : "");
+            p.setAllergyInfo(allergyInfo != null ? allergyInfo.trim() : "");
+            p.setAvailable(isAvailable);
+            success = dao.update(p);
+        } else {
+            // 新規登録（Insert）
+            p = new Product();
+            p.setName(name.trim());
+            p.setCategoryId(categoryId);
+            p.setPrice(price);
+            p.setDescription(description != null ? description.trim() : "");
+            p.setAllergyInfo(allergyInfo != null ? allergyInfo.trim() : "");
+            p.setAvailable(isAvailable);
+            p.setImagePath("");
+            success = dao.insert(p);
+        }
 
         if (success) {
-            response.sendRedirect("Products?msg=success");
+            String msg = (id == null) ? "success" : "updatesuccess";
+            response.sendRedirect("Products?msg=" + msg);
         } else {
             response.sendRedirect("Products?msg=error");
         }
