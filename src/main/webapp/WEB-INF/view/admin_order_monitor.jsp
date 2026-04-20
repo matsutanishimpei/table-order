@@ -13,36 +13,56 @@
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
 </head>
 <body>
-    <div class="container">
-        <a href="${pageContext.request.contextPath}/Admin/Home" class="link-back">← 管理メニューへ戻る</a>
-        
-        <header class="page-header">
-            <h1>受注状況・フロア監視</h1>
-            <div style="font-size: 0.8rem; color: #999;">自動更新: 30秒ごと</div>
+    <div class="container" style="max-width: 1400px; padding: 64px 24px;">
+        <header class="page-header" style="margin-bottom: 48px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Real-time Monitoring</div>
+                <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">受注状況・フロア監視</h1>
+            </div>
+            <div style="text-align: right;">
+                <div class="badge badge-info" style="font-size: 0.75rem; letter-spacing: 0.05em; padding: 8px 16px; border-radius: 12px; background: rgba(99,102,241,0.1); color: var(--accent);">
+                    🔄 自動更新: 30秒ごと
+                </div>
+            </div>
         </header>
 
-        <div class="monitor-grid">
+        <div class="monitor-grid" style="gap: 24px;">
             <c:forEach var="t" items="${tableList}">
-                <div class="table-card status-${t.statusCode}">
-                    <div class="table-id"><c:out value="${t.tableName}" /></div>
-                    <div class="table-status-badge"><c:out value="${t.statusLabel}" /></div>
+                <div class="table-card" style="position: relative; overflow: hidden; border: none; box-shadow: var(--shadow-xl); padding: 48px 32px; transition: transform 0.3s ease;">
+                    <!-- 状態に応じた背景アクセント -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: ${t.statusCode == '0' ? '#10b981' : 'var(--accent)'};"></div>
                     
-                    <div class="card-content">
-                        <div style="font-size: 0.9rem; color: var(--text-sub); margin-bottom: 8px;">
-                            注文アイテム：<span style="font-weight: bold; color: var(--text-main);">${t.orderCount}</span> 点
+                    <div class="table-id" style="margin-bottom: 16px; font-size: 4.5rem; letter-spacing: -0.05em; line-height: 1;"><c:out value="${t.tableName}" /></div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <span class="badge ${t.statusCode == '0' ? 'badge-success' : 'badge-info'}" style="padding: 6px 20px; font-size: 0.85rem; border-radius: 100px;">
+                            <c:out value="${t.statusLabel}" />
+                        </span>
+                    </div>
+                    
+                    <div class="card-content" style="background: var(--bg-body); padding: 20px; border-radius: 20px; margin-bottom: 24px;">
+                        <div style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Items Ordered
                         </div>
-                        <div style="font-size: 1.2rem; font-weight: 800; color: var(--accent);">
-                            ¥<fmt:formatNumber value="${t.totalAmount}" />
+                        <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                            <span style="font-size: 2rem; font-weight: 900; color: var(--primary);">${t.orderCount}</span>
+                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-sub);">PCS</span>
+                        </div>
+                        <div style="margin-top: 16px; font-size: 1.5rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em;">
+                            <span style="font-size: 0.9rem; opacity: 0.6; margin-right: 2px;">¥</span><fmt:formatNumber value="${t.totalAmount}" />
                         </div>
                     </div>
 
-                    <div style="font-size: 0.75rem; color: #999; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px;">
-                        最終注文: <c:choose>
-                            <c:when test="${not empty t.lastOrderTime}">
-                                <fmt:formatDate value="${t.lastOrderTime}" pattern="HH:mm" />
-                            </c:when>
-                            <c:otherwise>-</c:otherwise>
-                        </c:choose>
+                    <div style="font-size: 0.8rem; color: var(--text-sub); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>Last Order:</span>
+                        <span style="color: var(--text-main); font-weight: 700;">
+                            <c:choose>
+                                <c:when test="${not empty t.lastOrderTime}">
+                                    <fmt:formatDate value="${t.lastOrderTime}" pattern="HH:mm" />
+                                </c:when>
+                                <c:otherwise>--:--</c:otherwise>
+                            </c:choose>
+                        </span>
                     </div>
                 </div>
             </c:forEach>

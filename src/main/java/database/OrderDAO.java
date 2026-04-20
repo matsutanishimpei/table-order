@@ -301,18 +301,28 @@ public class OrderDAO {
                 int itemCount = rs.getInt("item_count");
                 if (itemCount == 0) {
                     view.setStatusLabel("空席");
-                    view.setStatusCode("idle");
+                    view.setStatusCode("0"); // 空席を 0 と定義
                 } else {
-                    int minStatus = rs.getInt("min_status");
-                    if (minStatus == OrderConstants.STATUS_ORDERED) {
-                        view.setStatusLabel("調理中");
-                        view.setStatusCode("cooking");
-                    } else if (minStatus == OrderConstants.STATUS_COOKING_DONE) {
-                        view.setStatusLabel("配膳待ち");
-                        view.setStatusCode("ready");
-                    } else if (minStatus == OrderConstants.STATUS_SERVED) {
-                        view.setStatusLabel("食事中");
-                        view.setStatusCode("eating");
+                    Object minStatusObj = rs.getObject("min_status");
+                    if (minStatusObj == null) {
+                        view.setStatusLabel("空席");
+                        view.setStatusCode("0");
+                    } else {
+                        int minStatus = (Integer)minStatusObj;
+                        if (minStatus == OrderConstants.STATUS_ORDERED) {
+                            view.setStatusLabel("調理中");
+                            view.setStatusCode("10");
+                        } else if (minStatus == OrderConstants.STATUS_COOKING_DONE) {
+                            view.setStatusLabel("配膳待ち");
+                            view.setStatusCode("20");
+                        } else if (minStatus == OrderConstants.STATUS_SERVED) {
+                            view.setStatusLabel("食事中");
+                            view.setStatusCode("30");
+                        } else {
+                            // その他（会計済みなど）
+                            view.setStatusLabel("空席");
+                            view.setStatusCode("0");
+                        }
                     }
                 }
                 
