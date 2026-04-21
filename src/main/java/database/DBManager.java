@@ -72,8 +72,7 @@ public class DBManager {
         try {
             return dataSource.getConnection();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "データベースプーリングからの接続取得に失敗しました。", e);
-            return null;
+            throw new exception.DatabaseException("データベースプーリングからの接続取得に失敗しました。", e);
         }
     }
 

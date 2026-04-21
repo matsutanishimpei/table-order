@@ -74,7 +74,7 @@ public class UserDAO {
             }
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "ログイン処理中にデータベースエラーが発生しました。ID=" + id, e);
+            throw new exception.DatabaseException("ログイン処理中にデータベースエラーが発生しました。ID=" + id, e);
         }
 
         return user;

@@ -88,7 +88,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "アクティブ注文明細の取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("アクティブ注文明細の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -104,8 +104,7 @@ public class OrderDAO {
             ps.setInt(2, itemId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "注文明細のステータス更新中にエラーが発生しました。itemId=" + itemId, e);
-            return false;
+            throw new exception.DatabaseException("注文明細のステータス更新中にエラーが発生しました。itemId=" + itemId, e);
         }
     }
 
@@ -138,7 +137,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "配膳待ち明細の取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("配膳待ち明細の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -169,7 +168,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "未会計座席一覧の取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("未会計座席一覧の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -210,7 +209,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "座席注文サマリーの取得中にエラーが発生しました。tableId=" + tableId, e);
+            throw new exception.DatabaseException("座席注文サマリーの取得中にエラーが発生しました。tableId=" + tableId, e);
         }
         summary.setTableId(tableId);
         summary.setItems(items);
@@ -305,7 +304,7 @@ public class OrderDAO {
             }
         }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "全テーブルステータス取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("全テーブルステータス取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -324,7 +323,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "累計売上高の取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("累計売上高の取得中にエラーが発生しました。", e);
         }
         return 0;
     }
@@ -354,7 +353,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "日次売上集計の取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("日次売上集計の取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -382,7 +381,7 @@ public class OrderDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "商品別売上ランキングの取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("商品別売上ランキングの取得中にエラーが発生しました。", e);
         }
         return list;
     }

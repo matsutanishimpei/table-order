@@ -31,7 +31,7 @@ public class CategoryDAO {
                 list.add(c);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "全カテゴリ取得中にエラーが発生しました。", e);
+            throw new exception.DatabaseException("全カテゴリ取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -46,8 +46,7 @@ public class CategoryDAO {
             ps.setString(1, name);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "カテゴリ登録中にエラーが発生しました。name=" + name, e);
-            return false;
+            throw new exception.DatabaseException("カテゴリ登録中にエラーが発生しました。name=" + name, e);
         }
     }
 }

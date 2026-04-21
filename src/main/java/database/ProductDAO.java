@@ -41,7 +41,7 @@ public class ProductDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "カテゴリ別商品取得中にエラーが発生しました。categoryId=" + categoryId, e);
+            throw new exception.DatabaseException("カテゴリ別商品取得中にエラーが発生しました。categoryId=" + categoryId, e);
         }
         return list;
     }
@@ -70,7 +70,7 @@ public class ProductDAO {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "商品取得(findById)中にエラーが発生しました。id=" + id, e);
+            throw new exception.DatabaseException("商品取得(findById)中にエラーが発生しました。id=" + id, e);
         }
         return p;
     }
@@ -98,7 +98,7 @@ public class ProductDAO {
                 list.add(p);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new exception.DatabaseException("全商品取得中にエラーが発生しました。", e);
         }
         return list;
     }
@@ -119,8 +119,7 @@ public class ProductDAO {
             ps.setBoolean(7, p.isAvailable());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new exception.DatabaseException("商品登録中にエラーが発生しました。", e);
         }
     }
 
@@ -140,8 +139,7 @@ public class ProductDAO {
             ps.setInt(7, p.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "商品更新中にエラーが発生しました。productId=" + p.getId(), e);
-            return false;
+            throw new exception.DatabaseException("商品更新中にエラーが発生しました。productId=" + p.getId(), e);
         }
     }
 
@@ -156,8 +154,7 @@ public class ProductDAO {
             ps.setInt(2, productId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "商品状態更新中にエラーが発生しました。productId=" + productId, e);
-            return false;
+            throw new exception.DatabaseException("商品状態更新中にエラーが発生しました。productId=" + productId, e);
         }
     }
 }
