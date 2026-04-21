@@ -34,8 +34,9 @@ public class CartServlet extends HttpServlet {
 
         if ("add".equals(action)) {
             int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
+            int quantity = util.ValidationUtil.parseIntSafe(request.getParameter("quantity"), 1); // 数量取得、デフォルト1
             if (productId > 0) {
-                addItem(cart, productId);
+                addItem(cart, productId, quantity);
             }
         } else if ("remove".equals(action)) {
             int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
@@ -51,11 +52,11 @@ public class CartServlet extends HttpServlet {
         response.sendRedirect("Menu" + (categoryId != null ? "?categoryId=" + categoryId : ""));
     }
 
-    private void addItem(List<CartItem> cart, int productId) {
+    private void addItem(List<CartItem> cart, int productId, int quantity) {
         // すでにカートにあるか確認
         for (CartItem item : cart) {
             if (item.getProductId() == productId) {
-                item.setQuantity(item.getQuantity() + 1);
+                item.setQuantity(item.getQuantity() + quantity); // 指定数量を加算
                 return;
             }
         }
@@ -63,7 +64,7 @@ public class CartServlet extends HttpServlet {
         ProductDAO dao = new ProductDAO();
         Product p = dao.findById(productId);
         if (p != null) {
-            cart.add(new CartItem(p.getId(), p.getName(), p.getPrice(), 1));
+            cart.add(new CartItem(p.getId(), p.getName(), p.getPrice(), quantity)); // 指定数量で追加
         }
     }
 

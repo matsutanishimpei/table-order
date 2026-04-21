@@ -4,93 +4,89 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>レジ精算システム - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>精算管理 | レジ・決済コンソール</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body class="app-layout theme-kitchen">
-    <!-- サイドバー：座席選択 -->
-    <div class="sidebar" style="width: 320px; border-right: 1px solid rgba(255,255,255,0.05); background: #020617;">
-        <div class="sidebar-header" style="background: #1e293b; padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); font-weight: 800; margin-bottom: 4px;">Point of Sale</div>
-            <div style="font-size: 1.25rem; font-weight: 900;">精算待ちテーブル</div>
-        </div>
-        <div class="sidebar-content" style="padding: 12px 0;">
-            <c:forEach var="t" items="${unsettledTables}">
-                <a href="Home?tableId=${t.tableId}" class="sidebar-item ${t.tableId == selectedSummary.tableId ? 'active' : ''}" style="padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
-                    <span style="font-weight: 700; font-size: 1.1rem;"><c:out value="${t.tableName}" /></span>
-                    <span style="font-size: 0.75rem; opacity: 0.5;">READY TO PAY</span>
-                </a>
-            </c:forEach>
-            <c:if test="${empty unsettledTables}">
-                <div style="padding: 64px 24px; color: #64748b; text-align: center; font-size: 0.9rem; line-height: 1.6;">
-                    <div style="font-size: 2.5rem; margin-bottom: 16px; opacity: 0.2;">🌙</div>
-                    現在、会計待ちのテーブルはありません。
+<body class="bg-[#020617] font-sans antialiased text-slate-100 min-h-screen">
+    <div class="px-8 py-10">
+        <header class="mb-12 flex justify-between items-end border-b border-white/5 pb-10">
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 bg-primary-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]"></span>
+                    <span class="text-[10px] font-black text-primary-400 uppercase tracking-[0.4em] leading-none italic">Settlement Hub</span>
                 </div>
-            </c:if>
-        </div>
-        <div class="sidebar-footer" style="padding: 24px; text-align: center;">
-            <a href="${pageContext.request.contextPath}/Logout" class="link-back" style="font-size: 0.85rem; opacity: 0.6;">Logout System</a>
-        </div>
-    </div>
+                <h1 class="text-6xl font-black tracking-tighter text-white">
+                    精算待ち一覧<span class="text-primary-500">.</span>
+                </h1>
+                <p class="text-slate-500 font-bold italic text-sm">各テーブルの未決済注文の統合管理と会計処理</p>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="Home" class="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-slate-400 hover:text-white hover:bg-white/10 transition-all no-underline uppercase tracking-widest">
+                    管理ホームへ
+                </a>
+                <div class="bg-white/5 border border-white/10 px-8 py-6 rounded-3xl backdrop-blur-md">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">未決済数</div>
+                    <div class="text-3xl font-black text-white tracking-tighter">${unsettledTables.size()} <span class="text-xs text-slate-600 font-bold">テーブル</span></div>
+                </div>
+            </div>
+        </header>
 
-    <!-- メイン：レジ詳細 -->
-    <div class="main-content" style="padding: 48px; min-height: 100vh;">
-        <c:choose>
-            <c:when test="${not empty selectedSummary}">
-                <div class="card" style="max-width: 800px; padding: 48px; border: none; background: #1e293b; box-shadow: var(--shadow-xl); border-radius: 32px;">
-                    <header style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 48px; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 32px;">
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="font-size: 0.75rem; color: var(--accent); font-weight: 800; text-transform: uppercase;">Selected Table</div>
-                            <h2 style="border:none; margin:0; padding:0; font-size: 2.2rem; font-weight: 900;"><c:out value="${selectedSummary.tableName}" /> 様</h2>
+        <main class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-12">
+            <c:forEach var="entry" items="${unsettledTables}">
+                <div class="bg-slate-900 border border-white/10 rounded-5xl overflow-hidden flex flex-col group hover:border-primary-500/50 transition-all duration-500 shadow-2xl">
+                    <header class="p-10 bg-gradient-to-br from-slate-800 to-slate-900 border-b border-white/5 relative overflow-hidden">
+                        <!-- Table Number Background -->
+                        <div class="absolute -right-4 -top-8 text-[12rem] font-black text-white/5 italic select-none pointer-events-none group-hover:text-primary-500/10 transition-colors">
+                            #${entry.tableId}
                         </div>
-                        <span class="badge" style="background: rgba(255,255,255,0.05); color: #94a3b8; padding: 8px 16px; border-radius: 12px; font-weight: 700;">
-                            ${selectedSummary.items.size()} items ordered
-                        </span>
+                        
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <p class="text-[10px] font-black text-primary-400 uppercase tracking-widest leading-none mb-3 italic">Floor Destination</p>
+                                <h2 class="text-6xl font-black text-white tracking-tighter leading-none">
+                                    <c:out value="${entry.tableName}" /><span class="text-xl text-slate-600 font-bold ml-2 select-none italic">席</span>
+                                </h2>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 italic">Bill Items</p>
+                                <p class="text-2xl font-black text-white font-mono">${entry.orderCount} <span class="text-xs text-slate-600">点</span></p>
+                            </div>
+                        </div>
                     </header>
 
-                    <div class="items-list" style="margin-bottom: 48px;">
-                        <c:forEach var="item" items="${selectedSummary.items}">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                                <div class="word-break" style="flex: 1; padding-right: 24px;">
-                                    <div style="font-weight: 700; color: #f1f5f9; font-size: 1.1rem; margin-bottom: 4px;"><c:out value="${item.productName}" /></div>
-                                    <div style="color: #94a3b8; font-size: 0.85rem; font-family: monospace;">@¥<fmt:formatNumber value="${item.unitPrice}" /></div>
-                                </div>
-                                <div style="text-align: right; display: flex; align-items: center; gap: 32px;">
-                                    <div style="color: #94a3b8; font-weight: 600; font-size: 1rem; min-width: 60px;">× ${item.quantity}</div>
-                                    <div style="font-weight: 800; min-width: 120px; color: #f8fafc; font-size: 1.25rem; font-family: monospace;">¥<fmt:formatNumber value="${item.subtotal}" /></div>
-                                </div>
+                    <div class="flex-grow p-10 space-y-8">
+                        <div class="space-y-4">
+                            <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2 italic">Receipt Subtotal</div>
+                            <div class="flex justify-between items-baseline border-b border-white/5 pb-4">
+                                <span class="text-slate-400 font-black italic text-lg uppercase">jpy</span>
+                                <span class="text-5xl font-black text-white tracking-tighter">
+                                    <fmt:formatNumber value="${entry.totalAmount}" />
+                                </span>
                             </div>
-                        </c:forEach>
-                    </div>
-
-                    <div style="margin-top: 48px; padding: 40px; border-radius: 24px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 1rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;">Final Total</div>
-                        <div style="font-size: 3.2rem; font-weight: 900; color: white; letter-spacing: -0.02em; font-family: monospace;">
-                            <span style="font-size: 1.5rem; opacity: 0.5; margin-right: 4px;">¥</span><fmt:formatNumber value="${selectedSummary.totalAmount}" />
                         </div>
-                    </div>
 
-                    <form action="Home" method="post" style="margin-top: 56px;">
-                        <input type="hidden" name="csrf_token" value="${csrf_token}">
-                        <input type="hidden" name="action" value="checkout">
-                        <input type="hidden" name="tableId" value="${selectedSummary.tableId}">
-                        <button type="submit" class="order-btn" style="height: 72px; font-size: 1.3rem; border-radius: 20px;" onclick="return confirm('精算を完了し、テーブルを空けますか？');">
-                            <span>🏧</span> 精算を完了し、閉じる
-                        </button>
-                    </form>
+                        <footer>
+                            <form action="Home" method="post">
+                                <input type="hidden" name="csrf_token" value="${csrf_token}">
+                                <input type="hidden" name="action" value="checkout">
+                                <input type="hidden" name="tableId" value="${entry.tableId}">
+                                <button type="submit" class="w-full py-6 bg-primary-600 text-white rounded-2xl font-black text-sm tracking-[0.3em] uppercase hover:bg-primary-500 transition-all active:scale-95 shadow-2xl shadow-primary-500/20 group">
+                                    会計を完了する <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
+                                </button>
+                            </form>
+                        </footer>
+                    </div>
                 </div>
-            </c:when>
-            <c:otherwise>
-                <div class="placeholder-view" style="padding-top: 120px;">
-                    <div class="placeholder-icon" style="font-size: 6rem; opacity: 0.1;">🏧</div>
-                    <h2 style="font-size: 1.75rem; font-weight: 800; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 16px;">精算するテーブルを選択してください</h2>
-                    <p style="opacity: 0.5; max-width: 600px; margin: 0 auto; line-height: 1.8;">左側のリストから会計待ちの座席を選択すると、注文詳細と合計金額が表示されます。内容を確認し、精算処理を完了させてください。</p>
+            </c:forEach>
+
+            <c:if test="${empty unsettledTables}">
+                <div class="col-span-full border-2 border-dashed border-white/10 rounded-6xl py-48 flex flex-col items-center justify-center opacity-20 grayscale">
+                    <div class="text-9xl mb-8 animate-pulse-subtle">🏧</div>
+                    <p class="text-xs font-black text-slate-500 uppercase tracking-[0.6em] italic leading-relaxed">No pending settlements.<br>Cashier dashboard is clear.</p>
                 </div>
-            </c:otherwise>
-        </c:choose>
+            </c:if>
+        </main>
     </div>
 </body>
 </html>

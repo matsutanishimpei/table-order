@@ -4,99 +4,138 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>売上管理 - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>売上分析 | 管理センター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 1200px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px; flex-direction: column; align-items: flex-start; gap: 8px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Financial Performance</div>
-            <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">売上管理ダッシュボード</h1>
-            <a href="${pageContext.request.contextPath}/Admin/Home" class="link-back" style="margin-top: 16px;">← 管理メニューへ戻る</a>
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900">
+    <div class="max-w-[1200px] mx-auto px-12 py-20">
+        <header class="mb-16 flex justify-between items-end">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] leading-none italic">Revenue Analytics</span>
+                </div>
+                <h1 class="text-6xl font-black tracking-tighter text-slate-950">
+                    売上分析<span class="text-primary-600">.</span>
+                </h1>
+                <p class="text-slate-500 font-medium italic opacity-60">財務パフォーマンスと需要動向の統合分析コンソール</p>
+            </div>
+            <a href="Home" class="px-8 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-400 hover:text-slate-950 transition-all uppercase tracking-widest no-underline">
+                管理ホームへ戻る
+            </a>
         </header>
 
-        <div class="dashboard-grid" style="margin-bottom: 48px; gap: 32px;">
-            <div class="stat-card" style="border: none; box-shadow: var(--shadow-xl);">
-                <div class="stat-label" style="text-transform: uppercase; letter-spacing: 0.05em;">Total Sales / 累計売上高</div>
-                <div class="stat-value" style="font-size: 3rem; color: var(--accent);"><span style="font-size: 1.5rem; opacity: 0.5; margin-right: 4px;">¥</span><fmt:formatNumber value="${totalSales}" /></div>
+        <!-- サマリーカード -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+            <div class="premium-card p-12 bg-white relative overflow-hidden group hover:border-primary-500/50 transition-all shadow-2xl border-none">
+                <div class="absolute -right-8 -bottom-8 text-9xl font-black text-slate-50 italic pointer-events-none group-hover:text-primary-50 transition-colors uppercase select-none italic">¥</div>
+                <div class="relative z-10 space-y-4">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">累計売上額</h2>
+                    <div class="flex items-baseline gap-3">
+                        <span class="text-slate-300 font-black italic text-2xl uppercase">jpy</span>
+                        <div class="text-7xl font-black text-slate-950 tracking-tighter">
+                            <fmt:formatNumber value="${totalSales}" />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card" style="border: none; box-shadow: var(--shadow-xl);">
-                <div class="stat-label" style="text-transform: uppercase; letter-spacing: 0.05em;">Efficiency / 直近平均売上</div>
-                <div class="stat-value" style="font-size: 3rem;">
-                    <span style="font-size: 1.5rem; opacity: 0.5; margin-right: 4px;">¥</span>
-                    <c:set var="sum" value="0" />
-                    <c:forEach var="d" items="${dailySales}">
-                        <c:set var="sum" value="${sum + d.amount}" />
-                    </c:forEach>
-                    <fmt:formatNumber value="${dailySales.size() > 0 ? sum / dailySales.size() : 0}" pattern="#,###" />
+
+            <div class="premium-card p-12 bg-white relative overflow-hidden group hover:border-emerald-500/50 transition-all shadow-2xl border-none">
+                <div class="absolute -right-8 -bottom-8 text-9xl font-black text-slate-50 italic pointer-events-none group-hover:text-emerald-50 transition-colors uppercase select-none italic">%</div>
+                <div class="relative z-10 space-y-4">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">日次平均売上</h2>
+                    <div class="flex items-baseline gap-3">
+                        <span class="text-slate-300 font-black italic text-2xl uppercase">jpy</span>
+                        <div class="text-7xl font-black text-slate-950 tracking-tighter">
+                            <c:set var="sum" value="0" />
+                            <c:forEach var="d" items="${dailySales}">
+                                <c:set var="sum" value="${sum + d.amount}" />
+                            </c:forEach>
+                            <fmt:formatNumber value="${dailySales.size() > 0 ? sum / dailySales.size() : 0}" pattern="#,###" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- 日次売上トレンド -->
-            <section class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-lg);">
-                <div style="padding: 24px 32px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border: none; padding: 0;">日次売上トレンド (直近7日間)</h2>
-                </div>
-                <table class="admin-table" style="box-shadow: none; border-radius: 0;">
-                    <thead>
-                        <tr>
-                            <th style="background: transparent; border-bottom: 2px solid var(--border);">日付</th>
-                            <th style="text-align: right; background: transparent; border-bottom: 2px solid var(--border);">売上高</th>
-                            <th style="text-align: center; background: transparent; border-bottom: 2px solid var(--border);">件数</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="d" items="${dailySales}">
-                            <tr>
-                                <td style="font-family: monospace; font-weight: 600; color: var(--text-main);"><fmt:formatDate value="${d.salesDate}" pattern="yyyy/MM/dd" /></td>
-                                <td style="text-align: right; font-weight: 700; color: var(--primary);">¥<fmt:formatNumber value="${d.amount}" /></td>
-                                <td style="text-align: center;"><span class="badge badge-info">${d.orderCount} 件</span></td>
+            <section class="premium-card bg-white overflow-hidden shadow-2xl border-none">
+                <header class="data-header bg-slate-50/50 px-10 py-8">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Daily Trajectory (Last 7 Days)</h2>
+                    <span class="text-[10px] font-black uppercase text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 italic font-mono leading-none">Live Sync</span>
+                </header>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                <th class="px-10 py-6">集計日</th>
+                                <th class="px-6 py-6 text-right">売上高</th>
+                                <th class="px-10 py-6 text-center">注文数</th>
                             </tr>
-                        </c:forEach>
-                        <c:if test="${empty dailySales}">
-                            <tr><td colspan="3" style="text-align: center; color: var(--text-sub); padding: 80px 40px;">データが入っていません</td></tr>
-                        </c:if>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <c:forEach var="d" items="${dailySales}">
+                                <tr class="group hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-10 py-10 text-sm font-black text-slate-400 font-mono italic">
+                                        <fmt:formatDate value="${d.salesDate}" pattern="yyyy.MM.dd" />
+                                    </td>
+                                    <td class="px-6 py-10 text-right font-black text-slate-900 text-3xl tracking-tighter">
+                                        ¥<fmt:formatNumber value="${d.amount}" />
+                                    </td>
+                                    <td class="px-10 py-10 text-center">
+                                        <span class="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-black tracking-widest uppercase italic">
+                                            ${d.orderCount} Orders
+                                        </span>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty dailySales}">
+                                <tr><td colspan="3" class="px-10 py-40 text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] italic leading-relaxed">No chronological data committed.<br>Sales matrix is currently void.</td></tr>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- 商品別ランキング -->
-            <section class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-lg);">
-                <div style="padding: 24px 32px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border: none; padding: 0;">商品別売上ランキング</h2>
-                </div>
-                <table class="admin-table" style="box-shadow: none; border-radius: 0;">
-                    <thead>
-                        <tr>
-                            <th style="width: 70px; text-align: center; background: transparent; border-bottom: 2px solid var(--border);">順位</th>
-                            <th style="background: transparent; border-bottom: 2px solid var(--border);">商品名</th>
-                            <th style="width: 100px; text-align: center; background: transparent; border-bottom: 2px solid var(--border);">数量</th>
-                            <th style="width: 140px; text-align: right; background: transparent; border-bottom: 2px solid var(--border);">売上合計</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="p" items="${productRanking}" varStatus="status">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <span style="font-size: 1.25rem; font-weight: 900; color: ${status.index < 3 ? 'var(--accent)' : 'var(--text-sub)'}; opacity: ${1 - (status.index * 0.15)}">
-                                        ${status.index + 1}
-                                    </span>
-                                </td>
-                                <td><strong style="color: var(--primary);"><c:out value="${p.productName}" /></strong></td>
-                                <td style="text-align: center; font-weight: 500;">${p.totalQuantity} <small style="opacity: 0.5;">個</small></td>
-                                <td style="text-align: right; font-weight: 700; color: var(--primary);">¥<fmt:formatNumber value="${p.totalAmount}" /></td>
+            <section class="premium-card bg-white overflow-hidden shadow-2xl border-none">
+                <header class="data-header bg-slate-50/50 px-10 py-8">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Market Demand Ranking</h2>
+                    <span class="text-[10px] font-black uppercase text-primary-500 bg-primary-50 px-3 py-1 rounded-full border border-primary-100 italic font-mono leading-none">Top Performers</span>
+                </header>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                <th class="px-10 py-6 text-center w-20">順位</th>
+                                <th class="px-6 py-6">商品名</th>
+                                <th class="px-10 py-6 text-right">売上累計</th>
                             </tr>
-                        </c:forEach>
-                        <c:if test="${empty productRanking}">
-                            <tr><td colspan="4" style="text-align: center; color: var(--text-sub); padding: 80px 40px;">データが入っていません</td></tr>
-                        </c:if>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <c:forEach var="p" items="${productRanking}" varStatus="status">
+                                <tr class="group hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-10 py-10 text-center relative overflow-hidden">
+                                        <div class="text-4xl font-black italic tracking-tighter leading-none ${status.index < 3 ? 'text-primary-600' : 'text-slate-100'}">
+                                            0${status.index + 1}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-10">
+                                        <div class="font-black text-slate-900 text-2xl group-hover:text-primary-600 transition-colors tracking-tight leading-none"><c:out value="${p.productName}" /></div>
+                                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-3 italic leading-none">${p.totalQuantity} <span class="opacity-40">Units Distribution</span></div>
+                                    </td>
+                                    <td class="px-10 py-10 text-right font-black text-slate-950 text-3xl tracking-tighter">
+                                        ¥<fmt:formatNumber value="${p.totalAmount}" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty productRanking}">
+                                <tr><td colspan="3" class="px-10 py-40 text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] italic leading-relaxed">No market data available.<br>Asset demand log is void.</td></tr>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </div>

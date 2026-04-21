@@ -3,79 +3,110 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カテゴリー管理（管理者） - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>カテゴリー管理 | 管理センター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 900px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px; flex-direction: column; align-items: flex-start; gap: 8px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Classification Settings</div>
-            <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">カテゴリー管理</h1>
-            <a href="${pageContext.request.contextPath}/Admin/Home" class="link-back" style="margin-top: 16px;">← 管理メニューへ戻る</a>
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900">
+    <div class="max-w-[1200px] mx-auto px-12 py-20">
+        <header class="mb-16 flex justify-between items-end">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] leading-none italic">Taxonomy System</span>
+                </div>
+                <h1 class="text-6xl font-black tracking-tighter text-slate-950">
+                    カテゴリー管理<span class="text-emerald-600">.</span>
+                </h1>
+                <p class="text-slate-500 font-medium italic opacity-60">商品分類の登録および系統の管理</p>
+            </div>
+            
+            <a href="Home" class="px-8 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-400 hover:text-slate-950 transition-all uppercase tracking-widest no-underline">
+                管理ホームへ戻る
+            </a>
         </header>
 
-        <c:if test="${param.msg == 'success'}">
-            <div class="alert alert-success" style="border-radius: 16px;">カテゴリーを正常に追加しました。</div>
-        </c:if>
-        <c:if test="${param.msg == 'empty'}">
-            <div class="alert alert-danger" style="border-radius: 16px;">カテゴリー名を入力してください。</div>
-        </c:if>
-        <c:if test="${param.msg == 'toolong'}">
-            <div class="alert alert-danger" style="border-radius: 16px;">カテゴリー名が長すぎます（最大50文字以内）。</div>
-        </c:if>
-        <c:if test="${param.msg == 'error'}">
-            <div class="alert alert-danger" style="border-radius: 16px;">処理中にエラーが発生しました。</div>
+        <c:if test="${not empty param.msg}">
+            <div class="mb-12 animate-fadeIn p-5 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center gap-4 text-xs font-bold uppercase tracking-wide">
+                <c:choose>
+                    <c:when test="${param.msg == 'success'}"><span>✅</span> カテゴリーが正常に保存されました。</c:when>
+                    <c:otherwise><span>⚠️</span> 処理中にエラーが発生しました。</c:otherwise>
+                </c:choose>
+            </div>
         </c:if>
 
-        <div style="display: grid; grid-template-columns: 1fr; gap: 32px;">
-            <!-- 登録フォーム -->
-            <div class="card" style="box-shadow: var(--shadow-xl); border: none;">
-                <h2 style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sub); border: none; padding: 0; margin-bottom: 24px;">新規カテゴリー追加</h2>
-                <form action="Categories" method="post" class="form-inline" style="gap: 16px;">
+        <div class="grid grid-cols-1 gap-12">
+            <!-- 新規登録エリア: Products には無いが Admin の一貫性を重視 -->
+            <section class="premium-card p-10 bg-white border border-slate-100 shadow-xl rounded-3xl">
+                <header class="mb-8">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2 font-mono italic">Quick Register</h2>
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tighter">新規カテゴリー追加</h3>
+                </header>
+                <form action="Categories" method="post" class="flex flex-col md:flex-row gap-6 items-end">
                     <input type="hidden" name="csrf_token" value="${csrf_token}">
-                    <div class="flex-grow-1">
-                        <input type="text" name="name" class="form-control" style="height: 56px; border-radius: 14px;" placeholder="例：サイドメニュー（最大50文字）" required autofocus maxlength="50">
+                    <div class="flex-1 space-y-3 w-full">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">カテゴリー名</label>
+                        <input type="text" name="name" required placeholder="例: おつまみ、ドリンクなど" maxlength="50"
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-lg font-black shadow-inner">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="height: 56px; padding: 0 32px; border-radius: 14px;">カテゴリーを追加</button>
+                    <button type="submit" class="px-10 py-5 bg-emerald-600 text-white rounded-2xl font-bold transition-all hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-600/20 text-xs tracking-widest uppercase">
+                        追加を実行
+                    </button>
                 </form>
-            </div>
+            </section>
 
-            <!-- 一覧表示 -->
-            <div class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-lg);">
-                <div style="padding: 24px 32px; background: #f8fafc; border-bottom: 1px solid var(--border);">
-                    <h2 style="margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border: none; padding: 0;">登録済み一覧</h2>
+            <!-- 一覧エリア: admin_products.jsp の構造を完全踏襲 -->
+            <main class="premium-card bg-white overflow-hidden shadow-2xl border-none">
+                <header class="data-header bg-slate-50/50">
+                    <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Registered Categories</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black uppercase text-slate-400 border border-slate-200 px-3 py-1 rounded-full">${categoryList.size()} <span class="opacity-40">Groups</span></span>
+                    </div>
+                </header>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                                <th class="px-10 py-6 w-32">ID</th>
+                                <th class="px-10 py-6">カテゴリー名</th>
+                                <th class="px-10 py-6 text-right w-40">属性</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <c:forEach var="cat" items="${categoryList}">
+                                <tr class="group hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-10 py-8">
+                                        <div class="text-[11px] font-black text-slate-300 font-mono italic">#${cat.id}</div>
+                                    </td>
+                                    <td class="px-10 py-8">
+                                        <div class="text-lg font-black text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">
+                                            <c:out value="${cat.name}" />
+                                        </div>
+                                    </td>
+                                    <td class="px-10 py-8 text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic">
+                                            <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> Internal Node
+                                        </span>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty categoryList}">
+                                <tr>
+                                    <td colspan="3" class="px-10 py-32 text-center">
+                                        <p class="text-xs font-black text-slate-300 uppercase tracking-[0.5em] italic leading-relaxed">No taxonomy assets detected.</p>
+                                    </td>
+                                </tr>
+                            </c:if>
+                        </tbody>
+                    </table>
                 </div>
-                <table class="admin-table" style="box-shadow: none; border-radius: 0;">
-                    <thead>
-                        <tr>
-                            <th style="width: 120px; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">ID</th>
-                            <th style="background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">カテゴリー名</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="cat" items="${categoryList}">
-                            <tr>
-                                <td style="color: var(--text-sub); font-family: monospace; font-size: 0.95rem;">#${cat.id}</td>
-                                <td style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">
-                                    <c:out value="${cat.name}" />
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty categoryList}">
-                            <tr>
-                                <td colspan="2" style="text-align: center; padding: 100px 40px;">
-                                    <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.1;">🏷️</div>
-                                    <div style="color: var(--text-sub); font-weight: 500;">まだカテゴリーが登録されていません。</div>
-                                </td>
-                            </tr>
-                        </c:if>
-                    </tbody>
-                </table>
-            </div>
+            </main>
         </div>
     </div>
+
+    <style>
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>

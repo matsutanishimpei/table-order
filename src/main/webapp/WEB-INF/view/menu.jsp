@@ -4,90 +4,127 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品注文 - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>メニュー選択 | テーブルオーダーシステム</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body class="app-layout">
-    <!-- サイドバー: カテゴリ選択 -->
-    <div class="sidebar" style="width: 260px;">
-        <div class="sidebar-header" style="background: var(--primary); padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 4px;">Current Status</div>
-            <div style="font-size: 1.25rem; font-weight: 800;">TABLE: ${sessionScope.user.id}</div>
-        </div>
-        <div class="sidebar-content">
+<body class="bg-slate-50 font-sans antialiased text-slate-900 flex h-screen overflow-hidden">
+    <!-- サイドナビゲーション: カテゴリ選択 -->
+    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col z-30 shadow-2xl">
+        <header class="p-10 border-b border-slate-100 flex flex-col gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-primary-600 rounded-full animate-pulse"></div>
+                <div class="text-[10px] font-bold text-primary-600 uppercase tracking-widest leading-none">Connected Table</div>
+            </div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tighter leading-none">
+                <span class="text-slate-400 text-sm font-bold align-middle mr-1">NO.</span>${sessionScope.user.id}
+            </h2>
+        </header>
+
+        <nav class="flex-grow overflow-y-auto px-4 py-8 space-y-2">
             <c:forEach var="cat" items="${categories}">
-                <a href="Menu?categoryId=${cat.id}" class="sidebar-item ${selectedCategoryId == cat.id ? 'active' : ''}">
-                    <c:out value="${cat.name}" />
+                <a href="Menu?categoryId=${cat.id}" class="nav-link ${selectedCategoryId == cat.id ? 'active' : ''} no-underline">
+                    <span class="flex-grow"><c:out value="${cat.name}" /></span>
+                    <c:if test="${selectedCategoryId == cat.id}">
+                        <div class="w-1.5 h-1.5 bg-primary-600 rounded-full"></div>
+                    </c:if>
                 </a>
             </c:forEach>
-        </div>
-        <div class="sidebar-footer">
-            <a href="OrderHistory" class="btn btn-outline btn-block" style="border-radius: 12px; font-size: 0.85rem;">
-                <span>⏱</span> 注文履歴を表示
-            </a>
-        </div>
-    </div>
+        </nav>
 
-    <!-- メインコンテンツ: 商品表示 -->
-    <div class="main-content" style="padding: 40px 48px;">
-        <header class="page-header" style="margin-bottom: 48px;">
-            <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Selections</span>
-                <h1>商品メニュー</h1>
+        <footer class="p-6 border-t border-slate-100">
+            <a href="OrderHistory" class="flex items-center justify-center gap-3 w-full py-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all no-underline tracking-widest uppercase">
+                <span class="text-lg">⏱</span> 注文履歴を確認
+            </a>
+        </footer>
+    </aside>
+
+    <!-- メインコンテンツ: 商品グリッド -->
+    <main class="flex-grow flex flex-col relative z-10 bg-slate-50/50">
+        <header class="h-28 px-12 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-20">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">お品書き</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[.2em] mt-1 italic">${products.size()} Items Available</p>
             </div>
-            <div style="font-size: 0.9rem; color: var(--text-sub);">
-                ${products.size()} items available
+            <div class="flex items-center gap-4">
+                <c:if test="${not empty message || param.msg == 'success'}">
+                    <div class="px-6 py-2.5 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-100 animate-fadeIn">
+                        ${not empty message ? message : '注文が確定しました！お届けまでしばらくお待ちください。'}
+                    </div>
+                </c:if>
+                <c:if test="${not empty error || param.msg == 'error'}">
+                    <div class="px-6 py-2.5 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-100 animate-fadeIn">
+                        ${not empty error ? error : '注文処理中にエラーが発生しました。'}
+                    </div>
+                </c:if>
             </div>
         </header>
 
-        <c:if test="${not empty message}"><div class="alert alert-success">${message}</div></c:if>
-        <c:if test="${not empty error}"><div class="alert alert-danger">${error}</div></c:if>
-
-        <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
-            <c:forEach var="p" items="${products}">
-                <a href="ProductDetail?productId=${p.id}&categoryId=${selectedCategoryId}" class="product-card">
-                    <div class="product-item-name text-clamp-2" title="<c:out value='${p.name}' />">
-                        <c:out value="${p.name}" />
-                    </div>
-                    <div class="product-item-price">¥<fmt:formatNumber value="${p.price}" /></div>
-                    <div style="margin-top: 16px; font-size: 0.8rem; color: var(--text-sub); display: flex; align-items: center; gap: 4px;">
-                        <span>Details</span>
-                        <span style="font-size: 1rem;">→</span>
-                    </div>
-                </a>
-            </c:forEach>
+        <div class="flex-grow overflow-y-auto p-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                <c:forEach var="p" items="${products}">
+                    <a href="ProductDetail?productId=${p.id}&categoryId=${selectedCategoryId}" 
+                       class="premium-card group hover:-translate-y-2 hover:shadow-2xl transition-all duration-500 no-underline bg-white block">
+                        <div class="aspect-[4/3] bg-slate-100 flex items-center justify-center text-5xl group-hover:scale-105 transition-transform duration-700 overflow-hidden relative">
+                            <span class="opacity-80 translate-y-2">🍲</span>
+                            <c:if test="${!p.available}">
+                                <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center">
+                                    <span class="text-sm font-black text-white border-2 border-white/30 px-6 py-2 rounded-full">SOLD OUT</span>
+                                </div>
+                            </c:if>
+                        </div>
+                        <div class="p-8">
+                            <div class="text-[10px] font-bold text-primary-600 uppercase tracking-[0.2em] mb-2 opacity-60">Recommendation</div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-4 line-clamp-2 min-h-[3.5rem] group-hover:text-primary-600 transition-colors leading-snug">
+                                <c:out value="${p.name}" />
+                            </h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-slate-900 tracking-tighter">
+                                    <fmt:formatNumber value="${p.price}" />
+                                </span>
+                                <span class="text-xs font-bold text-slate-400">円</span>
+                            </div>
+                        </div>
+                    </a>
+                </c:forEach>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <!-- カートパネル (右側) -->
-    <div class="side-panel" style="width: 360px;">
-        <div class="panel-header" style="padding: 32px 24px; background: var(--bg-dark); color: white;">注文カート</div>
-        
-        <div class="panel-content" style="padding: 24px;">
+    <!-- サイドパネル: カート -->
+    <aside class="w-96 bg-white border-l border-slate-200 flex flex-col z-30 shadow-[-20px_0_40px_rgba(0,0,0,0.02)]">
+        <header class="p-10 bg-slate-900 text-white flex justify-between items-center">
+            <div>
+                <div class="text-[10px] font-bold text-primary-400 uppercase tracking-[.3em] mb-1">Items in Cart</div>
+                <h2 class="text-xl font-black tracking-tight italic uppercase">ご注文内容</h2>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">🛒</div>
+        </header>
+
+        <div class="flex-grow overflow-y-auto px-8 py-10 space-y-8">
             <c:choose>
                 <c:when test="${not empty sessionScope.cart}">
                     <c:set var="total" value="0" />
                     <c:forEach var="item" items="${sessionScope.cart}">
-                        <div class="cart-item-row" style="padding: 20px 0;">
-                            <div style="flex: 1; padding-right: 12px;">
-                                <div class="text-truncate" style="font-weight: 700; color: var(--primary); font-size: 1rem; margin-bottom: 4px;" title="<c:out value='${item.name}' />">
+                        <div class="flex gap-6 group items-center">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-2xl flex-shrink-0 group-hover:bg-primary-50 transition-colors border border-slate-100">🍽️</div>
+                            <div class="flex-grow space-y-1">
+                                <div class="font-bold text-slate-900 text-sm leading-tight line-clamp-2">
                                     <c:out value="${item.name}" />
                                 </div>
-                                <div style="font-size: 0.85rem; color: var(--text-sub);">
-                                    ¥<fmt:formatNumber value="${item.unitPrice}" /> × ${item.quantity}
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">
+                                    <fmt:formatNumber value="${item.unitPrice}" /> × ${item.quantity}
                                 </div>
                             </div>
-                            <div style="text-align: right; min-width: 80px;">
-                                <div style="font-weight: 800; color: var(--text-main);">¥<fmt:formatNumber value="${item.subtotal}" /></div>
-                                <form action="Cart" method="post" style="margin-top: 8px;">
+                            <div class="text-right space-y-2">
+                                <div class="text-sm font-black text-primary-600">
+                                    ¥<fmt:formatNumber value="${item.subtotal}" />
+                                </div>
+                                <form action="Cart" method="post">
                                     <input type="hidden" name="csrf_token" value="${csrf_token}">
                                     <input type="hidden" name="action" value="remove">
                                     <input type="hidden" name="productId" value="${item.productId}">
                                     <input type="hidden" name="categoryId" value="${selectedCategoryId}">
-                                    <button type="submit" style="border:none; background:none; color:var(--text-sub); cursor:pointer; font-size: 0.75rem; padding:0; text-decoration: underline;">削除する</button>
+                                    <button type="submit" class="text-[9px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors font-mono">Remove</button>
                                 </form>
                             </div>
                         </div>
@@ -95,26 +132,36 @@
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <div class="placeholder-view" style="padding-top: 100px;">
-                        <div class="placeholder-icon" style="font-size: 4rem; opacity: 0.2;">🛒</div>
-                        <p style="font-weight: 600; letter-spacing: 0.05em;">カートは空です</p>
+                    <div class="h-full flex flex-col items-center justify-center text-center opacity-30 py-20 grayscale">
+                        <div class="text-6xl mb-8">🍲</div>
+                        <p class="font-bold text-[10px] uppercase tracking-[0.4em] text-slate-400">カートは空です</p>
                     </div>
                 </c:otherwise>
             </c:choose>
         </div>
 
-        <div class="panel-footer" style="padding: 32px 24px; background: rgba(0,0,0,0.02);">
-            <div class="cart-total-display" style="margin-bottom: 32px; border-top: 2px solid var(--border); padding-top: 24px;">
-                <span style="font-size: 1rem; opacity: 0.6; font-weight: 600;">TOTAL</span>
-                <span style="font-size: 2rem; letter-spacing: -0.02em;">¥<fmt:formatNumber value="${total != null ? total : 0}" /></span>
+        <footer class="p-10 bg-slate-50 border-t border-slate-100 space-y-8">
+            <div class="flex justify-between items-end">
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">合計金額 (税込)</div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-5xl font-black text-slate-900 tracking-tighter">
+                        <fmt:formatNumber value="${total != null ? total : 0}" />
+                    </span>
+                    <span class="text-slate-400 font-bold text-sm">円</span>
+                </div>
             </div>
             <form action="Order" method="post">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
-                <button type="submit" class="order-btn" ${empty sessionScope.cart ? 'disabled' : ''} style="height: 64px;">
-                    注文を確定する
+                <button type="submit" class="btn-primary w-full py-6 text-base tracking-[0.3em] shadow-2xl shadow-primary-600/30 group" ${empty sessionScope.cart ? 'disabled' : ''}>
+                    注文を確定する <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
                 </button>
             </form>
-        </div>
-    </div>
+        </footer>
+    </aside>
+
+    <style>
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>

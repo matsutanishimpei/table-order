@@ -4,97 +4,92 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${product.name} - 商品詳細 - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>${product.name} | 詳細 | テーブルオーダーシステム</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 720px; padding: 64px 24px;">
-        <a href="Menu?categoryId=${selectedCategoryId}" class="link-back" style="font-weight: 600; letter-spacing: 0.05em;">← メニューへ戻る</a>
+<body class="bg-slate-50 font-sans antialiased text-slate-900 min-h-screen">
+    <div class="max-w-[1000px] mx-auto px-6 py-20">
+        <nav class="mb-12">
+            <a href="Menu?categoryId=${selectedCategoryId}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary-600 transition-colors no-underline uppercase tracking-widest">
+                <span class="text-lg">←</span> おしながきに戻る
+            </a>
+        </nav>
 
-        <header class="detail-header" style="margin-top: 48px; border-bottom: 2px solid var(--border); padding-bottom: 40px; margin-bottom: 48px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 12px;">Product Overview</div>
-            <h1 class="detail-title product-title" style="font-size: 2.8rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 24px;">
-                <c:out value="${product.name}" />
-            </h1>
-            <div class="detail-price" style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em;">
-                <span style="font-size: 1.2rem; font-weight: 600; opacity: 0.6; margin-right: 4px;">¥</span><fmt:formatNumber value="${product.price}" />
-                <span style="font-size: 0.9rem; font-weight: 500; opacity: 0.5; margin-left: 8px;">(tax excl.)</span>
-            </div>
-        </header>
-
-        <div class="card" style="border: none; box-shadow: var(--shadow-xl); margin-bottom: 40px;">
-            <h2 style="font-size: 1.1rem; text-transform: uppercase; color: var(--text-sub); border-left: none; padding-left: 0; letter-spacing: 0.1em; margin-bottom: 16px;">DESCRIPTION</h2>
-            <div class="word-break" style="line-height: 1.8; color: var(--text-main); font-size: 1.15rem; font-weight: 400;">
-                <c:choose>
-                    <c:when test="${not empty product.description}">
-                        <c:out value="${product.description}" />
-                    </c:when>
-                    <c:otherwise>
-                        <span style="color: var(--text-sub); font-style: italic; font-weight: 300;">商品説明の内容を現在準備しております。少々お待ちください。</span>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-
-        <div class="card" style="border: none; box-shadow: var(--shadow-lg); background: #fdfaf6; border: 1px solid #f3ebdf;">
-            <h2 style="font-size: 1rem; color: #b45309; border-left: none; padding-left: 0; letter-spacing: 0.1em; margin-bottom: 12px;">ALLERGY INFO</h2>
-            <div style="color: #92400e; font-size: 1rem;">
-                <c:choose>
-                    <c:when test="${not empty product.allergyInfo}">
-                        <span style="font-weight: 700; background: #fef3c7; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">特定原材料等</span>
-                        <span class="word-break" style="font-weight: 500;"><c:out value="${product.allergyInfo}" /></span>
-                    </c:when>
-                    <c:otherwise>
-                        <span style="color: #d97706; opacity: 0.6;">この商品に該当するアレルギー情報は登録されていません。</span>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
-
-        <div style="margin-top: 64px; border-top: 1px solid var(--border); padding-top: 48px;">
-            <form action="Cart" method="post">
-                <input type="hidden" name="csrf_token" value="${csrf_token}">
-                <input type="hidden" name="action" value="add">
-                <input type="hidden" name="productId" value="${product.id}">
-                <input type="hidden" name="categoryId" value="${selectedCategoryId}">
-                
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="quantity" class="form-label" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sub);">Quantity</label>
-                        <div style="display: flex; gap: 16px; align-items: center; margin-top: 8px;">
-                            <input type="number" id="quantity" name="quantity" class="form-control" 
-                                   value="1" min="1" max="20" style="width: 120px; height: 56px; text-align: center; font-size: 1.4rem; font-weight: 800; border-radius: 16px;">
-                        </div>
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+            <!-- 商品画像セクション -->
+            <section class="premium-card aspect-square bg-white flex items-center justify-center text-8xl shadow-2xl relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span class="relative z-10">🍲</span>
+                <c:if test="${!product.available}">
+                    <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-20">
+                        <span class="text-xl font-black text-white border-2 border-white/20 px-10 py-4 rounded-full tracking-widest">売り切れ</span>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 4px;">Subtotal (estimate)</div>
-                        <div style="font-size: 1.75rem; font-weight: 900; color: var(--primary);">
-                            <span style="font-size: 1rem; opacity: 0.5;">¥</span><fmt:formatNumber value="${product.price}" />
-                        </div>
+                </c:if>
+            </section>
+
+            <!-- 商品情報セクション -->
+            <section class="space-y-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
+                        <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest leading-none opacity-60">Product Excellence</span>
+                    </div>
+                    <h1 class="text-5xl font-black text-slate-950 tracking-tighter leading-tight">
+                        <c:out value="${product.name}" />
+                    </h1>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-black text-slate-950 tracking-tighter">
+                            <fmt:formatNumber value="${product.price}" />
+                        </span>
+                        <span class="text-slate-400 font-bold text-sm">円 (税込)</span>
                     </div>
                 </div>
 
-                <c:choose>
-                    <c:when test="${product.available}">
-                        <button type="submit" class="order-btn" style="height: 72px; font-size: 1.3rem;">
-                            <span>カートに追加する</span>
-                        </button>
-                    </c:when>
-                    <c:otherwise>
-                        <button type="button" class="order-btn" disabled style="height: 72px;">
-                            <span>現在品切れ中です</span>
-                        </button>
-                    </c:otherwise>
-                </c:choose>
-            </form>
-        </div>
+                <div class="prose prose-slate prose-sm">
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">お料理の紹介</h4>
+                    <p class="text-slate-600 leading-relaxed font-medium">
+                        <c:out value="${product.description}" />
+                    </p>
+                </div>
 
-        <div style="text-align: center; margin-top: 48px;">
-            <a href="Menu?categoryId=${selectedCategoryId}" class="btn btn-outline" style="min-width: 240px; height: 56px; border-radius: 16px; font-size: 0.95rem; color: var(--text-sub);">メニューへ戻る（キャンセル）</a>
-        </div>
+                <c:if test="${not empty product.allergyInfo}">
+                    <div class="p-6 bg-red-50/50 border border-red-100 rounded-2xl space-y-2">
+                        <h4 class="text-[10px] font-black text-red-500 uppercase tracking-widest">アレルギー情報</h4>
+                        <p class="text-xs font-bold text-red-800 tracking-wide"><c:out value="${product.allergyInfo}" /></p>
+                    </div>
+                </c:if>
+
+                <form action="Cart" method="post" class="space-y-10 pt-4">
+                    <input type="hidden" name="csrf_token" value="${csrf_token}">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="productId" value="${product.id}">
+                    <input type="hidden" name="categoryId" value="${selectedCategoryId}">
+                    
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">数量を選択</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" name="quantity" value="1" min="1" max="20" required
+                                class="w-32 px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:border-primary-500 transition-all font-black text-xl text-center shadow-sm">
+                            <span class="text-slate-400 font-bold text-sm">点</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-6 text-base tracking-[0.3em] shadow-2xl shadow-primary-600/30 group" ${!product.available ? 'disabled' : ''}>
+                        カートに追加する <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">+</span>
+                    </button>
+                </form>
+            </section>
+        </main>
+
+        <section class="mt-32 pt-20 border-t border-slate-100">
+            <h3 class="text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-12">Related Items</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 opacity-60">
+                <div class="premium-card aspect-video border-dashed flex items-center justify-center text-2xl">🍲</div>
+                <div class="premium-card aspect-video border-dashed flex items-center justify-center text-2xl">🥬</div>
+                <div class="premium-card aspect-video border-dashed flex items-center justify-center text-2xl">🥩</div>
+                <div class="premium-card aspect-video border-dashed flex items-center justify-center text-2xl">🍵</div>
+            </div>
+        </section>
     </div>
 </body>
 </html>

@@ -4,140 +4,112 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品管理（管理者） - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>商品管理 | 管理センター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 1100px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px; flex-direction: column; align-items: flex-start; gap: 8px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Inventory Management</div>
-            <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">商品管理システム</h1>
-            <a href="${pageContext.request.contextPath}/Admin/Home" class="link-back" style="margin-top: 16px;">← 管理メニューへ戻る</a>
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900">
+    <div class="max-w-[1200px] mx-auto px-12 py-20">
+        <header class="mb-16 flex justify-between items-end">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] leading-none italic">Asset Catalog System</span>
+                </div>
+                <h1 class="text-6xl font-black tracking-tighter text-slate-950">
+                    商品管理<span class="text-emerald-600">.</span>
+                </h1>
+                <p class="text-slate-500 font-medium italic opacity-60">メニュー商品の登録・編集および在庫ステータスの制御</p>
+            </div>
+            
+            <a href="Home" class="px-8 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-400 hover:text-slate-950 transition-all uppercase tracking-widest no-underline">
+                管理ホームへ戻る
+            </a>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
-            <c:if test="${param.msg == 'success'}">
-                <div class="alert alert-success" style="border-radius: 16px; margin: 0;">新規商品を正式に登録しました。</div>
-            </c:if>
-            <c:if test="${param.msg == 'invalid'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">入力内容に不備があります。値を確認してください。</div>
-            </c:if>
-            <c:if test="${param.msg == 'toolong'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">商品名が長すぎます（最大100文字）。</div>
-            </c:if>
-            <c:if test="${param.msg == 'error'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">サーバーエラーが発生しました。時間を置いて再度お試しください。</div>
-            </c:if>
-            <c:if test="${param.msg == 'updatesuccess'}">
-                <div class="alert alert-success" style="border-radius: 16px; margin: 0;">商品情報を正常に更新しました。</div>
-            </c:if>
-            <c:if test="${param.msg == 'notfound'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">指定された商品データが存在しません。</div>
-            </c:if>
-        </div>
-
-        <!-- 新規登録フォーム -->
-        <div class="card" style="box-shadow: var(--shadow-xl); border: none; margin-bottom: 48px;">
-            <h2 style="font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sub); border: none; padding: 0; margin-bottom: 32px;">新規商品登録</h2>
-            <form action="Products" method="post">
-                <input type="hidden" name="csrf_token" value="${csrf_token}">
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 24px;">
-                    <div class="form-group">
-                        <label class="form-label">商品名</label>
-                        <input type="text" name="name" class="form-control" style="height: 52px;" required placeholder="例：特選カルビ焼肉" maxlength="100">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">カテゴリー</label>
-                        <select name="categoryId" class="form-control" style="height: 52px;" required>
-                            <c:forEach var="cat" items="${categoryList}">
-                                <option value="${cat.id}"><c:out value="${cat.name}" /></option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">価格（税抜）</label>
-                        <input type="number" name="price" class="form-control" style="height: 52px;" required min="0" placeholder="0">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 24px;">
-                    <div class="form-group">
-                        <label class="form-label">商品説明</label>
-                        <textarea name="description" class="form-control" rows="3" style="border-radius: 16px;" placeholder="顧客用詳細画面に表示される魅力的な説明文を入力してください。"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">アレルギー情報</label>
-                        <input type="text" name="allergyInfo" class="form-control" style="height: 52px;" placeholder="例：小麦、乳、卵">
-                    </div>
-                </div>
-                <div style="margin-top: 24px; padding: 16px; background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border);">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
-                        <input type="checkbox" name="isAvailable" checked style="width: 20px; height: 20px;"> 
-                        <span style="font-weight: 600; color: var(--primary);">この商品を即時販売開始する</span>
-                    </label>
-                </div>
-                <div style="margin-top: 40px; display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn btn-primary" style="padding: 16px 48px; border-radius: 16px; font-weight: 700;">
-                        <span>🛒</span> 新規登録を実行
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- 商品一覧 -->
-        <div class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-xl);">
-            <div style="padding: 24px 32px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border: none; padding: 0;">登録済み商品一覧</h2>
-                    <span style="font-size: 0.85rem; color: var(--text-sub); font-weight: 600;">Total: ${productList.size()} items</span>
+        <c:if test="${not empty param.msg}">
+            <div class="mb-12 animate-fadeIn p-5 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center gap-4 text-xs font-bold uppercase tracking-wide">
+                <span>✅</span> データベースの更新が正常に完了しました。
             </div>
-            <table class="admin-table" style="box-shadow: none; border-radius: 0;">
-                <thead>
-                    <tr>
-                        <th style="width: 70px; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">ID</th>
-                        <th style="width: 220px; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">商品名</th>
-                        <th style="width: 140px; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">カテゴリ</th>
-                        <th style="width: 120px; text-align: right; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">価格</th>
-                        <th style="background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">説明 / アレルギー</th>
-                        <th style="width: 100px; text-align: center; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">状態</th>
-                        <th style="width: 100px; text-align: center; background: transparent; color: var(--text-sub); border-bottom: 2px solid var(--border);">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="p" items="${productList}">
-                        <tr>
-                            <td style="color: var(--text-sub); font-family: monospace;">#${p.id}</td>
-                            <td style="font-weight: 700; color: var(--primary);">
-                                <c:out value="${p.name}" />
-                            </td>
-                            <td>
-                                <c:forEach var="cat" items="${categoryList}">
-                                    <c:if test="${p.categoryId == cat.id}">
-                                        <span class="badge" style="background: rgba(99, 102, 241, 0.05); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.1);"><c:out value="${cat.name}" /></span>
-                                    </c:if>
-                                </c:forEach>
-                            </td>
-                            <td style="text-align: right; font-weight: 800; color: var(--primary);">¥<fmt:formatNumber value="${p.price}" /></td>
-                            <td>
-                                <div style="font-size: 0.85rem; line-height: 1.5;">
-                                    <div class="text-clamp-2" style="color: var(--text-main); margin-bottom: 4px;"><c:out value="${p.description}" /></div>
-                                    <div style="color: var(--accent); font-weight: 600; font-size: 0.75rem;">[ALLERGY: <c:out value="${empty p.allergyInfo ? 'NONE' : p.allergyInfo}" />]</div>
-                                </div>
-                            </td>
-                            <td style="text-align: center;">
-                                <span class="badge ${p.available ? 'badge-success' : 'badge-danger'}">
-                                    ${p.available ? '販売中' : '売切'}
-                                </span>
-                            </td>
-                            <td style="text-align: center;">
-                                <a href="Products?action=edit&id=${p.id}" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.75rem; border-radius: 10px; font-weight: 700;">編集</a>
-                            </td>
+        </c:if>
+
+        <main class="premium-card bg-white overflow-hidden shadow-2xl border-none">
+            <header class="data-header bg-slate-50/50">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Registered Products</h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-[10px] font-black uppercase text-slate-400 border border-slate-200 px-3 py-1 rounded-full">${productList.size()} <span class="opacity-40">Items</span></span>
+                </div>
+            </header>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                            <th class="px-10 py-6">商品名 / ID</th>
+                            <th class="px-6 py-6">カテゴリー</th>
+                            <th class="px-6 py-6 text-right">単価</th>
+                            <th class="px-10 py-6 text-center w-32">ステータス</th>
+                            <th class="px-10 py-6 text-right w-40">操作</th>
                         </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <c:forEach var="p" items="${productList}">
+                            <tr class="group hover:bg-slate-50/50 transition-colors">
+                                <td class="px-10 py-8">
+                                    <div class="text-lg font-black text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">
+                                        <c:out value="${p.name}" />
+                                    </div>
+                                    <div class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mt-1 font-mono italic">#${p.id}</div>
+                                </td>
+                                <td class="px-6 py-8">
+                                    <span class="px-3 py-1 rounded-lg bg-slate-100 text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none border border-slate-200/50">
+                                        <c:forEach var="cat" items="${categoryList}">
+                                            <c:if test="${p.categoryId == cat.id}"><c:out value="${cat.name}" /></c:if>
+                                        </c:forEach>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-8 text-right">
+                                    <div class="flex items-baseline justify-end gap-1 font-black">
+                                        <span class="text-xs text-slate-300 italic">¥</span>
+                                        <span class="text-xl text-slate-900 tracking-tighter"><fmt:formatNumber value="${p.price}" /></span>
+                                    </div>
+                                </td>
+                                <td class="px-10 py-8 text-center">
+                                    <c:choose>
+                                        <c:when test="${p.available}">
+                                            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic">
+                                                <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> Active
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-50 text-red-400 text-[9px] font-black uppercase tracking-widest border border-red-100 italic">
+                                                <span class="w-1 h-1 bg-red-400 rounded-full"></span> Disabled
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="px-10 py-8 text-right space-x-2">
+                                    <a href="Products?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
+                                        <span class="text-lg">⚙️</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty productList}">
+                            <tr>
+                                <td colspan="5" class="px-10 py-32 text-center">
+                                    <p class="text-xs font-black text-slate-300 uppercase tracking-[0.5em] italic leading-relaxed">No culinary assets detected.<br>Product matrix is void.</p>
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
+
+    <style>
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>

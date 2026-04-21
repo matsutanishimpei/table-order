@@ -44,12 +44,11 @@ public class OrderServlet extends HttpServlet {
         if (success) {
             // カートを空にする
             cart.clear();
-            // 完了画面（または完了メッセージ付きのメニュー）へ
-            request.setAttribute("message", "注文が確定しました！お届けまでしばらくお待ちください。");
-            request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
+            // 完了画面（または完了メッセージ付きのメニュー）へリダイレクト
+            // Note: 本来は Flash Attribute 等を使うのが望ましいが、シンプルに Menu へ戻す
+            response.sendRedirect("Menu?msg=success");
         } else {
-            request.setAttribute("error", "注文処理中にエラーが発生しました。");
-            request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
+            response.sendRedirect("Menu?msg=error");
         }
     }
 }

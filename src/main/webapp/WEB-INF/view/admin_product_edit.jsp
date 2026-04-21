@@ -4,93 +4,119 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品編集 - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>商品編集 | 管理センター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 900px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px; flex-direction: column; align-items: flex-start; gap: 8px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Editing Record #${product.id}</div>
-            <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">商品詳細の編集</h1>
-            <a href="Products" class="link-back" style="margin-top: 16px;">← 商品一覧へ戻る</a>
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900">
+    <div class="max-w-[900px] mx-auto px-12 py-20">
+        <nav class="mb-12">
+            <a href="Products" class="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-emerald-600 transition-colors no-underline uppercase tracking-[0.2em]">
+                <span class="text-lg">←</span> 商品一覧に戻る
+            </a>
+        </nav>
+
+        <header class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Asset Revision Module</span>
+            </div>
+            <h1 class="text-6xl font-black tracking-tighter text-slate-950 leading-tight">
+                商品の編集<span class="text-emerald-600">.</span>
+            </h1>
+            <p class="text-slate-500 font-medium italic opacity-60">商品情報の修正および掲載ステータスの更新</p>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
-            <c:if test="${param.msg == 'invalid'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">入力内容に不備があります。数値を再確認してください。</div>
-            </c:if>
-            <c:if test="${param.msg == 'toolong'}">
-                <div class="alert alert-danger" style="border-radius: 16px; margin: 0;">商品名が長すぎます（最大100文字）。</div>
-            </c:if>
-        </div>
+        <c:if test="${not empty param.msg}">
+            <div class="mb-10 p-5 rounded-2xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-4 animate-fadeIn">
+                <span class="text-lg">⚠️</span>
+                <span class="text-xs font-bold uppercase tracking-wide">Validation error. 入力内容を確認してください (ID: ${product.id})</span>
+            </div>
+        </c:if>
 
-        <div class="card" style="box-shadow: var(--shadow-xl); border: none; padding: 48px;">
-            <h2 style="font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sub); border: none; padding: 0; margin-bottom: 40px;">商品情報の修正</h2>
-            <form action="Products" method="post">
+        <main class="premium-card p-16 shadow-2xl border-none bg-white relative overflow-hidden">
+            <!-- Background ID Decoration -->
+            <div class="absolute -top-10 -right-10 text-[10rem] font-black text-slate-50 italic opacity-5 pointer-events-none select-none italic">
+                #${product.id}
+            </div>
+
+            <form action="Products" method="post" class="relative z-10 space-y-12">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <input type="hidden" name="id" value="${product.id}">
                 
-                <div class="form-group">
-                    <label class="form-label">商品名</label>
-                    <input type="text" name="name" class="form-control" style="height: 56px;" required 
-                           value="<c:out value='${product.name}' />" placeholder="例：特選カルビ焼肉" maxlength="100">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px;">
-                    <div class="form-group">
-                        <label class="form-label">カテゴリー</label>
-                        <select name="categoryId" class="form-control" style="height: 56px;" required>
-                            <c:forEach var="cat" items="${categoryList}">
-                                <option value="${cat.id}" ${product.categoryId == cat.id ? 'selected' : ''}>
-                                    <c:out value="${cat.name}" />
-                                </option>
-                            </c:forEach>
-                        </select>
+                <section class="space-y-10">
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">商品タイトル</label>
+                        <input type="text" name="name" required placeholder="メニューに表示される名称" maxlength="100"
+                               value="<c:out value='${product.name}' />"
+                               class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-xl font-black shadow-inner">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">価格（税抜）</label>
-                        <input type="number" name="price" class="form-control" style="height: 56px;" required min="0" 
-                               value="${product.price}">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-4">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">カテゴリー</label>
+                            <div class="relative">
+                                <select name="categoryId" required
+                                        class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-sm font-black appearance-none shadow-inner h-full cursor-pointer">
+                                    <c:forEach var="cat" items="${categoryList}">
+                                        <option value="${cat.id}" ${product.categoryId == cat.id ? 'selected' : ''}>
+                                            <c:out value="${cat.name}" />
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                                <div class="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">販売価格 (単位: 円)</label>
+                            <div class="relative h-full">
+                                <input type="number" name="price" required min="0" 
+                                       value="${product.price}"
+                                       class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-2xl font-black shadow-inner h-full">
+                                <span class="absolute right-8 top-1/2 -translate-y-1/2 text-slate-300 font-bold italic">JPY</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group" style="margin-top: 32px;">
-                    <label class="form-label">商品説明</label>
-                    <textarea name="description" class="form-control" rows="4" style="border-radius: 16px;"
-                               placeholder="詳細画面に表示される魅力的な説明文を入力してください。"><c:out value="${product.description}" /></textarea>
-                </div>
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">商品説明 / meta</label>
+                        <textarea name="description" rows="5" placeholder="商品のおすすめポイントや特徴を記述してください..."
+                                  class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-sm font-medium resize-none shadow-inner leading-relaxed"><c:out value="${product.description}" /></textarea>
+                    </div>
 
-                <div class="form-group" style="margin-top: 32px;">
-                    <label class="form-label">アレルギー情報</label>
-                    <input type="text" name="allergyInfo" class="form-control" style="height: 56px;"
-                           value="<c:out value='${product.allergyInfo}' />" placeholder="例：小麦、乳、卵">
-                </div>
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">アレルギー情報 / 備考</label>
+                        <input type="text" name="allergyInfo" placeholder="卵、乳、小麦など（不要な場合は空欄）"
+                               value="<c:out value='${product.allergyInfo}' />"
+                               class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-sm font-black shadow-inner">
+                    </div>
 
-                <div style="margin-top: 40px; padding: 24px; background: var(--bg-body); border-radius: 16px; border: 1px solid var(--border);">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                        <input type="checkbox" name="isAvailable" ${product.available ? 'checked' : ''} style="width: 22px; height: 22px;">
-                        <span style="font-weight: 700; color: var(--primary);">この商品を販売中として公開する</span>
-                    </label>
-                    <p style="margin: 0 0 0 34px; font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">
-                        チェックを解除すると即座にメニューから非表示（売切状態）になります。
-                    </p>
-                </div>
+                    <div class="p-8 bg-[#f8fafc] rounded-3xl border border-slate-100 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <span class="text-xs font-black text-slate-900 uppercase tracking-widest">お品書きに表示する</span>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic leading-none">Catalog Availability Status</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" name="isAvailable" ${product.available ? 'checked' : ''} class="sr-only peer">
+                            <div class="w-14 h-8 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
+                        </label>
+                    </div>
+                </section>
 
-                <div style="margin-top: 56px; display: flex; gap: 16px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 2; height: 64px; font-size: 1.1rem; border-radius: 18px; font-weight: 800;">
-                        変更内容を正式に保存
+                <footer class="pt-12 border-t border-slate-50 flex gap-6">
+                    <button type="submit" class="btn-primary bg-emerald-600 hover:bg-emerald-700 flex-grow py-6 text-base tracking-[0.4em] shadow-2xl shadow-emerald-600/20">
+                        変更を保存する
                     </button>
-                    <a href="Products" class="btn btn-outline" style="flex: 1; height: 64px; line-height: 2.2; border-radius: 18px; font-weight: 700;">キャンセル</a>
-                </div>
+                    <a href="Products" class="inline-flex items-center justify-center px-10 py-6 bg-slate-100 text-slate-400 text-xs font-black rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all uppercase tracking-widest no-underline">
+                        キャンセル
+                    </a>
+                </footer>
             </form>
-        </div>
-
-        <div style="margin-top: 32px; text-align: center; font-family: monospace; font-size: 0.85rem; color: var(--text-sub); opacity: 0.5;">
-            SYSTEM_RECORD_ID: ${product.id}
-        </div>
+        </main>
     </div>
+
+    <style>
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>

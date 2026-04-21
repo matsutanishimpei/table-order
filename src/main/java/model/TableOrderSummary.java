@@ -12,6 +12,7 @@ public class TableOrderSummary implements Serializable {
     private int tableId;
     private String tableName;
     private int totalAmount;
+    private int orderCount;
     private List<OrderItemView> items;
 
     // ゲッター/セッター
@@ -23,6 +24,9 @@ public class TableOrderSummary implements Serializable {
 
     public int getTotalAmount() { return totalAmount; }
     public void setTotalAmount(int totalAmount) { this.totalAmount = totalAmount; }
+
+    public int getOrderCount() { return orderCount; }
+    public void setOrderCount(int orderCount) { this.orderCount = orderCount; }
 
     public List<OrderItemView> getItems() { return items; }
     public void setItems(List<OrderItemView> items) { this.items = items; }

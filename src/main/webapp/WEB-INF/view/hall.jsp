@@ -4,55 +4,77 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>配膳管理パネル - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>配膳管理 | ホールスタッフコンソール</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body class="app-layout theme-kitchen">
-    <div class="container" style="max-width: 1200px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 32px;">
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Active Service</div>
-                <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">配膳管理パネル</h1>
+<body class="bg-slate-950 font-sans antialiased text-slate-100 min-h-screen">
+    <div class="px-8 py-10">
+        <header class="mb-12 flex justify-between items-end border-b border-white/5 pb-10">
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 bg-emerald-500 rounded-full animate-float shadow-[0_0_15px_rgba(16,185,129,0.5)]"></span>
+                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] leading-none italic">Delivery Hub</span>
+                </div>
+                <h1 class="text-6xl font-black tracking-tighter text-white">
+                    配膳待ち一覧<span class="text-emerald-500">.</span>
+                </h1>
+                <p class="text-slate-500 font-bold italic text-sm">調理完了済み商品の配膳ステータス管理</p>
             </div>
-            <a href="${pageContext.request.contextPath}/Logout" class="btn btn-outline" style="border-radius: 12px; font-size: 0.85rem; opacity: 0.6;">Logout System</a>
+            
+            <div class="bg-white/5 border border-white/10 px-8 py-6 rounded-3xl backdrop-blur-md text-center">
+                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">配膳待ち</div>
+                <div class="text-3xl font-black text-emerald-500 tracking-tighter">${readyItems.size()} <span class="text-sm text-slate-600">件</span></div>
+            </div>
         </header>
 
-        <div class="monitor-grid" style="gap: 24px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
             <c:forEach var="item" items="${readyItems}">
-                <div class="table-card" style="padding: 32px; border: none; background: #1e293b; box-shadow: var(--shadow-xl); text-align: left;">
-                    <div style="font-size: 0.8rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Deliver To</div>
-                    <div class="table-id" style="font-size: 4rem; line-height: 1; margin-bottom: 24px; color: #f8fafc; letter-spacing: -0.05em;"><c:out value="${item.tableName}" /></div>
-                    
-                    <div class="card-content" style="margin-bottom: 32px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px;">
-                        <div style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: #f1f5f9;"><c:out value="${item.productName}" /></div>
-                        <div style="font-size: 1.25rem; color: #fbbf24; font-weight: 900;">数量: ${item.quantity} PCs</div>
+                <div class="bg-slate-900 border border-white/10 rounded-4xl p-8 relative overflow-hidden group hover:border-emerald-500/50 transition-all duration-500">
+                    <!-- Table Identification -->
+                    <div class="absolute -right-6 -top-6 text-9xl font-black text-white/5 italic select-none group-hover:text-emerald-500/10 transition-colors">
+                        #${item.tableName}
                     </div>
 
-                    <form action="Home" method="post">
+                    <header class="relative z-10 flex justify-between items-start mb-8">
+                        <div>
+                            <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-2 italic">Table Destination</p>
+                            <h2 class="text-5xl font-black text-white tracking-tighter leading-none">${item.tableName}<span class="text-lg text-slate-600 ml-2 font-bold select-none italic">席</span></h2>
+                        </div>
+                    </header>
+
+                    <div class="relative z-10 mb-10 min-h-[140px] flex flex-col justify-center">
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 italic">Delivery Asset</div>
+                        <h3 class="text-2xl font-black text-white leading-tight mb-2 group-hover:text-emerald-400 transition-colors">
+                            <c:out value="${item.productName}" />
+                        </h3>
+                        <div class="flex items-center gap-3 mt-4 text-emerald-500/80 font-black text-xs uppercase tracking-widest italic">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Ready to Serve
+                        </div>
+                    </div>
+
+                    <form action="Home" method="post" class="relative z-10 pt-6 border-t border-white/5 text-center">
                         <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="serve">
                         <input type="hidden" name="itemId" value="${item.orderItemId}">
-                        <button type="submit" class="btn btn-success" style="width: 100%; height: 56px; border-radius: 16px; font-weight: 800; background: #10b981; box-shadow: 0 4px 14px rgba(16,185,129,0.3);">
-                            <span>✅</span> 配膳完了
-                        </button>
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="px-5 py-3 bg-slate-800 rounded-xl text-xl font-black text-white border border-white/5">
+                                × ${item.quantity}
+                            </div>
+                            <button type="submit" class="flex-grow py-5 bg-white text-slate-900 rounded-2xl font-black text-xs tracking-[0.3em] uppercase hover:bg-emerald-500 transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,255,255,0.05)]">
+                                配膳を完了
+                            </button>
+                        </div>
                     </form>
                 </div>
             </c:forEach>
 
             <c:if test="${empty readyItems}">
-                <div class="placeholder-view" style="grid-column: 1 / -1; padding-top: 100px;">
-                    <div class="placeholder-icon" style="font-size: 6rem; opacity: 0.1;">🍽️</div>
-                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #94a3b8;">現在、配膳待ちの料理はありません</h2>
-                    <p style="opacity: 0.5; margin-bottom: 32px;">調理が完了するとここにカードが表示されます。</p>
-                    <button onclick="location.reload()" class="btn btn-outline" style="min-width: 240px; border-radius: 14px;">
-                        🔄 画面を更新して確認
-                    </button>
+                <div class="col-span-full border-2 border-dashed border-white/10 rounded-5xl py-40 flex flex-col items-center justify-center opacity-30 grayscale">
+                    <div class="text-8xl mb-8 animate-float">🍽️</div>
+                    <p class="text-xs font-black text-slate-500 uppercase tracking-[0.6em] italic leading-relaxed">All deliveries processed.<br>Service queue is empty.</p>
                 </div>
             </c:if>
-        </div>
+        </main>
     </div>
 </body>
 </html>

@@ -4,90 +4,97 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キッチン管理パネル - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>調理指示 | キッチンモニター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body class="app-layout theme-kitchen">
-    <!-- 左サイドバー: メニュー管理（品切れ操作） -->
-    <div class="sidebar" style="width: 300px; border-right: 1px solid rgba(255,255,255,0.05); background: #020617;">
-        <div class="sidebar-header" style="background: #1e293b; padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); font-weight: 800; margin-bottom: 4px;">Kitchen Operations</div>
-            <div style="font-size: 1.25rem; font-weight: 900;">品切れ管理</div>
-        </div>
-        <div class="sidebar-content" style="padding: 12px 0;">
-            <c:forEach var="p" items="${allProducts}">
-                <div class="sidebar-item" style="border-bottom: 1px solid rgba(255,255,255,0.02); padding: 16px 24px;">
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <div class="text-truncate" style="font-weight: 600; color: #f1f5f9; font-size: 0.95rem;" title="<c:out value='${p.name}' />">
-                            <c:out value="${p.name}" />
-                        </div>
-                        <form action="Home" method="post" style="margin: 0; text-align: right;">
-                            <input type="hidden" name="csrf_token" value="${csrf_token}">
-                            <input type="hidden" name="action" value="toggle_availability">
-                            <input type="hidden" name="productId" value="${p.id}">
-                            <input type="hidden" name="currentAvailable" value="${p.available}">
-                            <button type="submit" class="badge ${p.available ? 'badge-success' : 'badge-danger'}" style="border:none; cursor:pointer; padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.75rem;">
-                                ${p.available ? '● 販売中' : '✖ 売切'}
-                            </button>
-                        </form>
-                    </div>
+<body class="bg-slate-950 font-sans antialiased text-slate-100 min-h-screen overflow-x-hidden">
+    <div class="px-8 py-10">
+        <header class="mb-12 flex justify-between items-end border-b border-white/5 pb-10">
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 bg-amber-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.5)]"></span>
+                    <span class="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] leading-none italic">Production Queue</span>
                 </div>
-            </c:forEach>
-        </div>
-        <div class="sidebar-footer" style="padding: 24px; text-align: center;">
-            <a href="${pageContext.request.contextPath}/Logout" class="link-back" style="font-size: 0.85rem; opacity: 0.6;">Logout System</a>
-        </div>
-    </div>
-
-    <!-- メインコンテンツ: 注文一覧 -->
-    <div class="main-content" style="padding: 48px; min-height: 100vh;">
-        <header class="page-header" style="margin-bottom: 48px; flex-direction: column; align-items: flex-start; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 32px;">
-            <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Prep Queue</div>
-            <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">調理待ち注文一覧</h1>
-            <div style="font-size: 0.9rem; color: var(--text-sub); margin-top: 8px;">
-                ※調理完了後にボタンを押してフロアへ通知してください
+                <h1 class="text-6xl font-black tracking-tighter text-white">
+                    調理指示<span class="text-amber-500">.</span>
+                </h1>
+                <p class="text-slate-500 font-bold italic text-sm">キッチン用高コントラスト・リアルタイムモニター</p>
+            </div>
+            
+            <div class="flex items-center gap-8 bg-white/5 border border-white/10 px-8 py-6 rounded-3xl backdrop-blur-md">
+                <div class="text-center">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">調理中</div>
+                    <div class="text-3xl font-black text-amber-500 tracking-tighter">${activeItems.size()}</div>
+                </div>
+                <div class="w-px h-10 bg-white/10"></div>
+                <div class="text-center">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">現在時刻</div>
+                    <div class="text-xl font-black text-white tracking-tighter font-mono" id="clock">00:00:00</div>
+                </div>
             </div>
         </header>
 
-        <div class="monitor-grid" style="gap: 24px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
-            <c:forEach var="item" items="${activeItems}">
-                <div class="table-card" style="padding: 32px; border: none; background: #1e293b; box-shadow: var(--shadow-xl); text-align: left; transition: transform 0.2s ease;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
-                        <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent);"><c:out value="${item.tableName}" /></span>
-                        <span class="badge" style="background: rgba(255,255,255,0.05); color: #94a3b8; font-size: 0.75rem;">
-                            <fmt:formatDate value="${item.orderedAt}" pattern="HH:mm" /> Order
-                        </span>
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+            <c:forEach var="order" items="${activeItems}">
+                <div class="bg-slate-900 border border-white/10 rounded-4xl p-8 relative overflow-hidden group hover:border-amber-500/50 transition-all duration-500">
+                    <!-- Table Number Accent -->
+                    <div class="absolute -right-6 -top-6 text-9xl font-black text-white/5 italic select-none group-hover:text-amber-500/10 transition-colors">
+                        #${order.tableName}
                     </div>
-                    <div class="card-content" style="margin-bottom: 32px;">
-                        <div style="font-size: 1.75rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; color: #f8fafc; letter-spacing: -0.02em;">
-                            <c:out value="${item.productName}" />
+
+                    <header class="relative z-10 flex justify-between items-start mb-8">
+                        <div>
+                            <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest leading-none mb-2 italic">Table Identifier</p>
+                            <h2 class="text-5xl font-black text-white tracking-tighter leading-none">${order.tableName}<span class="text-lg text-slate-600 ml-2 font-bold select-none italic">席</span></h2>
                         </div>
-                        <div style="font-size: 1.4rem; color: #fbbf24; font-weight: 900; background: rgba(251, 191, 36, 0.05); padding: 12px 16px; border-radius: 12px; display: inline-block;">
-                            数量: ${item.quantity}
+                        <div class="text-right">
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 italic">Ordered At</p>
+                            <p class="text-xs font-black text-slate-400 font-mono"><fmt:formatDate value="${order.orderedAt}" pattern="HH:mm" /></p>
+                        </div>
+                    </header>
+
+                    <div class="relative z-10 mb-10 min-h-[140px] flex flex-col justify-center">
+                        <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 italic">Preparation Target</div>
+                        <h3 class="text-2xl font-black text-white leading-tight mb-2 group-hover:text-amber-400 transition-colors">
+                            <c:out value="${order.productName}" />
+                        </h3>
+                        <div class="flex items-center gap-4 mt-6">
+                            <div class="px-6 py-2 bg-amber-500 text-slate-950 text-2xl font-black rounded-xl shadow-[0_10px_20px_rgba(245,158,11,0.2)]">
+                                × ${order.quantity}
+                            </div>
                         </div>
                     </div>
-                    
-                    <form action="Home" method="post" style="margin-top: auto;">
+
+                    <form action="Home" method="post" class="relative z-10 pt-6 border-t border-white/5">
                         <input type="hidden" name="csrf_token" value="${csrf_token}">
                         <input type="hidden" name="action" value="complete">
-                        <input type="hidden" name="itemId" value="${item.orderItemId}">
-                        <button type="submit" class="btn btn-success" style="width: 100%; height: 60px; font-size: 1.1rem; font-weight: 800; border-radius: 16px; justify-content: center; background: #10b981; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);">
-                            調理完了
+                        <input type="hidden" name="itemId" value="${order.orderItemId}">
+                        <button type="submit" class="w-full py-5 bg-white text-slate-900 rounded-2xl font-black text-xs tracking-[0.3em] uppercase hover:bg-amber-500 transition-all active:scale-95 shadow-xl">
+                            調理完了報告
                         </button>
                     </form>
                 </div>
             </c:forEach>
+
             <c:if test="${empty activeItems}">
-                <div class="placeholder-view" style="grid-column: 1 / -1; padding-top: 100px;">
-                    <div class="placeholder-icon" style="font-size: 6rem; opacity: 0.1;">👨‍🍳</div>
-                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #94a3b8; letter-spacing: 0.05em;">調理待ちの注文はありません</h2>
-                    <p style="opacity: 0.5;">新しい注文が入るとここに表示されます。</p>
+                <div class="col-span-full border-2 border-dashed border-white/10 rounded-5xl py-40 flex flex-col items-center justify-center opacity-40">
+                    <div class="text-8xl mb-8 animate-pulse-subtle">👨‍🍳</div>
+                    <p class="text-xs font-black text-slate-500 uppercase tracking-[0.6em] italic leading-relaxed">No pending prep tasks.<br>Kitchen buffer is clear.</p>
                 </div>
             </c:if>
-        </div>
+        </main>
     </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                               now.getMinutes().toString().padStart(2, '0') + ':' + 
+                               now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('clock').innerText = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
 </body>
 </html>

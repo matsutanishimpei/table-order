@@ -172,11 +172,12 @@ public class OrderDAO {
      */
     public List<TableOrderSummary> findUnsettledTables() {
         List<TableOrderSummary> list = new ArrayList<>();
-        String sql = "SELECT DISTINCT st.id, st.table_name " +
+        String sql = "SELECT st.id, st.table_name, SUM(oi.quantity * oi.unit_price) as total_amt, SUM(oi.quantity) as item_count " +
                      "FROM shop_tables st " +
                      "JOIN orders o ON st.id = o.table_id " +
                      "JOIN order_items oi ON o.id = oi.order_id " +
-                     "WHERE oi.status < ?";
+                     "WHERE oi.status < ? " +
+                     "GROUP BY st.id, st.table_name";
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -186,6 +187,8 @@ public class OrderDAO {
                     TableOrderSummary summary = new TableOrderSummary();
                     summary.setTableId(rs.getInt("id"));
                     summary.setTableName(rs.getString("table_name"));
+                    summary.setTotalAmount(rs.getInt("total_amt"));
+                    summary.setOrderCount(rs.getInt("item_count"));
                     list.add(summary);
                 }
             }

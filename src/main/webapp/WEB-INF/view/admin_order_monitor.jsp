@@ -4,69 +4,94 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 30秒ごとに自動更新 -->
-    <meta http-equiv="refresh" content="30">
-    <title>受注状況監視 - Table Order</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/img/favicon.png">
+    <title>フロア監視 | 管理モニター</title>
+    <jsp:include page="common/header.jsp" />
 </head>
-<body>
-    <div class="container" style="max-width: 1400px; padding: 64px 24px;">
-        <header class="page-header" style="margin-bottom: 48px;">
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;">Real-time Monitoring</div>
-                <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em;">受注状況・フロア監視</h1>
-            </div>
-            <div style="text-align: right;">
-                <div class="badge badge-info" style="font-size: 0.75rem; letter-spacing: 0.05em; padding: 8px 16px; border-radius: 12px; background: rgba(99,102,241,0.1); color: var(--accent);">
-                    🔄 自動更新: 30秒ごと
+<body class="bg-[#f8fafc] font-sans antialiased text-slate-900 min-h-screen">
+    <div class="px-8 py-10 max-w-[1400px] mx-auto">
+        <header class="mb-12 flex justify-between items-end border-b border-slate-200/60 pb-10">
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.6)]"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] leading-none italic">Floor Connectivity Terminal</span>
                 </div>
+                <h1 class="text-6xl font-black tracking-tighter text-slate-950">
+                    フロア監視<span class="text-emerald-600">.</span>
+                </h1>
+                <p class="text-slate-500 font-bold italic text-sm opacity-60">全卓の稼働状況および未精算注文のリアルタイム追跡</p>
             </div>
+            
+            <a href="Home" class="px-8 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black text-slate-400 hover:text-slate-950 hover:border-slate-300 transition-all no-underline uppercase tracking-widest shadow-sm">
+                管理ホームへ戻る
+            </a>
         </header>
 
-        <div class="monitor-grid" style="gap: 24px;">
-            <c:forEach var="t" items="${tableList}">
-                <div class="table-card" style="position: relative; overflow: hidden; border: none; box-shadow: var(--shadow-xl); padding: 48px 32px; transition: transform 0.3s ease;">
-                    <!-- 状態に応じた背景アクセント -->
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: ${t.statusCode == '0' ? '#10b981' : 'var(--accent)'};"></div>
-                    
-                    <div class="table-id" style="margin-bottom: 16px; font-size: 4.5rem; letter-spacing: -0.05em; line-height: 1;"><c:out value="${t.tableName}" /></div>
-                    
-                    <div style="margin-bottom: 24px;">
-                        <span class="badge ${t.statusCode == '0' ? 'badge-success' : 'badge-info'}" style="padding: 6px 20px; font-size: 0.85rem; border-radius: 100px;">
-                            <c:out value="${t.statusLabel}" />
-                        </span>
-                    </div>
-                    
-                    <div class="card-content" style="background: var(--bg-body); padding: 20px; border-radius: 20px; margin-bottom: 24px;">
-                        <div style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Items Ordered
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <c:forEach var="table" items="${tableList}">
+                <div class="premium-card bg-white p-10 border border-slate-100 shadow-xl rounded-[2.5rem] relative overflow-hidden group hover:border-emerald-200 hover:shadow-2xl hover:shadow-emerald-600/5 transition-all duration-500 min-h-[420px] flex flex-col justify-between">
+                    <!-- Table ID Decoration (Background) -->
+                    <div class="absolute -right-6 -bottom-6 text-9xl font-black text-slate-50 italic select-none pointer-events-none group-hover:text-emerald-50 transition-colors duration-700">#${table.tableId}</div>
+
+                    <!-- Table Identification -->
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-3 italic">Active Node</p>
+                            <h2 class="text-6xl font-black text-slate-900 tracking-tighter leading-none group-hover:text-emerald-600 transition-colors">
+                                <c:out value="${table.tableName}" /><span class="text-xl text-slate-300 font-bold ml-2 select-none italic">番</span>
+                            </h2>
                         </div>
-                        <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-                            <span style="font-size: 2rem; font-weight: 900; color: var(--primary);">${t.orderCount}</span>
-                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-sub);">PCS</span>
-                        </div>
-                        <div style="margin-top: 16px; font-size: 1.5rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em;">
-                            <span style="font-size: 0.9rem; opacity: 0.6; margin-right: 2px;">¥</span><fmt:formatNumber value="${t.totalAmount}" />
+                        <div class="flex flex-col items-end gap-3">
+                            <c:choose>
+                                <c:when test="${table.statusCode != '0'}">
+                                    <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic animate-pulse">
+                                        <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> <c:out value="${table.statusLabel}" />
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest border border-slate-100 italic">
+                                        <span class="w-1 h-1 bg-slate-300 rounded-full"></span> <c:out value="${table.statusLabel}" />
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
 
-                    <div style="font-size: 0.8rem; color: var(--text-sub); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                        <span>Last Order:</span>
-                        <span style="color: var(--text-main); font-weight: 700;">
-                            <c:choose>
-                                <c:when test="${not empty t.lastOrderTime}">
-                                    <fmt:formatDate value="${t.lastOrderTime}" pattern="HH:mm" />
-                                </c:when>
-                                <c:otherwise>--:--</c:otherwise>
-                            </c:choose>
-                        </span>
+                    <!-- Statistics Panel -->
+                    <div class="relative z-10 space-y-8 mt-12 bg-slate-50/80 p-8 rounded-[2rem] border border-slate-100 shadow-inner group-hover:bg-white group-hover:border-emerald-100 transition-all duration-300">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="space-y-1">
+                                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic opacity-80">Bill Total</div>
+                                <div class="text-2xl font-black text-slate-900 tracking-tighter font-mono">
+                                    <span class="text-xs text-slate-300 mr-0.5">¥</span><fmt:formatNumber value="${table.totalAmount}" />
+                                </div>
+                            </div>
+                            <div class="space-y-1 text-right border-l border-slate-200/60 pl-6">
+                                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic opacity-80">Dish Count</div>
+                                <div class="text-2xl font-black text-emerald-600">
+                                    ${table.orderCount} <span class="text-[10px] text-slate-400 font-bold lowercase">items</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-6 border-t border-slate-200/60 flex justify-between items-center">
+                            <div class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic leading-none">Access Timestamp</div>
+                            <div class="text-xs font-black text-slate-500 font-mono italic leading-none">
+                                <fmt:formatDate value="${table.lastOrderTime}" pattern="HH:mm" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action (Optional visual cue) -->
+                    <div class="relative z-10 flex justify-end mt-4">
+                         <div class="text-[8px] font-black text-slate-300 uppercase tracking-[0.4em] leading-none opacity-0 group-hover:opacity-100 transition-opacity italic">Live data stream active</div>
                     </div>
                 </div>
             </c:forEach>
-        </div>
+        </main>
     </div>
+
+    <style>
+        .animate-fadeIn { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>
