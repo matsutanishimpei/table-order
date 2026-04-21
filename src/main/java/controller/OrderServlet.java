@@ -38,8 +38,8 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        OrderDAO dao = new OrderDAO();
-        boolean success = dao.createOrder(tableId, cart);
+        service.OrderService service = new service.OrderService();
+        boolean success = service.createOrder(tableId, cart);
 
         if (success) {
             // カートを空にする

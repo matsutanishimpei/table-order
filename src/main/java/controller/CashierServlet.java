@@ -41,13 +41,13 @@ public class CashierServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        OrderDAO dao = new OrderDAO();
+        service.OrderService service = new service.OrderService();
 
         if ("checkout".equals(action)) {
             // 会計完了処理
             int tableId = util.ValidationUtil.parseIntSafe(request.getParameter("tableId"), -1);
             if (tableId > 0) {
-                dao.completeCheckout(tableId);
+                service.completeCheckout(tableId);
             }
         }
 

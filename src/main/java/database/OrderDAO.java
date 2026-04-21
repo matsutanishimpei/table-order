@@ -21,65 +21,41 @@ import model.TableOrderSummary;
 public class OrderDAO {
     private static final Logger logger = Logger.getLogger(OrderDAO.class.getName());
     /**
-     * 注文を登録します。orders と order_items への登録をトランザクション内で行います。
-     * @param tableId 座席ID
-     * @param cartItems カート内の商品リスト
-     * @return 成功時は true
+     * [Atomic] orders テーブルに新規注文を登録し、生成された order_id を返します。
+     * 呼び出し元で Connection を管理する必要があります（Service層からの利用を想定）。
      */
-    public boolean createOrder(int tableId, List<CartItem> cartItems) {
-        Connection con = null;
-        PreparedStatement psOrder = null;
-        PreparedStatement psItem = null;
-
-        try {
-            con = DBManager.getConnection();
-            con.setAutoCommit(false); // トランザクション開始
-
-            // 1. orders テーブルに登録
-            String sqlOrder = "INSERT INTO orders (table_id, status) VALUES (?, ?)";
-            psOrder = con.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
+    public int insertOrder(Connection con, int tableId, int status) throws SQLException {
+        String sqlOrder = "INSERT INTO orders (table_id, status) VALUES (?, ?)";
+        try (PreparedStatement psOrder = con.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
             psOrder.setInt(1, tableId);
-            psOrder.setInt(2, OrderConstants.STATUS_ORDERED);
+            psOrder.setInt(2, status);
             psOrder.executeUpdate();
 
-            // 生成された order_id を取得
-            int orderId = -1;
             try (ResultSet rs = psOrder.getGeneratedKeys()) {
                 if (rs.next()) {
-                    orderId = rs.getInt(1);
+                    return rs.getInt(1);
                 }
             }
+        }
+        return -1;
+    }
 
-            if (orderId == -1) throw new SQLException("OrderID generation failed.");
-
-            // 2. order_items テーブルに全商品を登録
-            String sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, unit_price, status) VALUES (?, ?, ?, ?, ?)";
-            psItem = con.prepareStatement(sqlItem);
-
+    /**
+     * [Atomic] order_items テーブルに複数の商品を一括・高速でバッチ登録します。
+     * 呼び出し元で Connection を管理する必要があります（Service層からの利用を想定）。
+     */
+    public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems, int status) throws SQLException {
+        String sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, unit_price, status) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
             for (CartItem item : cartItems) {
                 psItem.setInt(1, orderId);
                 psItem.setInt(2, item.getProductId());
                 psItem.setInt(3, item.getQuantity());
                 psItem.setInt(4, item.getUnitPrice());
-                psItem.setInt(5, OrderConstants.STATUS_ORDERED);
+                psItem.setInt(5, status);
                 psItem.addBatch(); // バッチ処理に追加
             }
-
-            psItem.executeBatch(); // まとめて実行
-
-            con.commit(); // コミット
-            return true;
-
-        } catch (SQLException e) {
-            if (con != null) {
-                try { con.rollback(); } catch (SQLException ex) { logger.log(Level.SEVERE, "注文登録のロールバック中にエラーが発生しました。", ex); }
-            }
-            logger.log(Level.SEVERE, "注文登録処理中にエラーが発生しました。tableId=" + tableId, e);
-            return false;
-        } finally {
-            if (psOrder != null) try { psOrder.close(); } catch (SQLException e) {}
-            if (psItem != null) try { psItem.close(); } catch (SQLException e) {}
-            if (con != null) try { con.close(); } catch (SQLException e) {}
+            psItem.executeBatch();
         }
     }
 
@@ -243,40 +219,30 @@ public class OrderDAO {
     }
 
     /**
-     * 特定の座席の会計を完了させます（ステータスを更新）。
+     * [Atomic] 特定の座席に紐づく未精算の order_items のステータスを更新します。
+     * 呼び出し元で Connection を管理する必要があります。
      */
-    public boolean completeCheckout(int tableId) {
-        Connection con = null;
-        try {
-            con = DBManager.getConnection();
-            con.setAutoCommit(false);
+    public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
+        String sqlItems = "UPDATE order_items SET status = ? WHERE status < ? AND order_id IN (SELECT id FROM orders WHERE table_id = ?)";
+        try (PreparedStatement ps = con.prepareStatement(sqlItems)) {
+            ps.setInt(1, targetStatus);
+            ps.setInt(2, conditionStatusLt);
+            ps.setInt(3, tableId);
+            ps.executeUpdate();
+        }
+    }
 
-            // 1. order_items を更新
-            String sqlItems = "UPDATE order_items SET status = ? WHERE status < ? AND order_id IN (SELECT id FROM orders WHERE table_id = ?)";
-            try (PreparedStatement ps = con.prepareStatement(sqlItems)) {
-                ps.setInt(1, OrderConstants.STATUS_PAID);
-                ps.setInt(2, OrderConstants.STATUS_PAID);
-                ps.setInt(3, tableId);
-                ps.executeUpdate();
-            }
-
-            // 2. orders を更新
-            String sqlOrders = "UPDATE orders SET status = ? WHERE status < ? AND table_id = ?";
-            try (PreparedStatement ps = con.prepareStatement(sqlOrders)) {
-                ps.setInt(1, OrderConstants.STATUS_PAID);
-                ps.setInt(2, OrderConstants.STATUS_PAID);
-                ps.setInt(3, tableId);
-                ps.executeUpdate();
-            }
-
-            con.commit();
-            return true;
-        } catch (SQLException e) {
-            if (con != null) try { con.rollback(); } catch (SQLException ex) { logger.log(Level.SEVERE, "会計完了のロールバック中にエラーが発生しました。", ex); }
-            logger.log(Level.SEVERE, "会計完了処理中にエラーが発生しました。tableId=" + tableId, e);
-            return false;
-        } finally {
-            if (con != null) try { con.close(); } catch (SQLException e) {}
+    /**
+     * [Atomic] 特定の座席に紐づく未精算の orders 自身のステータスを更新します。
+     * 呼び出し元で Connection を管理する必要があります。
+     */
+    public void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
+        String sqlOrders = "UPDATE orders SET status = ? WHERE status < ? AND table_id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sqlOrders)) {
+            ps.setInt(1, targetStatus);
+            ps.setInt(2, conditionStatusLt);
+            ps.setInt(3, tableId);
+            ps.executeUpdate();
         }
     }
 
