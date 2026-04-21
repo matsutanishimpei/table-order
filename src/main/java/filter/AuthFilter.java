@@ -27,35 +27,32 @@ public class AuthFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         String path = req.getServletPath();
 
-        // ログイン画面、画像、CSSなどは除外
+        // 1. 静的リソースとログイン画面の除外（即時通過）
         if (path.equals("/Login") || path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")) {
             chain.doFilter(request, response);
             return;
         }
 
-        HttpSession session = req.getSession(true);
-        User user = (User) session.getAttribute("user");
+        // 2. セッションの存在チェック (ここでは無条件に生成しない)
+        HttpSession session = req.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
 
-        // CSRF トークン管理
+        // 3. ログインしていない場合はログイン画面へリダイレクト
+        if (user == null) {
+            res.sendRedirect(req.getContextPath() + "/Login");
+            return;
+        }
+
+        // --- ここから下は「認証済みユーザーのセッション」であることが確定 ---
+
+        // 4. CSRF トークン管理 (認証済みなので安全に格納可能)
         String sessionToken = (String) session.getAttribute("csrf_token");
         if (sessionToken == null) {
             sessionToken = util.CsrfUtil.generateToken();
             session.setAttribute("csrf_token", sessionToken);
         }
 
-        // ログイン、画像などは除外
-        if (path.equals("/Login") || path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // ログインチェック
-        if (user == null) {
-            res.sendRedirect(req.getContextPath() + "/Login");
-            return;
-        }
-
-        // CSRF 検証 (POST)
+        // 5. CSRF 検証 (POSTのみ)
         if (req.getMethod().equalsIgnoreCase("POST")) {
             String requestToken = request.getParameter("csrf_token");
             if (!util.CsrfUtil.validateToken(requestToken, sessionToken)) {
@@ -64,7 +61,7 @@ public class AuthFilter implements Filter {
             }
         }
 
-        // 権限チェック
+        // 6. 行き先パスによる権限チェック
         boolean authorized = true;
         if (path.startsWith("/Admin/") && !user.isAdmin()) {
             authorized = false;
@@ -81,6 +78,7 @@ public class AuthFilter implements Filter {
             return;
         }
 
+        // すべて問題なければ次の処理（Servlet等）へ
         chain.doFilter(request, response);
     }
 }
