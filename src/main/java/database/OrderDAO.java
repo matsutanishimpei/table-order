@@ -254,15 +254,18 @@ public class OrderDAO {
         String sql = "SELECT st.id, st.table_name, MIN(oi.status) as min_status, " +
                      "COUNT(oi.id) as item_count, SUM(oi.quantity * oi.unit_price) as total_amt, MAX(oi.created_at) as last_order " +
                      "FROM shop_tables st " +
-                     "LEFT JOIN orders o ON st.id = o.table_id AND o.status < 40 " +
-                     "LEFT JOIN order_items oi ON o.id = oi.order_id AND oi.status < 40 " +
+                     "LEFT JOIN orders o ON st.id = o.table_id AND o.status < ? " +
+                     "LEFT JOIN order_items oi ON o.id = oi.order_id AND oi.status < ? " +
                      "GROUP BY st.id, st.table_name ORDER BY st.id";
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            while (rs.next()) {
+            ps.setInt(1, OrderConstants.STATUS_PAID);
+            ps.setInt(2, OrderConstants.STATUS_PAID);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                 model.TableStatusView view = new model.TableStatusView();
                 view.setTableId(rs.getInt("id"));
                 view.setTableName(rs.getString("table_name"));
@@ -300,6 +303,7 @@ public class OrderDAO {
                 view.setLastOrderTime(rs.getTimestamp("last_order"));
                 list.add(view);
             }
+        }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "全テーブルステータス取得中にエラーが発生しました。", e);
         }
