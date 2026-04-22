@@ -30,11 +30,15 @@ public class KitchenServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO oDao = new OrderDAOImpl();
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
+        int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
+        if (itemId < 0) {
+            response.sendRedirect("Home");
+            return;
+        }
+
         String action = request.getParameter("action");
-        
         if ("complete".equals(action)) {
+            OrderDAO oDao = new OrderDAOImpl();
             oDao.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
         }
         response.sendRedirect("Home");

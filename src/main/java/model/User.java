@@ -49,8 +49,4 @@ public class User implements Serializable {
     public boolean isCashier() {
         return role == 4;
     }
-
-    public boolean isCashier() {
-        return role == 4;
-    }
 }

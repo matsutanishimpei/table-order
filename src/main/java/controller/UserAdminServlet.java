@@ -59,9 +59,13 @@ public class UserAdminServlet extends HttpServlet {
         String action = request.getParameter("action");
         String id = request.getParameter("id");
         String password = request.getParameter("password");
-        int role = Integer.parseInt(request.getParameter("role"));
+        int role = util.ValidationUtil.parseIntSafe(request.getParameter("role"), -1);
+        if (role < 0) {
+            response.sendRedirect("User");
+            return;
+        }
         String tableIdStr = request.getParameter("tableId");
-        Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr)) ? null : Integer.parseInt(tableIdStr);
+        Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr)) ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
 
         User targetUser = new User();
         targetUser.setId(id);

@@ -40,8 +40,8 @@ public class Menu extends HttpServlet {
         request.setAttribute("categories", categories);
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
-        String cIdStr = request.getParameter("categoryId");
-        int categoryId = (cIdStr != null) ? Integer.parseInt(cIdStr) : (categories.isEmpty() ? 0 : categories.get(0).getId());
+        int categoryId = util.ValidationUtil.parseIntSafe(request.getParameter("categoryId"),
+                          categories.isEmpty() ? 0 : categories.get(0).getId());
         
         // 当該カテゴリの商品一覧を取得
         List<Product> products = pDao.findByCategory(categoryId);

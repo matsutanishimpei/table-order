@@ -20,7 +20,12 @@ public class ProductDetail extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter("productId"));
+        int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
+        if (productId < 0) {
+            response.sendRedirect("Menu");
+            return;
+        }
+
         ProductDAO pDao = new ProductDAOImpl();
         Product p = pDao.findById(productId);
 

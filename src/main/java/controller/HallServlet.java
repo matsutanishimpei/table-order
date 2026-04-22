@@ -28,11 +28,15 @@ public class HallServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO dao = new OrderDAOImpl();
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
-        String action = request.getParameter("action");
+        int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
+        if (itemId < 0) {
+            response.sendRedirect("Home");
+            return;
+        }
 
+        String action = request.getParameter("action");
         if ("serve".equals(action)) {
+            OrderDAO dao = new OrderDAOImpl();
             dao.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
         }
         response.sendRedirect("Home");
