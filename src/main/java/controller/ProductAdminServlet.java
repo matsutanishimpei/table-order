@@ -22,13 +22,12 @@ import model.Product;
 @WebServlet("/Admin/Product")
 public class ProductAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final ProductDAO productDAO = new ProductDAOImpl();
+    private final CategoryDAO categoryDAO = new CategoryDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ProductDAO pDao = new ProductDAOImpl();
-        CategoryDAO cDao = new CategoryDAOImpl();
-
-        List<Product> products = pDao.findAll();
-        List<Category> categories = cDao.findAll();
+        List<Product> products = productDAO.findAll();
+        List<Category> categories = categoryDAO.findAll();
 
         request.setAttribute("productList", products);
         request.setAttribute("categoryList", categories);

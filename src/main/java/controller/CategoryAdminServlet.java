@@ -19,10 +19,10 @@ import model.Category;
 @WebServlet("/Admin/Category")
 public class CategoryAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final CategoryDAO categoryDAO = new CategoryDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        CategoryDAO dao = new CategoryDAOImpl();
-        List<Category> list = dao.findAll();
+        List<Category> list = categoryDAO.findAll();
         request.setAttribute("categoryList", list);
         request.getRequestDispatcher("/WEB-INF/view/admin_categories.jsp").forward(request, response);
     }

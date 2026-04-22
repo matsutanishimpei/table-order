@@ -19,10 +19,10 @@ import model.OrderItemView;
 @WebServlet("/Hall/Home")
 public class HallServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO dao = new OrderDAOImpl();
-        List<OrderItemView> orders = dao.findReadyOrderItems();
+        List<OrderItemView> orders = orderDAO.findReadyOrderItems();
         request.setAttribute("readyItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/hall.jsp").forward(request, response);
     }
@@ -36,8 +36,7 @@ public class HallServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("serve".equals(action)) {
-            OrderDAO dao = new OrderDAOImpl();
-            dao.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
+            orderDAO.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
         }
         response.sendRedirect("Home");
     }

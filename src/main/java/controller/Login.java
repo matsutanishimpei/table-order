@@ -21,6 +21,7 @@ import model.User;
 public class Login extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(Login.class.getName());
+    private final UserDAO userDAO = new UserDAOImpl();
 
     /**
      * ログイン画面を表示します。
@@ -37,10 +38,7 @@ public class Login extends HttpServlet {
         String id = request.getParameter("id");
         String pw = request.getParameter("pw");
 
-        // DAOの生成と認証処理
-        UserDAO dao = new UserDAOImpl();
-
-        User user = dao.login(id, pw);
+        User user = userDAO.login(id, pw);
 
         if (user != null) {
             // ログイン成功時：セッション固定攻撃対策としてIDを更新

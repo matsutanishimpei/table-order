@@ -17,13 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/Admin/Sales")
 public class SalesAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO dao = new OrderDAOImpl();
-
-        request.setAttribute("totalSales", dao.getTotalSales());
-        request.setAttribute("dailySales", dao.findDailySales());
-        request.setAttribute("productRanking", dao.findProductSalesRanking());
+        request.setAttribute("totalSales", orderDAO.getTotalSales());
+        request.setAttribute("dailySales", orderDAO.findDailySales());
+        request.setAttribute("productRanking", orderDAO.findProductSalesRanking());
 
         request.getRequestDispatcher("/WEB-INF/view/admin_sales.jsp").forward(request, response);
     }

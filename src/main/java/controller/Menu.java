@@ -22,6 +22,8 @@ import model.Product;
 @WebServlet("/Menu")
 public class Menu extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final CategoryDAO categoryDAO = new CategoryDAOImpl();
+    private final ProductDAO productDAO = new ProductDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // セッションの確認（ログインしていない場合はログイン画面に弾く）
@@ -31,12 +33,8 @@ public class Menu extends HttpServlet {
             return;
         }
 
-        // DAOの準備
-        CategoryDAO cDao = new CategoryDAOImpl();
-        ProductDAO pDao = new ProductDAOImpl();
-
         // カテゴリ一覧の取得
-        List<Category> categories = cDao.findAll();
+        List<Category> categories = categoryDAO.findAll();
         request.setAttribute("categories", categories);
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
@@ -44,7 +42,7 @@ public class Menu extends HttpServlet {
                           categories.isEmpty() ? 0 : categories.get(0).getId());
         
         // 当該カテゴリの商品一覧を取得
-        List<Product> products = pDao.findByCategory(categoryId);
+        List<Product> products = productDAO.findByCategory(categoryId);
         request.setAttribute("products", products);
         request.setAttribute("selectedCategoryId", categoryId);
 

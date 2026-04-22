@@ -21,6 +21,7 @@ import model.User;
 @WebServlet("/OrderHistory")
 public class OrderHistory extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -31,8 +32,7 @@ public class OrderHistory extends HttpServlet {
             return;
         }
 
-        OrderDAO oDao = new OrderDAOImpl();
-        TableOrderSummary summary = oDao.getTableOrderSummary(user.getTableId());
+        TableOrderSummary summary = orderDAO.getTableOrderSummary(user.getTableId());
         
         request.setAttribute("summary", summary);
         request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);

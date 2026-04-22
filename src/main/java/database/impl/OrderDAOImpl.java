@@ -24,6 +24,20 @@ import model.TableOrderSummary;
 public class OrderDAOImpl implements OrderDAO {
     private static final Logger logger = Logger.getLogger(OrderDAOImpl.class.getName());
 
+    /**
+     * ResultSet の現在行から OrderItemView オブジェクトを生成します。
+     */
+    private OrderItemView mapOrderItemRow(ResultSet rs) throws SQLException {
+        OrderItemView view = new OrderItemView();
+        view.setOrderItemId(rs.getInt("id"));
+        view.setProductName(rs.getString("product_name"));
+        view.setQuantity(rs.getInt("quantity"));
+        view.setTableName(rs.getString("table_name"));
+        view.setOrderedAt(rs.getTimestamp("created_at"));
+        view.setStatus(rs.getInt("status"));
+        return view;
+    }
+
     @Override
     public int insertOrder(Connection con, int tableId, int status) throws SQLException {
         String sqlOrder = "INSERT INTO orders (table_id, status) VALUES (?, ?)";
@@ -73,14 +87,7 @@ public class OrderDAOImpl implements OrderDAO {
             ps.setInt(1, OrderConstants.STATUS_ORDERED);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    OrderItemView view = new OrderItemView();
-                    view.setOrderItemId(rs.getInt("id"));
-                    view.setProductName(rs.getString("product_name"));
-                    view.setQuantity(rs.getInt("quantity"));
-                    view.setTableName(rs.getString("table_name"));
-                    view.setOrderedAt(rs.getTimestamp("created_at"));
-                    view.setStatus(rs.getInt("status"));
-                    list.add(view);
+                    list.add(mapOrderItemRow(rs));
                 }
             }
         } catch (SQLException e) {
@@ -118,14 +125,7 @@ public class OrderDAOImpl implements OrderDAO {
             ps.setInt(1, OrderConstants.STATUS_COOKING_DONE);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    OrderItemView view = new OrderItemView();
-                    view.setOrderItemId(rs.getInt("id"));
-                    view.setProductName(rs.getString("product_name"));
-                    view.setQuantity(rs.getInt("quantity"));
-                    view.setTableName(rs.getString("table_name"));
-                    view.setOrderedAt(rs.getTimestamp("created_at"));
-                    view.setStatus(rs.getInt("status"));
-                    list.add(view);
+                    list.add(mapOrderItemRow(rs));
                 }
             }
         } catch (SQLException e) {

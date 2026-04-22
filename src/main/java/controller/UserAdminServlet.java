@@ -22,11 +22,10 @@ import model.TableStatusView;
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final UserDAO userDAO = new UserDAOImpl();
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserDAO uDao = new UserDAOImpl();
-        OrderDAO oDao = new OrderDAOImpl();
-
         String action = request.getParameter("action");
 
         if ("edit".equals(action) || "add".equals(action)) {
@@ -34,19 +33,19 @@ public class UserAdminServlet extends HttpServlet {
             String id = request.getParameter("id");
             User targetUser = new User();
             if ("edit".equals(action) && id != null) {
-                targetUser = uDao.findById(id);
+                targetUser = userDAO.findById(id);
             }
             // セッションの user と競合しないよう targetUser という名前でセット
             request.setAttribute("targetUser", targetUser);
             
             // 空席確認（テーブル番号選択用）
-            List<TableStatusView> tables = oDao.findAllTableStatus();
+            List<TableStatusView> tables = orderDAO.findAllTableStatus();
             request.setAttribute("tables", tables);
             
             request.getRequestDispatcher("/WEB-INF/view/admin_user_edit.jsp").forward(request, response);
         } else {
             // 一覧表示
-            List<User> list = uDao.findAll();
+            List<User> list = userDAO.findAll();
             request.setAttribute("userList", list);
             request.getRequestDispatcher("/WEB-INF/view/admin_users.jsp").forward(request, response);
         }
@@ -54,7 +53,6 @@ public class UserAdminServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        UserDAO uDao = new UserDAOImpl();
         
         String action = request.getParameter("action");
         String id = request.getParameter("id");
@@ -73,17 +71,17 @@ public class UserAdminServlet extends HttpServlet {
         targetUser.setTableId(tableId);
 
         if ("delete".equals(action)) {
-            uDao.delete(id);
+            userDAO.delete(id);
         } else if ("update".equals(action)) {
-            uDao.update(targetUser);
+            userDAO.update(targetUser);
             // パスワードが入力されていれば更新
             if (password != null && !password.isEmpty()) {
-                uDao.updatePassword(id, password);
+                userDAO.updatePassword(id, password);
             }
         } else {
             // 新規追加
             targetUser.setPassword(password);
-            uDao.insert(targetUser);
+            userDAO.insert(targetUser);
         }
 
         response.sendRedirect("User");

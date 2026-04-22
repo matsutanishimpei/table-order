@@ -22,19 +22,19 @@ import service.impl.OrderServiceImpl;
 @WebServlet("/Cashier/Home")
 public class CashierServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        OrderDAO dao = new OrderDAOImpl();
-
         // 未精算の座席一覧を取得
-        List<TableOrderSummary> tables = dao.findUnsettledTables();
+        List<TableOrderSummary> tables = orderDAO.findUnsettledTables();
         request.setAttribute("unsettledTables", tables);
 
         // 特定の座席が選択されている場合、その詳細を取得
         int tableId = util.ValidationUtil.parseIntSafe(request.getParameter("tableId"), -1);
         if (tableId > 0) {
-            TableOrderSummary summary = dao.getTableOrderSummary(tableId);
+            TableOrderSummary summary = orderDAO.getTableOrderSummary(tableId);
             request.setAttribute("selectedSummary", summary);
         }
 
@@ -45,13 +45,12 @@ public class CashierServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        OrderService service = new OrderServiceImpl();
 
         if ("checkout".equals(action)) {
             // 会計完了処理
             int tableId = util.ValidationUtil.parseIntSafe(request.getParameter("tableId"), -1);
             if (tableId > 0) {
-                service.completeCheckout(tableId);
+                orderService.completeCheckout(tableId);
             }
         }
 

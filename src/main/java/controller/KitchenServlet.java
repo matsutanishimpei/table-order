@@ -21,10 +21,10 @@ import model.OrderItemView;
 @WebServlet("/Kitchen/Home")
 public class KitchenServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO oDao = new OrderDAOImpl();
-        List<OrderItemView> orders = oDao.findActiveOrderItems();
+        List<OrderItemView> orders = orderDAO.findActiveOrderItems();
         request.setAttribute("activeItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/kitchen.jsp").forward(request, response);
     }
@@ -38,8 +38,7 @@ public class KitchenServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("complete".equals(action)) {
-            OrderDAO oDao = new OrderDAOImpl();
-            oDao.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
+            orderDAO.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
         }
         response.sendRedirect("Home");
     }

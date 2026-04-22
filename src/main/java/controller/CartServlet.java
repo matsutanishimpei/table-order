@@ -22,6 +22,7 @@ import model.Product;
 @WebServlet("/Cart")
 public class CartServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final ProductDAO productDAO = new ProductDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
@@ -51,7 +52,7 @@ public class CartServlet extends HttpServlet {
                 }
 
                 if (!found) {
-                    ProductDAO dao = new ProductDAOImpl();
+                    ProductDAO dao = productDAO;
                     Product p = dao.findById(productId);
                     if (p != null) {
                         CartItem newItem = new CartItem();

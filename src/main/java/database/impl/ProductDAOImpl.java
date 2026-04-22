@@ -18,6 +18,21 @@ import model.Product;
  */
 public class ProductDAOImpl implements ProductDAO {
 
+    /**
+     * ResultSet の現在行から Product オブジェクトを生成します。
+     */
+    private Product mapRow(ResultSet rs) throws SQLException {
+        Product p = new Product();
+        p.setId(rs.getInt("id"));
+        p.setCategoryId(rs.getInt("category_id"));
+        p.setName(rs.getString("name"));
+        p.setPrice(rs.getInt("price"));
+        p.setDescription(rs.getString("description"));
+        p.setAllergyInfo(rs.getString("allergy_info"));
+        p.setAvailable(rs.getBoolean("is_available"));
+        return p;
+    }
+
     @Override
     public List<Product> findAll() {
         List<Product> list = new ArrayList<>();
@@ -27,15 +42,7 @@ public class ProductDAOImpl implements ProductDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getInt("id"));
-                p.setCategoryId(rs.getInt("category_id"));
-                p.setName(rs.getString("name"));
-                p.setPrice(rs.getInt("price"));
-                p.setDescription(rs.getString("description"));
-                p.setAllergyInfo(rs.getString("allergy_info"));
-                p.setAvailable(rs.getBoolean("is_available"));
-                list.add(p);
+                list.add(mapRow(rs));
             }
         } catch (SQLException e) {
             throw new exception.DatabaseException("全商品取得中にエラーが発生しました。", e);
@@ -54,15 +61,7 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setInt(1, categoryId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Product p = new Product();
-                    p.setId(rs.getInt("id"));
-                    p.setCategoryId(rs.getInt("category_id"));
-                    p.setName(rs.getString("name"));
-                    p.setPrice(rs.getInt("price"));
-                    p.setDescription(rs.getString("description"));
-                    p.setAllergyInfo(rs.getString("allergy_info"));
-                    p.setAvailable(rs.getBoolean("is_available"));
-                    list.add(p);
+                    list.add(mapRow(rs));
                 }
             }
         } catch (SQLException e) {
@@ -80,14 +79,7 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setInt(1, productId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    p = new Product();
-                    p.setId(rs.getInt("id"));
-                    p.setCategoryId(rs.getInt("category_id"));
-                    p.setName(rs.getString("name"));
-                    p.setPrice(rs.getInt("price"));
-                    p.setDescription(rs.getString("description"));
-                    p.setAllergyInfo(rs.getString("allergy_info"));
-                    p.setAvailable(rs.getBoolean("is_available"));
+                    p = mapRow(rs);
                 }
             }
         } catch (SQLException e) {

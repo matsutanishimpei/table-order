@@ -21,6 +21,7 @@ import model.User;
 @WebServlet("/Order")
 public class OrderServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -40,8 +41,7 @@ public class OrderServlet extends HttpServlet {
             return;
         }
 
-        OrderService service = new OrderServiceImpl();
-        boolean success = service.createOrder(tableId, cart);
+        boolean success = orderService.createOrder(tableId, cart);
 
         if (success) {
             // カートを空にする

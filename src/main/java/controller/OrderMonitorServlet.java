@@ -19,10 +19,10 @@ import model.TableStatusView;
 @WebServlet("/Admin/Monitor")
 public class OrderMonitorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final OrderDAO orderDAO = new OrderDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO dao = new OrderDAOImpl();
-        List<TableStatusView> tables = dao.findAllTableStatus();
+        List<TableStatusView> tables = orderDAO.findAllTableStatus();
         request.setAttribute("tableList", tables);
         request.getRequestDispatcher("/WEB-INF/view/admin_order_monitor.jsp").forward(request, response);
     }

@@ -18,6 +18,7 @@ import model.Product;
 @WebServlet("/ProductDetail")
 public class ProductDetail extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private final ProductDAO productDAO = new ProductDAOImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
@@ -26,8 +27,7 @@ public class ProductDetail extends HttpServlet {
             return;
         }
 
-        ProductDAO pDao = new ProductDAOImpl();
-        Product p = pDao.findById(productId);
+        Product p = productDAO.findById(productId);
 
         if (p == null) {
             response.sendRedirect("Menu");
