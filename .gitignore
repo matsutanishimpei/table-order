@@ -1,7 +1,5 @@
 build/
 .settings/
-.classpath
-.project
-src/main/resources/database.properties
-!src/main/resources/database.properties.template
+database.properties
+!database.properties.template
 src/main/webapp/sql/seed.sql

@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.OrderDAO;
-import database.impl.OrderDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,10 +19,10 @@ import model.OrderItemView;
 @WebServlet("/Hall/Home")
 public class HallServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<OrderItemView> orders = orderDAO.findReadyOrderItems();
+        List<model.OrderItemView> orders = orderService.findReadyOrderItems();
         request.setAttribute("readyItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/hall.jsp").forward(request, response);
     }
@@ -36,7 +36,7 @@ public class HallServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("serve".equals(action)) {
-            orderDAO.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
+            orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
         }
         response.sendRedirect("Home");
     }

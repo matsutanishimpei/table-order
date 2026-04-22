@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.OrderDAO;
-import database.impl.OrderDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +21,7 @@ import model.User;
 @WebServlet("/OrderHistory")
 public class OrderHistory extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -32,7 +32,7 @@ public class OrderHistory extends HttpServlet {
             return;
         }
 
-        TableOrderSummary summary = orderDAO.getTableOrderSummary(user.getTableId());
+        TableOrderSummary summary = orderService.getTableOrderSummary(user.getTableId());
         
         request.setAttribute("summary", summary);
         request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);

@@ -3,10 +3,10 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.UserDAO;
-import database.OrderDAO;
-import database.impl.UserDAOImpl;
-import database.impl.OrderDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
+import service.UserService;
+import service.impl.UserServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,8 +22,8 @@ import model.TableStatusView;
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final UserDAO userDAO = new UserDAOImpl();
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final UserService userService = new UserServiceImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -33,19 +33,19 @@ public class UserAdminServlet extends HttpServlet {
             String id = request.getParameter("id");
             User targetUser = new User();
             if ("edit".equals(action) && id != null) {
-                targetUser = userDAO.findById(id);
+                targetUser = userService.findById(id);
             }
             // セッションの user と競合しないよう targetUser という名前でセット
             request.setAttribute("targetUser", targetUser);
             
             // 空席確認（テーブル番号選択用）
-            List<TableStatusView> tables = orderDAO.findAllTableStatus();
+            List<model.TableStatusView> tables = orderService.findAllTableStatus();
             request.setAttribute("tables", tables);
             
             request.getRequestDispatcher("/WEB-INF/view/admin_user_edit.jsp").forward(request, response);
         } else {
             // 一覧表示
-            List<User> list = userDAO.findAll();
+            List<User> list = userService.findAll();
             request.setAttribute("userList", list);
             request.getRequestDispatcher("/WEB-INF/view/admin_users.jsp").forward(request, response);
         }
@@ -71,17 +71,13 @@ public class UserAdminServlet extends HttpServlet {
         targetUser.setTableId(tableId);
 
         if ("delete".equals(action)) {
-            userDAO.delete(id);
+            userService.delete(id);
         } else if ("update".equals(action)) {
-            userDAO.update(targetUser);
-            // パスワードが入力されていれば更新
-            if (password != null && !password.isEmpty()) {
-                userDAO.updatePassword(id, password);
-            }
+            userService.update(targetUser, password);
         } else {
             // 新規追加
             targetUser.setPassword(password);
-            userDAO.insert(targetUser);
+            userService.register(targetUser);
         }
 
         response.sendRedirect("User");

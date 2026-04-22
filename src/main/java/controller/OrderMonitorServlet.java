@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.OrderDAO;
-import database.impl.OrderDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,10 +19,10 @@ import model.TableStatusView;
 @WebServlet("/Admin/Monitor")
 public class OrderMonitorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<TableStatusView> tables = orderDAO.findAllTableStatus();
+        List<model.TableStatusView> tables = orderService.findAllTableStatus();
         request.setAttribute("tableList", tables);
         request.getRequestDispatcher("/WEB-INF/view/admin_order_monitor.jsp").forward(request, response);
     }

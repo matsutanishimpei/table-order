@@ -2,8 +2,8 @@ package controller;
 
 import java.io.IOException;
 
-import database.OrderDAO;
-import database.impl.OrderDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,12 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/Admin/Sales")
 public class SalesAdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("totalSales", orderDAO.getTotalSales());
-        request.setAttribute("dailySales", orderDAO.findDailySales());
-        request.setAttribute("productRanking", orderDAO.findProductSalesRanking());
+        request.setAttribute("totalSales", orderService.getTotalSales());
+        request.setAttribute("dailySales", orderService.findDailySales());
+        request.setAttribute("productRanking", orderService.findProductSalesRanking());
 
         request.getRequestDispatcher("/WEB-INF/view/admin_sales.jsp").forward(request, response);
     }

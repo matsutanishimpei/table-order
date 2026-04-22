@@ -3,10 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.OrderDAO;
-import database.impl.OrderDAOImpl;
-import database.ProductDAO;
-import database.impl.ProductDAOImpl;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,10 +19,10 @@ import model.OrderItemView;
 @WebServlet("/Kitchen/Home")
 public class KitchenServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderDAO orderDAO = new OrderDAOImpl();
+    private final OrderService orderService = new OrderServiceImpl();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<OrderItemView> orders = orderDAO.findActiveOrderItems();
+        List<model.OrderItemView> orders = orderService.findActiveOrderItems();
         request.setAttribute("activeItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/kitchen.jsp").forward(request, response);
     }
@@ -38,7 +36,7 @@ public class KitchenServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("complete".equals(action)) {
-            orderDAO.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
+            orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
         }
         response.sendRedirect("Home");
     }

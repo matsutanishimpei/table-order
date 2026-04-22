@@ -62,4 +62,49 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
     }
+
+    @Override
+    public List<model.OrderItemView> findActiveOrderItems() {
+        return orderDAO.findActiveOrderItems();
+    }
+
+    @Override
+    public List<model.OrderItemView> findReadyOrderItems() {
+        return orderDAO.findReadyOrderItems();
+    }
+
+    @Override
+    public boolean updateItemStatus(int itemId, int status) {
+        return orderDAO.updateItemStatus(itemId, status);
+    }
+
+    @Override
+    public List<model.TableOrderSummary> findUnsettledTables() {
+        return orderDAO.findUnsettledTables();
+    }
+
+    @Override
+    public model.TableOrderSummary getTableOrderSummary(int tableId) {
+        return orderDAO.getTableOrderSummary(tableId);
+    }
+
+    @Override
+    public int getTotalSales() {
+        return orderDAO.getTotalSales();
+    }
+
+    @Override
+    public List<model.DailySales> findDailySales() {
+        return orderDAO.findDailySales();
+    }
+
+    @Override
+    public List<model.ProductSales> findProductSalesRanking() {
+        return orderDAO.findProductSalesRanking();
+    }
+
+    @Override
+    public List<model.TableStatusView> findAllTableStatus() {
+        return orderDAO.findAllTableStatus();
+    }
 }
