@@ -1,160 +1,52 @@
 package database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import model.Product;
 
 /**
- * 商品情報のデータベース操作を行うDAOクラスです。
+ * 商品情報のデータベース操作を行うDAOインターフェースです。
  */
-public class ProductDAO {
-    private static final Logger logger = Logger.getLogger(ProductDAO.class.getName());
+public interface ProductDAO extends BaseDAO<model.Product> {
     /**
      * 指定されたカテゴリの販売中の商品を取得します。
+     * @param categoryId カテゴリID
+     * @return 商品リスト
      */
-    public List<Product> findByCategory(int categoryId) {
-        List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE category_id = ? AND is_available = 1";
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, categoryId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Product p = new Product();
-                    p.setId(rs.getInt("id"));
-                    p.setCategoryId(rs.getInt("category_id"));
-                    p.setName(rs.getString("name"));
-                    p.setPrice(rs.getInt("price"));
-                    p.setDescription(rs.getString("description"));
-                    p.setAllergyInfo(rs.getString("allergy_info"));
-                    p.setImagePath(rs.getString("image_path"));
-                    p.setAvailable(rs.getBoolean("is_available"));
-                    list.add(p);
-                }
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ別商品取得中にエラーが発生しました。categoryId=" + categoryId, e);
-        }
-        return list;
-    }
+    List<Product> findByCategory(int categoryId);
 
     /**
      * 商品IDから商品を取得します。
+     * @param id 商品ID
+     * @return 商品情報
      */
-    public Product findById(int id) {
-        Product p = null;
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE id = ?";
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    p = new Product();
-                    p.setId(rs.getInt("id"));
-                    p.setCategoryId(rs.getInt("category_id"));
-                    p.setName(rs.getString("name"));
-                    p.setPrice(rs.getInt("price"));
-                    p.setDescription(rs.getString("description"));
-                    p.setAllergyInfo(rs.getString("allergy_info"));
-                    p.setImagePath(rs.getString("image_path"));
-                    p.setAvailable(rs.getBoolean("is_available"));
-                }
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品取得(findById)中にエラーが発生しました。id=" + id, e);
-        }
-        return p;
-    }
+    Product findById(int id);
 
     /**
-     * 全ての商品を取得します（管理用）。
+     * 全ての商品を取得します。
+     * @return 商品リスト
      */
-    public List<Product> findAll() {
-        List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products ORDER BY id DESC";
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getInt("id"));
-                p.setCategoryId(rs.getInt("category_id"));
-                p.setName(rs.getString("name"));
-                p.setPrice(rs.getInt("price"));
-                p.setDescription(rs.getString("description"));
-                p.setAllergyInfo(rs.getString("allergy_info"));
-                p.setImagePath(rs.getString("image_path"));
-                p.setAvailable(rs.getBoolean("is_available"));
-                list.add(p);
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("全商品取得中にエラーが発生しました。", e);
-        }
-        return list;
-    }
+    @Override
+    List<Product> findAll();
 
     /**
      * 商品を新規登録します。
+     * @param p 商品情報
+     * @return 登録成功時は true
      */
-    public boolean insert(Product p) {
-        String sql = "INSERT INTO products (category_id, name, price, description, allergy_info, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setInt(3, p.getPrice());
-            ps.setString(4, p.getDescription());
-            ps.setString(5, p.getAllergyInfo());
-            ps.setString(6, p.getImagePath());
-            ps.setBoolean(7, p.isAvailable());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品登録中にエラーが発生しました。", e);
-        }
-    }
+    boolean insert(Product p);
 
     /**
      * 商品情報を更新します。
+     * @param p 商品情報
+     * @return 更新成功時は true
      */
-    public boolean update(Product p) {
-        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, description = ?, allergy_info = ?, image_path = ? WHERE id = ?";
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setInt(3, p.getPrice());
-            ps.setString(4, p.getDescription());
-            ps.setString(5, p.getAllergyInfo());
-            ps.setString(6, p.getImagePath());
-            ps.setInt(7, p.getId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品更新中にエラーが発生しました。productId=" + p.getId(), e);
-        }
-    }
+    boolean update(Product p);
 
     /**
      * 商品の販売状態を更新します。
+     * @param productId 商品ID
+     * @param isAvailable 販売中かどうか
+     * @return 更新成功時は true
      */
-    public boolean updateAvailability(int productId, boolean isAvailable) {
-        String sql = "UPDATE products SET is_available = ? WHERE id = ?";
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setBoolean(1, isAvailable);
-            ps.setInt(2, productId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品状態更新中にエラーが発生しました。productId=" + productId, e);
-        }
-    }
+    boolean updateAvailability(int productId, boolean isAvailable);
 }

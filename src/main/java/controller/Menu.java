@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import database.CategoryDAO;
+import database.impl.CategoryDAOImpl;
 import database.ProductDAO;
+import database.impl.ProductDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,18 +32,18 @@ public class Menu extends HttpServlet {
         }
 
         // DAOの準備
-        CategoryDAO cDao = new CategoryDAO();
-        ProductDAO pDao = new ProductDAO();
+        CategoryDAO cDao = new CategoryDAOImpl();
+        ProductDAO pDao = new ProductDAOImpl();
 
         // カテゴリ一覧の取得
         List<Category> categories = cDao.findAll();
         request.setAttribute("categories", categories);
 
-        // 表示するカテゴリIDの取得（未指定なら最初のカテゴリ）
+        // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
         String cIdStr = request.getParameter("categoryId");
         int categoryId = (cIdStr != null) ? Integer.parseInt(cIdStr) : (categories.isEmpty() ? 0 : categories.get(0).getId());
         
-        // 指定カテゴリの商品一覧を取得
+        // 当該カテゴリの商品一覧を取得
         List<Product> products = pDao.findByCategory(categoryId);
         request.setAttribute("products", products);
         request.setAttribute("selectedCategoryId", categoryId);

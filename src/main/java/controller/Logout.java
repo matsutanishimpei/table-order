@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * ログアウト処理を行い、セッションを破棄するサーブレットです。
+ * ログアウト処理を行うサーブレットです。
  */
 @WebServlet("/Logout")
 public class Logout extends HttpServlet {
@@ -24,12 +24,12 @@ public class Logout extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        // コンテキストパス配下のLoginへリダイレクト
+        // コンテキストパス付きでログイン画面へリダイレクト
         response.sendRedirect(request.getContextPath() + "/Login");
     }
 
     /**
-     * POSTリクエスト時も同様に処理します（CSRF対策の一環として推奨される場合もあります）。
+     * POSTリクエスト時も同様に処理します。
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);

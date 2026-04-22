@@ -1,7 +1,7 @@
 package exception;
 
 /**
- * データベース操作に関する例外を実行時例外（RuntimeException）としてラップするクラスです。
+ * データベース操作に関する例外を表すカスタム例外クラスです。
  */
 public class DatabaseException extends RuntimeException {
     private static final long serialVersionUID = 1L;

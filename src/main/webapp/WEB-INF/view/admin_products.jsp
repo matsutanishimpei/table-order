@@ -88,7 +88,7 @@
                                     </c:choose>
                                 </td>
                                 <td class="px-10 py-8 text-right space-x-2">
-                                    <a href="Products?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
+                                    <a href="Product?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
                                         <span class="text-lg">⚙️</span>
                                     </a>
                                 </td>

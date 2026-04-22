@@ -22,12 +22,14 @@ public class CartItem implements Serializable {
         this.quantity = quantity;
     }
 
-    // 小計を計算
+    /**
+     * 小計を計算します。
+     * @return 単価 * 数量
+     */
     public int getSubtotal() {
         return unitPrice * quantity;
     }
 
-    // getters and setters
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
     public String getName() { return name; }

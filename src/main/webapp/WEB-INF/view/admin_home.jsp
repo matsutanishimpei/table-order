@@ -20,7 +20,7 @@
                 <p class="text-slate-500 font-medium italic opacity-60">店舗運営における全機能の統合管理コンソール</p>
             </div>
             
-            <form action="Logout" method="post">
+            <form action="${pageContext.request.contextPath}/Logout" method="post">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <button type="submit" class="px-8 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all uppercase tracking-widest">
                     ログアウト
@@ -30,7 +30,7 @@
 
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             <!-- フロア監視 -->
-            <a href="OrderMonitor" class="premium-card p-10 group no-underline transition-all hover:border-primary-500/50 hover:-translate-y-2 hover:shadow-2xl">
+            <a href="Monitor" class="premium-card p-10 group no-underline transition-all hover:border-primary-500/50 hover:-translate-y-2 hover:shadow-2xl">
                 <div class="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center text-2xl mb-8 group-hover:bg-primary-600 group-hover:text-white transition-all">📡</div>
                 <h2 class="text-2xl font-black text-slate-900 mb-2">フロア監視</h2>
                 <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-wider mb-8">Real-time status tracking</p>
@@ -40,7 +40,7 @@
             </a>
 
             <!-- 商品管理 -->
-            <a href="Products" class="premium-card p-10 group no-underline transition-all hover:border-emerald-500/50 hover:-translate-y-2 hover:shadow-2xl">
+            <a href="Product" class="premium-card p-10 group no-underline transition-all hover:border-emerald-500/50 hover:-translate-y-2 hover:shadow-2xl">
                 <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-2xl mb-8 group-hover:bg-emerald-500 group-hover:text-white transition-all">🍲</div>
                 <h2 class="text-2xl font-black text-slate-900 mb-2">商品管理</h2>
                 <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-wider mb-8">Asset and inventory master</p>
@@ -50,7 +50,7 @@
             </a>
 
             <!-- カテゴリー管理 -->
-            <a href="Categories" class="premium-card p-10 group no-underline transition-all hover:border-accent-500/50 hover:-translate-y-2 hover:shadow-2xl">
+            <a href="Category" class="premium-card p-10 group no-underline transition-all hover:border-accent-500/50 hover:-translate-y-2 hover:shadow-2xl">
                 <div class="w-14 h-14 rounded-2xl bg-accent-50 flex items-center justify-center text-2xl mb-8 group-hover:bg-accent-600 group-hover:text-white transition-all">🏷️</div>
                 <h2 class="text-2xl font-black text-slate-900 mb-2">カテゴリー管理</h2>
                 <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-wider mb-8">Taxonomy and classification</p>
@@ -66,6 +66,16 @@
                 <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-wider mb-8">Financial performance data</p>
                 <div class="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-2 italic">
                     レポートを表示 <span class="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </a>
+
+            <!-- ユーザー管理 -->
+            <a href="User" class="premium-card p-10 group no-underline transition-all hover:border-indigo-500/50 hover:-translate-y-2 hover:shadow-2xl">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all">👥</div>
+                <h2 class="text-2xl font-black text-slate-900 mb-2">ユーザー管理</h2>
+                <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-wider mb-8">Access and identity control</p>
+                <div class="text-[10px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2 italic">
+                    設定を編集 <span class="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
             </a>
 

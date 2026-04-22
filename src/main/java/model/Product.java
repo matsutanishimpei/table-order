@@ -30,7 +30,6 @@ public class Product implements Serializable {
         this.isAvailable = isAvailable;
     }
 
-    // getters and setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public int getCategoryId() { return categoryId; }

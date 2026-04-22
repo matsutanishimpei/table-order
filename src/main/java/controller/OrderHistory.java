@@ -1,7 +1,11 @@
 package controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import database.OrderDAO;
+import database.impl.OrderDAOImpl;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,35 +16,25 @@ import model.TableOrderSummary;
 import model.User;
 
 /**
- * 現在の座席の注文履歴を表示するサーブレットです。
+ * 座席ごとの注文履歴を表示するサーブレットです。
  */
 @WebServlet("/OrderHistory")
 public class OrderHistory extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // セッション確認
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || user.getTableId() == null) {
             response.sendRedirect("Login");
             return;
         }
 
-        User user = (User) session.getAttribute("user");
-        Integer tableId = user.getTableId();
-
-        if (tableId == null) {
-            response.sendRedirect("Menu");
-            return;
-        }
-
-        // 注文履歴サマリーを取得
-        OrderDAO oDao = new OrderDAO();
-        TableOrderSummary history = oDao.getTableOrderSummary(tableId);
-
-        request.setAttribute("history", history);
-
-        // 注文履歴画面へフォワード
+        OrderDAO oDao = new OrderDAOImpl();
+        TableOrderSummary summary = oDao.getTableOrderSummary(user.getTableId());
+        
+        request.setAttribute("summary", summary);
         request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);
     }
 }

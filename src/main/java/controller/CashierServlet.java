@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import database.OrderDAO;
+import database.impl.OrderDAOImpl;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.TableOrderSummary;
 import model.User;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 
 /**
  * 会計（レジ）用の管理サーブレットです。
@@ -21,7 +25,7 @@ public class CashierServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        OrderDAO dao = new OrderDAO();
+        OrderDAO dao = new OrderDAOImpl();
 
         // 未精算の座席一覧を取得
         List<TableOrderSummary> tables = dao.findUnsettledTables();
@@ -41,7 +45,7 @@ public class CashierServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        service.OrderService service = new service.OrderService();
+        OrderService service = new OrderServiceImpl();
 
         if ("checkout".equals(action)) {
             // 会計完了処理

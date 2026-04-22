@@ -1,62 +1,33 @@
 package util;
 
 /**
- * 入力値の検証や安全な型変換を行うユーティリティクラスです。
+ * 入力値検証などのユーティリティメソッドを提供するクラスです。
  */
 public class ValidationUtil {
-
+    
     /**
-     * 文字列を整数に変換します。失敗した場合は defaultValue を返します。
-     * @param value 変換対象の文字列
-     * @param defaultValue 失敗時のデフォルト値
-     * @return 変換後の整数
+     * 文字列を安全に整数に変換します。変換できない場合はデフォルト値を返します。
+     * @param str 変換対象の文字列
+     * @param defaultValue 変換失敗時のデフォルト値
+     * @return 変換後の整数、またはデフォルト値
      */
-    public static int parseIntSafe(String value, int defaultValue) {
-        if (value == null || value.trim().isEmpty()) {
+    public static int parseIntSafe(String str, int defaultValue) {
+        if (str == null || str.trim().isEmpty()) {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(value.trim());
+            return Integer.parseInt(str.trim());
         } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
-
+    
     /**
-     * 文字列を整数に変換します。失敗した場合は null を返します。
-     * @param value 変換対象の文字列
-     * @return 変換後の整数、または null
+     * 文字列が null または空文字かどうかを判定します。
+     * @param str 判定対象の文字列
+     * @return null または空文字の場合は true
      */
-    public static Integer parseIntOrNull(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    /**
-     * 文字列が空（null、空文字、空白のみ）でないかチェックします。
-     * @param value チェック対象
-     * @return 空でない場合は true
-     */
-    public static boolean isNotBlank(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
-
-    /**
-     * 文字列が指定された最大長以内であるかチェックします。
-     * @param value チェック対象
-     * @param maxLength 最大長
-     * @return 範囲内（または null）の場合は true
-     */
-    public static boolean isWithinLength(String value, int maxLength) {
-        if (value == null) {
-            return true;
-        }
-        return value.length() <= maxLength;
+    public static boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 }

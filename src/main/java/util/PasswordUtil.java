@@ -4,103 +4,82 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
- * パスワードのハッシュ化（BCrypt）、およびレガシー移行用のユーティリティ。
+ * パスワードのハッシュ化および検証を行うユーティリティクラスです。
+ * レガシーなSHA-256方式と、モダンなBCrypt方式の両方をサポートします。
  */
 public class PasswordUtil {
 
-    private static final String LEGACY_ALGORITHM = "SHA-256";
-    private static final int LEGACY_STRETCH_COUNT = 10000;
-
     /**
-     * 新しいパスワードを BCrypt アルゴリズムでハッシュ化します。
-     * 自動的に強力なソルトが生成・内包されます。
-     * 
-     * @param password 平文パスワード
-     * @param pepper アプリケーション共通のPepper（BCrypt前の前処理として使用）
-     * @return BCryptハッシュ文字列（例: $2a$12$...）
+     * BCrypt を使用してパスワードをハッシュ化します。
+     * @param password 生のパスワード
+     * @param pepper 共通ソルト
+     * @return ハッシュ化された文字列
      */
     public static String hashBcrypt(String password, String pepper) {
-        // Pepperが存在する場合は平文の末尾に付与してからBCrypt化する（より強固に）
-        String saltedPassword = (pepper != null) ? password + pepper : password;
-        // workload factor 12 は現在の標準的な計算量
-        return BCrypt.hashpw(saltedPassword, BCrypt.gensalt(12));
+        return BCrypt.hashpw(password + pepper, BCrypt.gensalt());
     }
 
     /**
-     * 入力されたパスワードが、保存されている BCrypt ハッシュと一致するか検証します。
-     * 内部でタイミング攻撃を防ぐ定数時間比較が行われます。
-     * 
-     * @param password 入力された平文パスワード
-     * @param pepper アプリケーション共通のPepper
-     * @param hashed データベースに保存されているBCryptハッシュ
-     * @return 一致すればtrue
+     * BCrypt 形式のハッシュと生のパスワードが一致するか検証します。
+     * @param password 生のパスワード
+     * @param pepper 共通ソルト
+     * @param hashedBCrypt ハッシュ化されたパスワード
+     * @return 一致すれば true
      */
-    public static boolean checkBcrypt(String password, String pepper, String hashed) {
-        String saltedPassword = (pepper != null) ? password + pepper : password;
+    public static boolean checkBcrypt(String password, String pepper, String hashedBCrypt) {
         try {
-            return BCrypt.checkpw(saltedPassword, hashed);
-        } catch (IllegalArgumentException e) {
-            // "Invalid salt version" などの例外発生時は false
+            return BCrypt.checkpw(password + pepper, hashedBCrypt);
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
-     * 【レガシー互換】安全な定数時間比較を行います（タイミング攻撃対策）
-     * 
-     * @param hash1 比較対象1
-     * @param hash2 比較対象2
-     * @return 完全に一致すればtrue
-     */
-    public static boolean isEqualConstantTime(String hash1, String hash2) {
-        if (hash1 == null || hash2 == null) {
-            return false;
-        }
-        return MessageDigest.isEqual(hash1.getBytes(), hash2.getBytes());
-    }
-
-    /**
-     * 【レガシー互換・移行用】
-     * 旧システムで使用されていた SHA-256 + 10,000回ストレッチング を再現します。
-     * 
-     * @param password 平文パスワード
-     * @param salt ユーザー固有のソルト（Base64形式）
-     * @param pepper アプリケーション共通の秘密鍵（Pepper）
-     * @return ハッシュ値（Base64形式）
+     * 【後方互換用】旧来の SHA-256 + Salt 方式でハッシュ化します。
+     * @param password 生のパスワード
+     * @param salt 個別ソルト
+     * @param pepper 共通ソルト
+     * @return ハッシュ化された文字列
      */
     public static String hashLegacy(String password, String salt, String pepper) {
         try {
-            MessageDigest md = MessageDigest.getInstance(LEGACY_ALGORITHM);
-            byte[] saltBytes = Base64.getDecoder().decode(salt);
-            
-            // ソルトとペッパーを混ぜる
-            md.update(saltBytes);
-            if (pepper != null) {
-                md.update(pepper.getBytes());
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update((password + salt + pepper).getBytes());
+            byte[] cipherText = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : cipherText) {
+                sb.append(String.format("%02x", b));
             }
-            byte[] hashed = md.digest(password.getBytes());
-
-            // ストレッチング
-            for (int i = 0; i < LEGACY_STRETCH_COUNT; i++) {
-                md.reset();
-                hashed = md.digest(hashed);
-            }
-
-            return Base64.getEncoder().encodeToString(hashed);
+            return sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("ハッシュアルゴリズムが見つかりません。", e);
+            throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
 
     /**
-     * 【レガシー互換・移行用】
-     * 新しいランダムなソルトを生成します。（新規ユーザーはBCryptを使うため基本は不要）
+     * 二つの文字列を定数時間で比較します（タイミング攻撃対策）。
+     * @param a 文字列A
+     * @param b 文字列B
+     * @return 一致すれば true
      */
-    public static String generateLegacySalt() {
+    public static boolean isEqualConstantTime(String a, String b) {
+        if (a == null || b == null) return false;
+        if (a.length() != b.length()) return false;
+        int result = 0;
+        for (int i = 0; i < a.length(); i++) {
+            result |= a.charAt(i) ^ b.charAt(i);
+        }
+        return result == 0;
+    }
+
+    /**
+     * ランダムなソルトを生成します。
+     * @return ソルト文字列
+     */
+    public static String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);

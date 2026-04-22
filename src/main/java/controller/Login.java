@@ -3,6 +3,8 @@ package controller;
 import java.io.IOException;
 
 import database.UserDAO;
+import database.impl.UserDAOImpl;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -36,7 +38,8 @@ public class Login extends HttpServlet {
         String pw = request.getParameter("pw");
 
         // DAOの生成と認証処理
-        UserDAO dao = new UserDAO();
+        UserDAO dao = new UserDAOImpl();
+
         User user = dao.login(id, pw);
 
         if (user != null) {

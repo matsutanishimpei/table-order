@@ -51,11 +51,11 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             <c:set var="grandTotal" value="0" />
-                            <c:forEach var="item" items="${orderHistory}">
+                            <c:forEach var="item" items="${summary.items}">
                                 <tr class="group hover:bg-slate-50/50 transition-colors">
                                     <td class="px-10 py-8">
                                         <div class="text-lg font-bold text-slate-900 group-hover:text-primary-600 transition-colors leading-tight">
-                                            <c:out value="${item.name}" />
+                                            <c:out value="${item.productName}" />
                                         </div>
                                         <div class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mt-1 italic">Culinary Asset</div>
                                     </td>
@@ -66,14 +66,14 @@
                                         <div class="flex items-baseline justify-end gap-1">
                                             <span class="text-slate-300 font-bold italic text-[10px] uppercase">jpy</span>
                                             <div class="text-xl font-black text-slate-950 tracking-tighter">
-                                                <fmt:formatNumber value="${item.subtotal}" />
+                                                <fmt:formatNumber value="${item.unitPrice * item.quantity}" />
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
-                                <c:set var="grandTotal" value="${grandTotal + item.subtotal}" />
+                                <c:set var="grandTotal" value="${grandTotal + (item.unitPrice * item.quantity)}" />
                             </c:forEach>
-                            <c:if test="${empty orderHistory}">
+                            <c:if test="${empty summary.items}">
                                 <tr>
                                     <td colspan="3" class="px-10 py-32 text-center">
                                         <div class="text-6xl mb-8 opacity-10">⏱</div>

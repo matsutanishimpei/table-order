@@ -41,7 +41,7 @@
                     <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2 font-mono italic">Quick Register</h2>
                     <h3 class="text-2xl font-black text-slate-900 tracking-tighter">新規カテゴリー追加</h3>
                 </header>
-                <form action="Categories" method="post" class="flex flex-col md:flex-row gap-6 items-end">
+                <form action="Category" method="post" class="flex flex-col md:flex-row gap-6 items-end">
                     <input type="hidden" name="csrf_token" value="${csrf_token}">
                     <div class="flex-1 space-y-3 w-full">
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">カテゴリー名</label>

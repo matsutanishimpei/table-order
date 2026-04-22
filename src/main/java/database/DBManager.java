@@ -1,92 +1,69 @@
 package database;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * データベース接続を管理するクラスです。
- * 機密情報は database.properties から読み込み、HikariCPによるコネクションプーリングを使用します。
  */
 public class DBManager {
-    private static final Logger logger = Logger.getLogger(DBManager.class.getName());
+    private static String url;
+    private static String user;
+    private static String pass;
+    private static String pepper;
 
-    // プロパティファイル(database.properties)の読み込み
-    private static final ResourceBundle rb = ResourceBundle.getBundle("database");
-
-    // HikariCP データソース
-    private static HikariDataSource dataSource;
-
-    // クラスロード時に一度だけプールを初期化する
     static {
-        try {
-            HikariConfig config = new HikariConfig();
-            
-            boolean isOracle = Boolean.parseBoolean(rb.getString("db.is_oracle"));
-            if (isOracle) {
-                config.setDriverClassName(rb.getString("db.oracle.driver"));
-                config.setJdbcUrl(rb.getString("db.oracle.url"));
-                config.setUsername(rb.getString("db.oracle.user"));
-                config.setPassword(rb.getString("db.oracle.pass"));
-            } else {
-                config.setDriverClassName(rb.getString("db.mysql.driver"));
-                config.setJdbcUrl(rb.getString("db.mysql.url"));
-                config.setUsername(rb.getString("db.mysql.user"));
-                config.setPassword(rb.getString("db.mysql.pass"));
+        // 設定ファイルの読み込み
+        try (InputStream is = DBManager.class.getClassLoader().getResourceAsStream("database.properties")) {
+            if (is == null) {
+                throw new RuntimeException("database.properties が見つかりません。src/main/resources に配置されているか確認してください。");
             }
+            Properties props = new Properties();
+            props.load(is);
 
-            // --- HikariCP プーリング設定 ---
-            // 接続プール内の最大コネクション数。高負荷時でもこれ以上は生成されない。
-            config.setMaximumPoolSize(20);
-            // プール内で待機させる最小コネクション数。
-            config.setMinimumIdle(5);
-            // アイドル状態のコネクションが保持される最大時間 (ミリ秒) - 5分
-            config.setIdleTimeout(300000);
-            // コネクションの取得を待機する最大時間 (ミリ秒) - 20秒
-            config.setConnectionTimeout(20000);
-            // キャッシュ機能の有効化によるパフォーマンス最適化 (MySQL推奨設定)
-            config.addDataSourceProperty("cachePrepStmts", "true");
-            config.addDataSourceProperty("prepStmtCacheSize", "250");
-            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            boolean isOracle = Boolean.parseBoolean(props.getProperty("db.is_oracle", "false"));
+            if (isOracle) {
+                url = props.getProperty("db.oracle.url");
+                user = props.getProperty("db.oracle.user");
+                pass = props.getProperty("db.oracle.pass");
+                Class.forName(props.getProperty("db.oracle.driver", "oracle.jdbc.OracleDriver"));
+            } else {
+                url = props.getProperty("db.mysql.url");
+                user = props.getProperty("db.mysql.user");
+                pass = props.getProperty("db.mysql.pass");
+                Class.forName(props.getProperty("db.mysql.driver", "com.mysql.cj.jdbc.Driver"));
+            }
             
-            dataSource = new HikariDataSource(config);
-            logger.info("HikariCP Connection Pool initialized successfully.");
+            pepper = props.getProperty("app.security.pepper");
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "HikariCP の初期化に失敗しました。データベースプロパティの設定に誤りがあるか、ドライバが見つかりません。", e);
-            throw new ExceptionInInitializerError(e);
+            e.printStackTrace();
+            throw new RuntimeException("DBManagerの初期化に失敗しました: " + e.getMessage(), e);
         }
     }
 
     /**
-     * データベースへの接続を（プールから）取得します。
-     * 
-     * @return Connectionオブジェクト。失敗した場合はnullを返します。
+     * データベースへの接続を取得します。
+     * @return Connectionオブジェクト
+     * @throws SQLException 接続失敗時
      */
-    public static Connection getConnection() {
-        try {
-            return dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("データベースプーリングからの接続取得に失敗しました。", e);
-        }
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, user, pass);
     }
 
     /**
-     * アプリケーション共通の秘密鍵（Pepper）を返します。
+     * パスワードハッシュ化用の共通ソルト(Pepper)を取得します。
      * @return Pepper文字列
      */
     public static String getPepper() {
-        return rb.getString("app.security.pepper");
+        return pepper;
     }
 
     /**
-     * データベース接続を閉じます（実際はプールへ返却されます）。
-     * 
+     * コネクションをクローズします（ユーティリティ）。
      * @param con Connectionオブジェクト
      */
     public static void closeConnection(Connection con) {
@@ -94,19 +71,8 @@ public class DBManager {
             try {
                 con.close();
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "データベース接続のクローズ(プール返却)中にエラーが発生しました。", e);
+                e.printStackTrace();
             }
-        }
-    }
-
-    /**
-     * アプリケーション終了時にコネクションプールを破棄します。
-     * （ServletContextListener などから呼び出すことを想定）
-     */
-    public static void closePool() {
-        if (dataSource != null && !dataSource.isClosed()) {
-            dataSource.close();
-            logger.info("HikariCP Connection Pool destroyed.");
         }
     }
 }

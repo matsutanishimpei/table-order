@@ -3,7 +3,9 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.OrderDAO;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -33,19 +35,18 @@ public class OrderServlet extends HttpServlet {
         // DBに保存
         Integer tableId = user.getTableId();
         if (tableId == null) {
-            request.setAttribute("error", "このアカウントには座席（テーブル）が割り当てられていないため、注文できません。");
+            request.setAttribute("error", "このアカウントには座席（テーブル番号）が割り当てられていないため、注文できません。");
             request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
             return;
         }
 
-        service.OrderService service = new service.OrderService();
+        OrderService service = new OrderServiceImpl();
         boolean success = service.createOrder(tableId, cart);
 
         if (success) {
             // カートを空にする
             cart.clear();
-            // 完了画面（または完了メッセージ付きのメニュー）へリダイレクト
-            // Note: 本来は Flash Attribute 等を使うのが望ましいが、シンプルに Menu へ戻す
+            // 完了画面、または完了メッセージ付きのメニュー画面へリダイレクト
             response.sendRedirect("Menu?msg=success");
         } else {
             response.sendRedirect("Menu?msg=error");

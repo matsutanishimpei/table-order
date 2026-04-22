@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import database.OrderDAO;
+import database.impl.OrderDAOImpl;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,22 +14,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.TableStatusView;
 
 /**
- * 店舗全体の受注状況を監視するダッシュボードを表示するサーブレットです。
+ * 全テーブルの状態を一覧表示するモニター用サーブレットです。
  */
-@WebServlet("/Admin/OrderMonitor")
+@WebServlet("/Admin/Monitor")
 public class OrderMonitorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        OrderDAO dao = new OrderDAO();
-        
-        // 全テーブルのステータス一覧を取得
-        List<TableStatusView> tableList = dao.findAllTableStatus();
-
-        // リクエストスコープにセット
-        request.setAttribute("tableList", tableList);
-
-        // JSPへフォワード
+        OrderDAO dao = new OrderDAOImpl();
+        List<TableStatusView> tables = dao.findAllTableStatus();
+        request.setAttribute("tableList", tables);
         request.getRequestDispatcher("/WEB-INF/view/admin_order_monitor.jsp").forward(request, response);
     }
 }

@@ -10,7 +10,7 @@
 <body class="bg-[#f8fafc] font-sans antialiased text-slate-900">
     <div class="max-w-[900px] mx-auto px-12 py-20">
         <nav class="mb-12">
-            <a href="Products" class="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-emerald-600 transition-colors no-underline uppercase tracking-[0.2em]">
+            <a href="Product" class="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-emerald-600 transition-colors no-underline uppercase tracking-[0.2em]">
                 <span class="text-lg">←</span> 商品一覧に戻る
             </a>
         </nav>
@@ -39,7 +39,7 @@
                 #${product.id}
             </div>
 
-            <form action="Products" method="post" class="relative z-10 space-y-12">
+            <form action="Product" method="post" class="relative z-10 space-y-12">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <input type="hidden" name="id" value="${product.id}">
                 
@@ -106,7 +106,7 @@
                     <button type="submit" class="btn-primary bg-emerald-600 hover:bg-emerald-700 flex-grow py-6 text-base tracking-[0.4em] shadow-2xl shadow-emerald-600/20">
                         変更を保存する
                     </button>
-                    <a href="Products" class="inline-flex items-center justify-center px-10 py-6 bg-slate-100 text-slate-400 text-xs font-black rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all uppercase tracking-widest no-underline">
+                    <a href="Product" class="inline-flex items-center justify-center px-10 py-6 bg-slate-100 text-slate-400 text-xs font-black rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all uppercase tracking-widest no-underline">
                         キャンセル
                     </a>
                 </footer>
