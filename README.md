@@ -1,5 +1,7 @@
 # Table Order & Store Management System
 
+![Java CI](https://github.com/matsutanishimpei/table-order/actions/workflows/ci.yml/badge.svg)
+
 飲食店向けの次世代テーブルオーダー・店舗管理システムです。お客様のモバイル注文から、厨房での調理管理、ホールでの配膳、レジでの精算、そして管理者による経営分析まで、店舗運営の全フローをカバーする統合ソリューションです。
 
 ## 🌟 主な機能
@@ -24,29 +26,29 @@
 Tailwind CSS を全面採用し、従来の静的CSS設計から、柔軟で保守性の高いユーティリティファースト設計へと進化しました。
 
 - **Tailwind CSS & Common Components**: `header.jsp` による共通設定と Tailwind CSS (Play CDN) の活用により、全12画面で寸分違わぬ一貫したプレミアム・デザインを実現。
-- **Premium Emerald Theme**: 清潔感と高級感を両立させたエメラルド・アクセントのライトテーマ。グラスモーフィズム、カードシャドウ、マイクロアニメーションを駆使した直感的な UI。
-- **レスポンシブ・グリッド**: 管理・スタッフ・顧客の各コンテキストに合わせ、1カラムからマルチカラムまで最適なレイアウトを自動調整。
+- **Maven Project**: Maven による標準的な依存関係管理を採用。ライブラリのバージョン管理やビルド・テストが自動化されています。
 - **堅牢なバックエンド (MVC, Service層)**: コントローラーとDAOの中間に **OrderService** 等のビジネスロジック層を新設。トランザクション管理をアプリケーション層で正確に制御します。
+- **Premium Emerald Theme**: 清潔感と高級感を両立させたエメラルド・アクセントのライトテーマ。グラスモーフィズム、カードシャドウ、マイクロアニメーションを駆使した直感的な UI。
 
 ## 🛡️ システムの堅牢性・安全性
 商用レベルの運用に耐えうる、高度なセキュリティ基盤を構築しています。
 
 - **多層防御のパスワード保護と BCrypt**: 業界標準の **BCrypt** へパスワードハッシュを完全移行。旧ハッシュ(SHA-256)からの「オンザフライ・マイグレーション」により、ユーザーに意識させることなくダウンタイム・ゼロでセキュリティ規格を引き上げました。
-- **Webセキュリティ標準**: XSS, CSRF (`CsrfUtil`による全POST保護), セッション固定攻撃の防止策を網羅。さらに、未認証ユーザーへの無条件セッション発行を行わないことで、システムを DoS 攻撃から保護しています。
+- **Webセキュリティ標準**: XSS, CSRF (`CsrfUtil`による全POST保護), セッション固定攻撃の防止策を網羅。
 - **ロールベースアクセス制御**: `AuthFilter` による厳格な権限・セッション管理。
 
 ## 🚀 技術スタック
-- **Backend**: Java (Jakarta EE 10+), Servlet/JSP, **HikariCP** (コネクションプーリング), **jBCrypt**
-- **Frontend**: Tailwind CSS (Play CDN), JSTL, Google Fonts (Outfit / Noto Sans JP)
-- **Asset**: AI-Generated Custom Favicon
-- **Database**: MySQL / MariaDB (DAOレイヤーとカスタム例外による厳密な管理)
-- **Server**: Apache Tomcat 11+
+- **Backend**: Java (Jakarta EE 10+), Servlet/JSP, **Maven** (Build Tool)
+- **Frontend**: Tailwind CSS (Play CDN), JSTL, Google Fonts
+- **Infrastructure**: **HikariCP** (Connection Pool), **jBCrypt**, MySQL / Oracle
+- **CI/CD**: GitHub Actions (Java CI with Maven)
 
 ## 🛠️ セットアップ方法
 
-1. **前提条件**: JDK 17+, Apache Tomcat 11+, MySQL
-2. **データベース構築**: `src/main/webapp/sql/` 内の `schema.sql`, `seed.sql` 実行。
-3. **設定**: `database.properties` でDB接続情報と `app.security.pepper` を設定。
+1. **前提条件**: JDK 17+, Apache Tomcat 10+, Maven
+2. **ビルド**: プロジェクトのルートで `mvn clean package` を実行。
+3. **データベース構築**: `src/main/webapp/sql/` 内の `schema.sql`, `seed.sql` 実行。
+4. **設定**: `database.properties` でDB接続情報と `app.security.pepper` を設定。
 
 ---
 
