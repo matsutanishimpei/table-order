@@ -13,7 +13,6 @@ bin/
 # Config
 database.properties
 !database.properties.template
-src/main/webapp/sql/seed.sql
 
 # AI Assistant
 .gemini/
