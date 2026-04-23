@@ -50,7 +50,7 @@
         </div>
         
         <footer class="mt-16 text-center opacity-40">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">© 2024 Table Order System Architects</p>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">© 2026 Table Order System Architects</p>
         </footer>
     </main>
 

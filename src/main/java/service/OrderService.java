@@ -44,6 +44,4 @@ public interface OrderService {
      * @return 更新成功時は true
      */
     boolean updateItemStatus(int itemId, int status);
-
-
 }

@@ -48,9 +48,12 @@ public class CartServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         if ("add".equals(action)) {
-            try {
-                int productId = Integer.parseInt(request.getParameter("productId"));
-                int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
+            int quantity = util.ValidationUtil.parseIntSafe(request.getParameter("quantity"), 0);
+            if (productId < 0 || quantity <= 0) {
+                response.sendRedirect("Menu");
+                return;
+            }
 
                 boolean found = false;
                 for (CartItem item : cart) {
@@ -72,9 +75,6 @@ public class CartServlet extends HttpServlet {
                         cart.add(newItem);
                     }
                 }
-            } catch (NumberFormatException e) {
-                logger.warning("不正な入力値が送信されました: " + e.getMessage());
-            }
         } else if ("clear".equals(action)) {
             cart.clear();
         }

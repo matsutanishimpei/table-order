@@ -33,6 +33,7 @@ public class OrderDAOImpl implements OrderDAO {
         view.setTableName(rs.getString("table_name"));
         view.setOrderedAt(rs.getTimestamp("created_at"));
         view.setStatus(rs.getInt("status"));
+        view.setUnitPrice(rs.getInt("unit_price"));
         return view;
     }
 
@@ -72,7 +73,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public List<OrderItemView> findActiveOrderItems() {
         List<OrderItemView> list = new ArrayList<>();
-        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status " +
+        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status, oi.unit_price " +
                      "FROM order_items oi " +
                      "JOIN products p ON oi.product_id = p.id " +
                      "JOIN orders o ON oi.order_id = o.id " +
@@ -110,7 +111,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public List<OrderItemView> findReadyOrderItems() {
         List<OrderItemView> list = new ArrayList<>();
-        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status " +
+        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status, oi.unit_price " +
                      "FROM order_items oi " +
                      "JOIN products p ON oi.product_id = p.id " +
                      "JOIN orders o ON oi.order_id = o.id " +
@@ -131,8 +132,6 @@ public class OrderDAOImpl implements OrderDAO {
         }
         return list;
     }
-
-
 
     @Override
     public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
@@ -155,6 +154,4 @@ public class OrderDAOImpl implements OrderDAO {
             ps.executeUpdate();
         }
     }
-
-
 }

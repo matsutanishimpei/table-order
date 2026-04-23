@@ -49,7 +49,7 @@ public class UserAdminServlet extends HttpServlet {
             
             // 空席確認（テーブル番号選択用）
             List<model.TableStatusView> tables = tableService.findAllTableStatus();
-            request.setAttribute("tables", tables);
+            request.setAttribute("tableList", tables);
             
             request.getRequestDispatcher("/WEB-INF/view/admin_user_edit.jsp").forward(request, response);
         } else {
