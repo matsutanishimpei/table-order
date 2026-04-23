@@ -13,6 +13,8 @@ import model.TableOrderSummary;
 import model.User;
 import service.OrderService;
 import service.impl.OrderServiceImpl;
+import service.TableService;
+import service.impl.TableServiceImpl;
 
 /**
  * 会計（レジ）用の管理サーブレットです。
@@ -20,12 +22,22 @@ import service.impl.OrderServiceImpl;
 @WebServlet("/Cashier/Home")
 public class CashierServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderService orderService = new OrderServiceImpl();
+    private final OrderService orderService;
+    private final TableService tableService;
+
+    public CashierServlet() {
+        this(new OrderServiceImpl(), new TableServiceImpl());
+    }
+
+    public CashierServlet(OrderService orderService, TableService tableService) {
+        this.orderService = orderService;
+        this.tableService = tableService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         // 未精算の座席一覧を取得
-        List<TableOrderSummary> tables = orderService.findUnsettledTables();
+        List<TableOrderSummary> tables = tableService.findUnsettledTables();
         request.setAttribute("unsettledTables", tables);
 
         // 特定の座席が選択されている場合、その詳細を取得
@@ -33,7 +45,7 @@ public class CashierServlet extends HttpServlet {
         int tableId = util.ValidationUtil.parseIntSafe(tableIdStr, 0);
 
         if (tableId > 0) {
-            TableOrderSummary summary = orderService.getTableOrderSummary(tableId);
+            TableOrderSummary summary = tableService.getTableOrderSummary(tableId);
             request.setAttribute("selectedSummary", summary);
         }
 

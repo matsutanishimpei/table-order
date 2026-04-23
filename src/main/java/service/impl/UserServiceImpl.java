@@ -15,8 +15,14 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
     private final UserDAO userDAO;
 
+    // プロダクション用コンストラクタ
     public UserServiceImpl() {
-        this.userDAO = new UserDAOImpl();
+        this(new UserDAOImpl());
+    }
+
+    // テスト・DI用コンストラクタ
+    public UserServiceImpl(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     @Override

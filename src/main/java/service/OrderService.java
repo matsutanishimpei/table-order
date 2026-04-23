@@ -44,40 +44,5 @@ public interface OrderService {
      */
     boolean updateItemStatus(int itemId, int status);
 
-    /**
-     * 未会計の座席一覧を取得します。
-     * @return 座席注文サマリーのリスト
-     */
-    java.util.List<model.TableOrderSummary> findUnsettledTables();
 
-    /**
-     * 特定の座席の注文サマリーを取得します。
-     * @param tableId 座席ID
-     * @return 座席注文サマリー
-     */
-    model.TableOrderSummary getTableOrderSummary(int tableId);
-
-    /**
-     * 全期間の累計売上額を取得します。
-     * @return 累計売上
-     */
-    int getTotalSales();
-
-    /**
-     * 日次売上集計を取得します。
-     * @return 日次売上リスト
-     */
-    java.util.List<model.DailySales> findDailySales();
-
-    /**
-     * 商品別の売上ランキングを取得します。
-     * @return 商品別売上リスト
-     */
-    java.util.List<model.ProductSales> findProductSalesRanking();
-
-    /**
-     * 全テーブルの現在のステータスを取得します。
-     * @return テーブルステータスリスト
-     */
-    java.util.List<model.TableStatusView> findAllTableStatus();
 }

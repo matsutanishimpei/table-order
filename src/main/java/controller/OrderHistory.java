@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import service.OrderService;
-import service.impl.OrderServiceImpl;
+import service.TableService;
+import service.impl.TableServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,8 +20,15 @@ import model.User;
  */
 @WebServlet("/OrderHistory")
 public class OrderHistory extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final OrderService orderService = new OrderServiceImpl();
+    private final TableService tableService;
+
+    public OrderHistory() {
+        this(new TableServiceImpl());
+    }
+
+    public OrderHistory(TableService tableService) {
+        this.tableService = tableService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -32,7 +39,7 @@ public class OrderHistory extends HttpServlet {
             return;
         }
 
-        TableOrderSummary summary = orderService.getTableOrderSummary(user.getTableId());
+        TableOrderSummary summary = tableService.getTableOrderSummary(user.getTableId());
         
         request.setAttribute("summary", summary);
         request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);

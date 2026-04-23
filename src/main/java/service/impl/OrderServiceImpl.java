@@ -18,8 +18,14 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger logger = Logger.getLogger(OrderServiceImpl.class.getName());
     private final OrderDAO orderDAO;
 
+    // プロダクション用コンストラクタ
     public OrderServiceImpl() {
-        this.orderDAO = new OrderDAOImpl();
+        this(new OrderDAOImpl());
+    }
+
+    // テスト・DI用コンストラクタ
+    public OrderServiceImpl(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
     }
 
     @Override
@@ -78,33 +84,5 @@ public class OrderServiceImpl implements OrderService {
         return orderDAO.updateItemStatus(itemId, status);
     }
 
-    @Override
-    public List<model.TableOrderSummary> findUnsettledTables() {
-        return orderDAO.findUnsettledTables();
-    }
 
-    @Override
-    public model.TableOrderSummary getTableOrderSummary(int tableId) {
-        return orderDAO.getTableOrderSummary(tableId);
-    }
-
-    @Override
-    public int getTotalSales() {
-        return orderDAO.getTotalSales();
-    }
-
-    @Override
-    public List<model.DailySales> findDailySales() {
-        return orderDAO.findDailySales();
-    }
-
-    @Override
-    public List<model.ProductSales> findProductSalesRanking() {
-        return orderDAO.findProductSalesRanking();
-    }
-
-    @Override
-    public List<model.TableStatusView> findAllTableStatus() {
-        return orderDAO.findAllTableStatus();
-    }
 }

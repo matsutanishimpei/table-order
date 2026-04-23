@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.CategoryDAO;
-import database.impl.CategoryDAOImpl;
+import service.CategoryService;
+import service.impl.CategoryServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,11 +18,18 @@ import model.Category;
  */
 @WebServlet("/Admin/Category")
 public class CategoryAdminServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final CategoryDAO categoryDAO = new CategoryDAOImpl();
+    private final CategoryService categoryService;
+
+    public CategoryAdminServlet() {
+        this(new CategoryServiceImpl());
+    }
+
+    public CategoryAdminServlet(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Category> list = categoryDAO.findAll();
+        List<Category> list = categoryService.findAll();
         request.setAttribute("categoryList", list);
         request.getRequestDispatcher("/WEB-INF/view/admin_categories.jsp").forward(request, response);
     }

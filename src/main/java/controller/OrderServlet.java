@@ -20,8 +20,15 @@ import model.User;
  */
 @WebServlet("/Order")
 public class OrderServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final OrderService orderService = new OrderServiceImpl();
+    private final OrderService orderService;
+
+    public OrderServlet() {
+        this(new OrderServiceImpl());
+    }
+
+    public OrderServlet(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();

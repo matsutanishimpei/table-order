@@ -3,10 +3,10 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import database.CategoryDAO;
-import database.impl.CategoryDAOImpl;
-import database.ProductDAO;
-import database.impl.ProductDAOImpl;
+import service.CategoryService;
+import service.impl.CategoryServiceImpl;
+import service.ProductService;
+import service.impl.ProductServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,9 +21,17 @@ import model.Product;
  */
 @WebServlet("/Menu")
 public class Menu extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final CategoryDAO categoryDAO = new CategoryDAOImpl();
-    private final ProductDAO productDAO = new ProductDAOImpl();
+    private final CategoryService categoryService;
+    private final ProductService productService;
+
+    public Menu() {
+        this(new CategoryServiceImpl(), new ProductServiceImpl());
+    }
+
+    public Menu(CategoryService categoryService, ProductService productService) {
+        this.categoryService = categoryService;
+        this.productService = productService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // セッションの確認（ログインしていない場合はログイン画面に弾く）
@@ -34,7 +42,7 @@ public class Menu extends HttpServlet {
         }
 
         // カテゴリ一覧の取得
-        List<Category> categories = categoryDAO.findAll();
+        List<Category> categories = categoryService.findAll();
         request.setAttribute("categories", categories);
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
@@ -42,7 +50,7 @@ public class Menu extends HttpServlet {
                           categories.isEmpty() ? 0 : categories.get(0).getId());
         
         // 当該カテゴリの商品一覧を取得
-        List<Product> products = productDAO.findByCategory(categoryId);
+        List<Product> products = productService.findByCategory(categoryId);
         request.setAttribute("products", products);
         request.setAttribute("selectedCategoryId", categoryId);
 

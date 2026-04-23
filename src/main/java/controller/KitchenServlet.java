@@ -18,8 +18,15 @@ import model.OrderItemView;
  */
 @WebServlet("/Kitchen/Home")
 public class KitchenServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final OrderService orderService = new OrderServiceImpl();
+    private final OrderService orderService;
+
+    public KitchenServlet() {
+        this(new OrderServiceImpl());
+    }
+
+    public KitchenServlet(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<model.OrderItemView> orders = orderService.findActiveOrderItems();

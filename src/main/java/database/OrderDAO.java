@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.List;
 import model.CartItem;
 import model.OrderItemView;
-import model.TableOrderSummary;
 
 /**
  * 注文情報のデータベース操作を行うDAOインターフェースです。
@@ -52,19 +51,6 @@ public interface OrderDAO {
     List<OrderItemView> findReadyOrderItems();
 
     /**
-     * 未会計の座席一覧を取得します。
-     * @return 座席注文サマリーのリスト
-     */
-    List<TableOrderSummary> findUnsettledTables();
-
-    /**
-     * 特定の座席の注文サマリーを取得します。
-     * @param tableId 座席ID
-     * @return 座席注文サマリー
-     */
-    TableOrderSummary getTableOrderSummary(int tableId);
-
-    /**
      * 会計時の注文明細ステータス更新を行います。
      * @param con データベース接続
      * @param tableId 座席ID
@@ -83,28 +69,4 @@ public interface OrderDAO {
      * @throws SQLException データベースエラー
      */
     void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException;
-
-    /**
-     * 全テーブルの現在のステータスを取得します。
-     * @return テーブルステータスリスト
-     */
-    List<model.TableStatusView> findAllTableStatus();
-
-    /**
-     * 全期間の累計売上額を取得します。
-     * @return 累計売上
-     */
-    int getTotalSales();
-
-    /**
-     * 日次売上集計を取得します。
-     * @return 日次売上リスト
-     */
-    List<model.DailySales> findDailySales();
-
-    /**
-     * 商品別の売上ランキングを取得します。
-     * @return 商品別売上リスト
-     */
-    List<model.ProductSales> findProductSalesRanking();
 }

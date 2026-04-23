@@ -3,3 +3,4 @@ build/
 database.properties
 !database.properties.template
 src/main/webapp/sql/seed.sql
+.gemini/

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import database.ProductDAO;
-import database.impl.ProductDAOImpl;
+import service.ProductService;
+import service.impl.ProductServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,8 +21,15 @@ import model.Product;
  */
 @WebServlet("/Cart")
 public class CartServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final ProductDAO productDAO = new ProductDAOImpl();
+    private final ProductService productService;
+
+    public CartServlet() {
+        this(new ProductServiceImpl());
+    }
+
+    public CartServlet(ProductService productService) {
+        this.productService = productService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
@@ -52,8 +59,8 @@ public class CartServlet extends HttpServlet {
                 }
 
                 if (!found) {
-                    ProductDAO dao = productDAO;
-                    Product p = dao.findById(productId);
+                    ProductService service = productService;
+                    Product p = service.findById(productId);
                     if (p != null) {
                         CartItem newItem = new CartItem();
                         newItem.setProductId(p.getId());

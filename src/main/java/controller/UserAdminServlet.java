@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
-import service.OrderService;
-import service.impl.OrderServiceImpl;
+import service.TableService;
+import service.impl.TableServiceImpl;
 import service.UserService;
 import service.impl.UserServiceImpl;
 
@@ -21,9 +21,17 @@ import model.TableStatusView;
  */
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private final UserService userService = new UserServiceImpl();
-    private final OrderService orderService = new OrderServiceImpl();
+    private final UserService userService;
+    private final TableService tableService;
+
+    public UserAdminServlet() {
+        this(new UserServiceImpl(), new TableServiceImpl());
+    }
+
+    public UserAdminServlet(UserService userService, TableService tableService) {
+        this.userService = userService;
+        this.tableService = tableService;
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -39,7 +47,7 @@ public class UserAdminServlet extends HttpServlet {
             request.setAttribute("targetUser", targetUser);
             
             // 空席確認（テーブル番号選択用）
-            List<model.TableStatusView> tables = orderService.findAllTableStatus();
+            List<model.TableStatusView> tables = tableService.findAllTableStatus();
             request.setAttribute("tables", tables);
             
             request.getRequestDispatcher("/WEB-INF/view/admin_user_edit.jsp").forward(request, response);
