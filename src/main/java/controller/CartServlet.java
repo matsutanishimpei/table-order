@@ -23,7 +23,6 @@ import model.Product;
 @WebServlet("/Cart")
 public class CartServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(CartServlet.class.getName());
     private final ProductService productService;
 
     public CartServlet() {
@@ -40,6 +39,7 @@ public class CartServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
+        @SuppressWarnings("unchecked")
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
         if (cart == null) {
             cart = new ArrayList<>();

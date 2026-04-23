@@ -20,7 +20,6 @@ import model.OrderItemView;
  * 注文情報のデータベース操作を行うDAO実装クラスです。
  */
 public class OrderDAOImpl implements OrderDAO {
-    private static final Logger logger = Logger.getLogger(OrderDAOImpl.class.getName());
 
     /**
      * ResultSet の現在行から OrderItemView オブジェクトを生成します。

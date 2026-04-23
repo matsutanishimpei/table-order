@@ -1,6 +1,30 @@
+# Maven
+target/
+
+# Build
 build/
+bin/
+
+# Eclipse
 .settings/
+.project
+.classpath
+
+# Config
 database.properties
 !database.properties.template
 src/main/webapp/sql/seed.sql
+
+# AI Assistant
 .gemini/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Prevent accidental JAR commits
+src/main/webapp/WEB-INF/lib/*.jar
+!src/main/webapp/WEB-INF/lib/.gitkeep

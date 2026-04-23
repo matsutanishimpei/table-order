@@ -1,7 +1,6 @@
 package database;
 
 import java.util.List;
-import model.Category;
 
 /**
  * カテゴリ情報のデータベース操作を行うDAOインターフェースです。

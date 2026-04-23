@@ -79,7 +79,7 @@ public class PasswordUtil {
      * ランダムなソルトを生成します。
      * @return ソルト文字列
      */
-    public static String generateSalt() {
+    public static String generateLegacySalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);

@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.User;
-import model.TableStatusView;
 
 /**
  * 管理者用のユーザー管理（一覧・追加・更新・削除）を制御するサーブレットです。

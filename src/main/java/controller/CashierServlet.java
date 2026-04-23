@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.TableOrderSummary;
-import model.User;
 import service.OrderService;
 import service.impl.OrderServiceImpl;
 import service.TableService;
