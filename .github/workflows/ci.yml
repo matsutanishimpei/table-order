@@ -38,10 +38,10 @@ jobs:
     - name: Prepare database.properties
       run: |
         cp src/main/resources/database.properties.template src/main/resources/database.properties
-        sed -i 's/db.mysql.url=jdbc:mysql:\/\/localhost:3306\/table_order/db.mysql.url=jdbc:mysql:\/\/127.0.0.1:3306\/table_order/g' src/main/resources/database.properties
-        sed -i 's/db.mysql.user=root/db.mysql.user=root/g' src/main/resources/database.properties
-        sed -i 's/db.mysql.pass=your_password/db.mysql.pass=password/g' src/main/resources/database.properties
-        sed -i 's/app.security.pepper=your_random_pepper/app.security.pepper=test_pepper/g' src/main/resources/database.properties
+        # テンプレート内のプレースホルダを正確に置換
+        sed -i 's|db.mysql.url=jdbc:mysql://localhost:3306/table_order_db?useSSL=false&serverTimezone=UTC|db.mysql.url=jdbc:mysql://127.0.0.1:3306/table_order?useSSL=false\&serverTimezone=UTC|' src/main/resources/database.properties
+        sed -i 's/db.mysql.pass=YOUR_MYSQL_PASSWORD_HERE/db.mysql.pass=password/' src/main/resources/database.properties
+        sed -i 's/app.security.pepper=YOUR_SECRET_PEPPER_HERE/app.security.pepper=test_pepper/' src/main/resources/database.properties
 
     - name: Build and Test with Maven
       run: mvn clean test
