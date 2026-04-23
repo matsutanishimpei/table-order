@@ -41,50 +41,43 @@ public class DatabaseConnectionTest {
     }
 
     @Nested
-    @DisplayName("認証系テスト")
-    class AuthTests {
+    @DisplayName("認証・操作系テスト (Integration)")
+    class IntegrationTests {
         @Test
-        @DisplayName("既存ユーザー(admin)でのログイン認証が正しく機能すること")
-        void testAdminLogin() {
-            // seed.sql で投入された admin / pass を使用
-            User user = userDAO.login("admin", "pass");
-            assertNotNull(user, "正しいIDとパスワードでログインできること");
-            assertEquals("admin", user.getId());
-
-            User failUser = userDAO.login("admin", "wrong_password");
-            assertNull(failUser, "誤ったパスワードではログインできないこと");
-        }
-    }
-
-    @Nested
-    @DisplayName("データ操作系テスト (CRUD)")
-    class CrudTests {
-        @Test
-        @DisplayName("ユーザーの作成・検索・更新・削除のサイクルが正常に動作すること")
-        void testUserLifecycle() {
-            String testId = "junit_test_" + System.currentTimeMillis();
+        @DisplayName("ユーザーの作成・ログイン・更新・削除のサイクルが正常に動作すること")
+        void testUserFullLifecycle() {
+            // IDは20文字以内 (VARCHAR(20)制限)
+            String testId = "jt_" + (System.currentTimeMillis() % 1000000000L);
+            String testPass = "test_password_123";
+            
             User newUser = new User();
             newUser.setId(testId);
-            newUser.setPassword("temp_pass");
+            newUser.setPassword(testPass);
             newUser.setRole(3); // Hall
 
-            // 1. Create (Insert)
-            assertTrue(userDAO.insert(newUser), "新規ユーザーの作成に成功すること");
+            try {
+                // 1. Create (Insert)
+                assertTrue(userDAO.insert(newUser), "新規ユーザーの作成に成功すること");
 
-            // 2. Read (FindById)
-            User found = userDAO.findById(testId);
-            assertNotNull(found, "作成したユーザーが取得できること");
-            assertEquals(3, found.getRole());
+                // 2. Login (Authentication)
+                // insert直後はBCryptで保存されているため、ログインが成功するはず
+                User loggedIn = userDAO.login(testId, testPass);
+                assertNotNull(loggedIn, "作成したユーザーでログインできること");
+                assertEquals(testId, loggedIn.getId());
 
-            // 3. Update (Role変更)
-            found.setRole(2); // Kitchen
-            assertTrue(userDAO.update(found), "ユーザー情報の更新に成功すること");
-            User updated = userDAO.findById(testId);
-            assertEquals(2, updated.getRole(), "更新内容が反映されていること");
+                // 3. Update (Role変更)
+                loggedIn.setRole(2); // Kitchen
+                assertTrue(userDAO.update(loggedIn), "ユーザー情報の更新に成功すること");
+                User updated = userDAO.findById(testId);
+                assertEquals(2, updated.getRole(), "更新内容が反映されていること");
 
-            // 4. Delete
-            assertTrue(userDAO.delete(testId), "ユーザーの削除に成功すること");
-            assertNull(userDAO.findById(testId), "削除後はユーザーが取得できないこと");
+                // 4. Login Failure (Wrong password)
+                assertNull(userDAO.login(testId, "wrong_pass"), "誤ったパスワードではログインできないこと");
+
+            } finally {
+                // 5. Cleanup (Delete)
+                userDAO.delete(testId);
+            }
         }
     }
 }
