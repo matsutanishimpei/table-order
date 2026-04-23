@@ -1,4 +1,4 @@
-name: Java CI (Plain Project)
+name: Java CI with Maven
 
 on:
   push:
@@ -10,6 +10,16 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: table_order
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
     - uses: actions/checkout@v4
 
@@ -18,6 +28,20 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: maven
+
+    - name: Setup Database
+      run: |
+        mysql -h 127.0.0.1 -u root -ppassword table_order < src/main/webapp/sql/schema.sql
+        mysql -h 127.0.0.1 -u root -ppassword table_order < src/main/webapp/sql/seed.sql
+
+    - name: Prepare database.properties
+      run: |
+        cp src/main/resources/database.properties.template src/main/resources/database.properties
+        sed -i 's/db.mysql.url=jdbc:mysql:\/\/localhost:3306\/table_order/db.mysql.url=jdbc:mysql:\/\/127.0.0.1:3306\/table_order/g' src/main/resources/database.properties
+        sed -i 's/db.mysql.user=root/db.mysql.user=root/g' src/main/resources/database.properties
+        sed -i 's/db.mysql.pass=your_password/db.mysql.pass=password/g' src/main/resources/database.properties
+        sed -i 's/app.security.pepper=your_random_pepper/app.security.pepper=test_pepper/g' src/main/resources/database.properties
 
     - name: Build and Test with Maven
       run: mvn clean test
