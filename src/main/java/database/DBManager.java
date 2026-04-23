@@ -1,18 +1,22 @@
 package database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * データベース接続を管理するクラスです。
  */
 public class DBManager {
-    private static String url;
-    private static String user;
-    private static String pass;
+    private static final Logger logger = Logger.getLogger(DBManager.class.getName());
+    
+    private static HikariDataSource dataSource;
     private static String pepper;
 
     static {
@@ -24,34 +28,46 @@ public class DBManager {
             Properties props = new Properties();
             props.load(is);
 
+            HikariConfig config = new HikariConfig();
+            
             boolean isOracle = Boolean.parseBoolean(props.getProperty("db.is_oracle", "false"));
             if (isOracle) {
-                url = props.getProperty("db.oracle.url");
-                user = props.getProperty("db.oracle.user");
-                pass = props.getProperty("db.oracle.pass");
-                Class.forName(props.getProperty("db.oracle.driver", "oracle.jdbc.OracleDriver"));
+                config.setJdbcUrl(props.getProperty("db.oracle.url"));
+                config.setUsername(props.getProperty("db.oracle.user"));
+                config.setPassword(props.getProperty("db.oracle.pass"));
+                config.setDriverClassName(props.getProperty("db.oracle.driver", "oracle.jdbc.OracleDriver"));
             } else {
-                url = props.getProperty("db.mysql.url");
-                user = props.getProperty("db.mysql.user");
-                pass = props.getProperty("db.mysql.pass");
-                Class.forName(props.getProperty("db.mysql.driver", "com.mysql.cj.jdbc.Driver"));
+                config.setJdbcUrl(props.getProperty("db.mysql.url"));
+                config.setUsername(props.getProperty("db.mysql.user"));
+                config.setPassword(props.getProperty("db.mysql.pass"));
+                config.setDriverClassName(props.getProperty("db.mysql.driver", "com.mysql.cj.jdbc.Driver"));
             }
+            
+            // プーリングの詳細設定
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(2);
+            config.setConnectionTimeout(30000); // 30秒
+            config.setIdleTimeout(600000);      // 10分
+            config.setMaxLifetime(1800000);     // 30分
+            
+            dataSource = new HikariDataSource(config);
             
             pepper = props.getProperty("app.security.pepper");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "DBManagerの初期化に失敗しました", e);
             throw new RuntimeException("DBManagerの初期化に失敗しました: " + e.getMessage(), e);
         }
     }
 
     /**
      * データベースへの接続を取得します。
+     * プールからコネクションを払い出します。
      * @return Connectionオブジェクト
      * @throws SQLException 接続失敗時
      */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, pass);
+        return dataSource.getConnection();
     }
 
     /**
@@ -71,7 +87,7 @@ public class DBManager {
             try {
                 con.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "コネクションのクローズ中にエラーが発生しました", e);
             }
         }
     }

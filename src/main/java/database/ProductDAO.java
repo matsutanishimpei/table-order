@@ -6,7 +6,7 @@ import model.Product;
 /**
  * 商品情報のデータベース操作を行うDAOインターフェースです。
  */
-public interface ProductDAO extends BaseDAO<model.Product> {
+public interface ProductDAO {
     /**
      * 指定されたカテゴリの販売中の商品を取得します。
      * @param categoryId カテゴリID
@@ -25,7 +25,6 @@ public interface ProductDAO extends BaseDAO<model.Product> {
      * 全ての商品を取得します。
      * @return 商品リスト
      */
-    @Override
     List<Product> findAll();
 
     /**

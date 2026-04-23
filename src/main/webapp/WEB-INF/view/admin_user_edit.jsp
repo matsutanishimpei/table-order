@@ -69,16 +69,16 @@
                         <label for="role" class="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 italic">Functional Role</label>
                         <select id="role" name="role" onchange="toggleTableSelect()"
                                 class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all appearance-none cursor-pointer">
-                            <option value="1" ${targetUser.role == 1 ? 'selected' : ''}>Administrator (管理者)</option>
-                            <option value="2" ${targetUser.role == 2 ? 'selected' : ''}>Kitchen (キッチン)</option>
-                            <option value="3" ${targetUser.role == 3 ? 'selected' : ''}>Hall (ホール)</option>
-                            <option value="4" ${targetUser.role == 4 ? 'selected' : ''}>Cashier (レジ)</option>
-                            <option value="10" ${targetUser.role == 10 ? 'selected' : ''}>Table Terminal (テーブル端末)</option>
+                            <option value="1" ${targetUser.admin ? 'selected' : ''}>Administrator (管理者)</option>
+                            <option value="2" ${targetUser.kitchen ? 'selected' : ''}>Kitchen (キッチン)</option>
+                            <option value="3" ${targetUser.hall ? 'selected' : ''}>Hall (ホール)</option>
+                            <option value="4" ${targetUser.cashier ? 'selected' : ''}>Cashier (レジ)</option>
+                            <option value="10" ${targetUser.tableTerminal ? 'selected' : ''}>Table Terminal (テーブル端末)</option>
                         </select>
                     </div>
 
                     <!-- テーブル割り当て -->
-                    <div id="table-select-container" class="space-y-4 ${targetUser.role == 10 ? '' : 'opacity-20 pointer-events-none transition-all duration-500'}">
+                    <div id="table-select-container" class="space-y-4 ${targetUser.tableTerminal ? '' : 'opacity-20 pointer-events-none transition-all duration-500'}">
                         <label for="tableId" class="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1 italic">Terminal Assignment</label>
                         <select id="tableId" name="tableId"
                                 class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all appearance-none cursor-pointer">

@@ -125,31 +125,9 @@ public class TableDAOImpl implements TableDAO {
                     view.setTableName(rs.getString("table_name"));
                     
                     int itemCount = rs.getInt("item_count");
-                    if (itemCount == 0) {
-                        view.setStatusLabel("空席");
-                        view.setStatusCode("0"); 
-                    } else {
-                        Object minStatusObj = rs.getObject("min_status");
-                        if (minStatusObj == null) {
-                            view.setStatusLabel("空席");
-                            view.setStatusCode("0");
-                        } else {
-                            int minStatus = (Integer)minStatusObj;
-                            if (minStatus == OrderConstants.STATUS_ORDERED) {
-                                view.setStatusLabel("調理待ち");
-                                view.setStatusCode("10");
-                            } else if (minStatus == OrderConstants.STATUS_COOKING_DONE) {
-                                view.setStatusLabel("配膳待ち");
-                                view.setStatusCode("20");
-                            } else if (minStatus == OrderConstants.STATUS_SERVED) {
-                                view.setStatusLabel("食事中");
-                                view.setStatusCode("30");
-                            } else {
-                                view.setStatusLabel("空席");
-                                view.setStatusCode("0");
-                            }
-                        }
-                    }
+                    Object minStatusObj = rs.getObject("min_status");
+                    int minStatus = (minStatusObj == null || itemCount == 0) ? 0 : (Integer) minStatusObj;
+                    view.setStatusCode(String.valueOf(minStatus));
                     
                     view.setOrderCount(itemCount);
                     view.setTotalAmount(rs.getInt("total_amt"));

@@ -13,20 +13,34 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.logging.Logger;
 import model.User;
+import util.CsrfUtil;
 
 /**
  * ログイン処理を制御するサーブレットクラスです。
  */
 @WebServlet("/Login")
-public class Login extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(Login.class.getName());
-    private final UserService userService = new UserServiceImpl();
+    private static final Logger logger = Logger.getLogger(LoginServlet.class.getName());
+    private final UserService userService;
+
+    public LoginServlet() {
+        this(new UserServiceImpl());
+    }
+
+    public LoginServlet(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * ログイン画面を表示します。
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // ログイン画面用の CSRF トークンを生成してセッションにセット
+        HttpSession session = request.getSession();
+        String token = CsrfUtil.generateToken();
+        session.setAttribute("csrf_token", token);
+
         request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
     }
 
@@ -34,6 +48,15 @@ public class Login extends HttpServlet {
      * ログイン認証を実行します。
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // CSRF トークンの検証（AuthFilter 対象外のため自前で実施）
+        HttpSession session = request.getSession(false);
+        String sessionToken = (session != null) ? (String) session.getAttribute("csrf_token") : null;
+        String requestToken = request.getParameter("csrf_token");
+        if (!CsrfUtil.validateToken(requestToken, sessionToken)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "不正なリクエストです（CSRFトークンエラー）。");
+            return;
+        }
+
         // パラメータ取得
         String id = request.getParameter("id");
         String pw = request.getParameter("pw");
@@ -45,7 +68,7 @@ public class Login extends HttpServlet {
             request.changeSessionId();
             
             // セッションにユーザー情報を保存してリダイレクト
-            HttpSession session = request.getSession();
+            session = request.getSession();
             session.setAttribute("user", user);
             
             if (user.isAdmin()) {

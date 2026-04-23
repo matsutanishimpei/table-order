@@ -21,6 +21,7 @@ import model.Product;
  */
 @WebServlet("/Admin/Product")
 public class ProductAdminServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final ProductService productService;
     private final CategoryService categoryService;
 

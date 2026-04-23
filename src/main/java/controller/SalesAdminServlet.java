@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet("/Admin/Sales")
 public class SalesAdminServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final SalesService salesService;
 
     public SalesAdminServlet() {

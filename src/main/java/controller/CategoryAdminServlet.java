@@ -18,6 +18,7 @@ import model.Category;
  */
 @WebServlet("/Admin/Category")
 public class CategoryAdminServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final CategoryService categoryService;
 
     public CategoryAdminServlet() {

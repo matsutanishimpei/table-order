@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.logging.Logger;
 import model.CartItem;
 import model.Product;
 
@@ -21,6 +22,8 @@ import model.Product;
  */
 @WebServlet("/Cart")
 public class CartServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(CartServlet.class.getName());
     private final ProductService productService;
 
     public CartServlet() {
@@ -59,8 +62,7 @@ public class CartServlet extends HttpServlet {
                 }
 
                 if (!found) {
-                    ProductService service = productService;
-                    Product p = service.findById(productId);
+                    Product p = productService.findById(productId);
                     if (p != null) {
                         CartItem newItem = new CartItem();
                         newItem.setProductId(p.getId());
@@ -71,7 +73,7 @@ public class CartServlet extends HttpServlet {
                     }
                 }
             } catch (NumberFormatException e) {
-                // 不正な値が送られた場合は何もしない（またはエラーログ）
+                logger.warning("不正な入力値が送信されました: " + e.getMessage());
             }
         } else if ("clear".equals(action)) {
             cart.clear();

@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import service.TableService;
 import service.impl.TableServiceImpl;
@@ -19,14 +18,15 @@ import model.User;
  * 座席ごとの注文履歴を表示するサーブレットです。
  */
 @WebServlet("/OrderHistory")
-public class OrderHistory extends HttpServlet {
+public class OrderHistoryServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final TableService tableService;
 
-    public OrderHistory() {
+    public OrderHistoryServlet() {
         this(new TableServiceImpl());
     }
 
-    public OrderHistory(TableService tableService) {
+    public OrderHistoryServlet(TableService tableService) {
         this.tableService = tableService;
     }
 

@@ -12,7 +12,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import model.Category;
 import model.Product;
 
@@ -20,27 +19,21 @@ import model.Product;
  * メニュー画面を表示するサーブレットクラスです。
  */
 @WebServlet("/Menu")
-public class Menu extends HttpServlet {
+public class MenuServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final CategoryService categoryService;
     private final ProductService productService;
 
-    public Menu() {
+    public MenuServlet() {
         this(new CategoryServiceImpl(), new ProductServiceImpl());
     }
 
-    public Menu(CategoryService categoryService, ProductService productService) {
+    public MenuServlet(CategoryService categoryService, ProductService productService) {
         this.categoryService = categoryService;
         this.productService = productService;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // セッションの確認（ログインしていない場合はログイン画面に弾く）
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("Login");
-            return;
-        }
-
         // カテゴリ一覧の取得
         List<Category> categories = categoryService.findAll();
         request.setAttribute("categories", categories);

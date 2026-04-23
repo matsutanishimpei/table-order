@@ -6,12 +6,11 @@ import model.Category;
 /**
  * カテゴリ情報のデータベース操作を行うDAOインターフェースです。
  */
-public interface CategoryDAO extends BaseDAO<model.Category> {
+public interface CategoryDAO {
     /**
      * 全てのカテゴリを取得します。
      * @return カテゴリのリスト
      */
-    @Override
     List<model.Category> findAll();
 
     /**

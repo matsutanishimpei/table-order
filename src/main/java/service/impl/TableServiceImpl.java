@@ -4,6 +4,7 @@ import java.util.List;
 
 import database.TableDAO;
 import database.impl.TableDAOImpl;
+import model.OrderConstants;
 import model.TableOrderSummary;
 import model.TableStatusView;
 import service.TableService;
@@ -36,6 +37,35 @@ public class TableServiceImpl implements TableService {
 
     @Override
     public List<TableStatusView> findAllTableStatus() {
-        return tableDAO.findAllTableStatus();
+        List<TableStatusView> list = tableDAO.findAllTableStatus();
+        // DAO は生のステータスコードのみ返すため、Service 層で表示用ラベルに変換する
+        for (TableStatusView view : list) {
+            view.setStatusLabel(resolveStatusLabel(view.getStatusCode()));
+        }
+        return list;
+    }
+
+    /**
+     * ステータスコードから表示用ラベルを返します。
+     */
+    private String resolveStatusLabel(String statusCode) {
+        if (statusCode == null) {
+            return "空席";
+        }
+        int code;
+        try {
+            code = Integer.parseInt(statusCode);
+        } catch (NumberFormatException e) {
+            return "空席";
+        }
+
+        if (code == OrderConstants.STATUS_ORDERED) {
+            return "調理待ち";
+        } else if (code == OrderConstants.STATUS_COOKING_DONE) {
+            return "配膳待ち";
+        } else if (code == OrderConstants.STATUS_SERVED) {
+            return "食事中";
+        }
+        return "空席";
     }
 }

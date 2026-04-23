@@ -18,6 +18,7 @@ import model.OrderItemView;
  */
 @WebServlet("/Kitchen/Home")
 public class KitchenServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final OrderService orderService;
 
     public KitchenServlet() {
@@ -29,7 +30,7 @@ public class KitchenServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<model.OrderItemView> orders = orderService.findActiveOrderItems();
+        List<OrderItemView> orders = orderService.findActiveOrderItems();
         request.setAttribute("activeItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/kitchen.jsp").forward(request, response);
     }

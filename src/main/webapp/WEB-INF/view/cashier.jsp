@@ -67,7 +67,7 @@
                         </div>
 
                         <footer>
-                            <form action="Home" method="post" onsubmit="return confirmCheckout(${entry.unservedCount});">
+                            <form action="Home" method="post" data-unserved="${entry.unservedCount}" onsubmit="return confirmCheckout(this);">
                                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                                 <input type="hidden" name="action" value="checkout">
                                 <input type="hidden" name="tableId" value="${entry.tableId}">
@@ -90,7 +90,8 @@
     </div>
 
     <script>
-        function confirmCheckout(unservedCount) {
+        function confirmCheckout(form) {
+            var unservedCount = parseInt(form.getAttribute('data-unserved') || '0', 10);
             if (unservedCount > 0) {
                 return confirm('未提供の商品が ' + unservedCount + ' 点含まれていますが、強制的に会計を完了してよろしいですか？\n（これらの商品はキッチン・配膳の指示一覧から消去されます）');
             }

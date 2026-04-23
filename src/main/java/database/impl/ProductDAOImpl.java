@@ -2,7 +2,6 @@ package database.impl;
 
 import database.DBManager;
 import database.ProductDAO;
-import database.BaseDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

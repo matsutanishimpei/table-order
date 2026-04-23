@@ -53,6 +53,10 @@ public class AuthFilter implements Filter {
                 res.sendError(HttpServletResponse.SC_BAD_REQUEST, "不正なリクエストです（CSRFトークンエラー）。");
                 return;
             }
+            
+            // トークンをローテーション（使用済みトークンを無効化）
+            String newToken = CsrfUtil.generateToken();
+            session.setAttribute("csrf_token", newToken);
         }
 
         // 3. 権限（認可）チェック

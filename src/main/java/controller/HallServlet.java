@@ -18,6 +18,7 @@ import model.OrderItemView;
  */
 @WebServlet("/Hall/Home")
 public class HallServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final OrderService orderService;
 
     public HallServlet() {
@@ -29,7 +30,7 @@ public class HallServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<model.OrderItemView> orders = orderService.findReadyOrderItems();
+        List<OrderItemView> orders = orderService.findReadyOrderItems();
         request.setAttribute("readyItems", orders);
         request.getRequestDispatcher("/WEB-INF/view/hall.jsp").forward(request, response);
     }

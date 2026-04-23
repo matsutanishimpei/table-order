@@ -1,7 +1,6 @@
 package database.impl;
 
 import database.CategoryDAO;
-import database.BaseDAO;
 import database.DBManager;
 
 import java.sql.Connection;

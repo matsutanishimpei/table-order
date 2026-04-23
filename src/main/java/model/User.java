@@ -23,7 +23,7 @@ public class User implements Serializable {
      * @return 管理者の場合は true
      */
     public boolean isAdmin() {
-        return role == 1;
+        return role == UserConstants.ROLE_ADMIN;
     }
 
     /**
@@ -31,7 +31,7 @@ public class User implements Serializable {
      * @return キッチンの場合は true
      */
     public boolean isKitchen() {
-        return role == 2;
+        return role == UserConstants.ROLE_KITCHEN;
     }
 
     /**
@@ -39,7 +39,7 @@ public class User implements Serializable {
      * @return ホールの場合は true
      */
     public boolean isHall() {
-        return role == 3;
+        return role == UserConstants.ROLE_HALL;
     }
 
     /**
@@ -47,6 +47,14 @@ public class User implements Serializable {
      * @return 会計の場合は true
      */
     public boolean isCashier() {
-        return role == 4;
+        return role == UserConstants.ROLE_CASHIER;
+    }
+
+    /**
+     * テーブル端末権限を持っているか判定します。
+     * @return テーブル端末の場合は true
+     */
+    public boolean isTableTerminal() {
+        return role == UserConstants.ROLE_TABLE_TERMINAL;
     }
 }

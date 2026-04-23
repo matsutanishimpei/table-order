@@ -2,6 +2,7 @@ package service;
 
 import java.util.List;
 import model.CartItem;
+import model.OrderItemView;
 
 /**
  * 注文業務のビジネスロジックを定義するインターフェースです。
@@ -28,13 +29,13 @@ public interface OrderService {
      * キッチン用のアクティブな注文明細を取得します。
      * @return 注文明細リスト
      */
-    java.util.List<model.OrderItemView> findActiveOrderItems();
+    List<OrderItemView> findActiveOrderItems();
 
     /**
      * 配膳待ちの明細を取得します。
      * @return 注文明細リスト
      */
-    java.util.List<model.OrderItemView> findReadyOrderItems();
+    List<OrderItemView> findReadyOrderItems();
 
     /**
      * 注文明細のステータスを更新します。

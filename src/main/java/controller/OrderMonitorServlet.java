@@ -18,6 +18,7 @@ import model.TableStatusView;
  */
 @WebServlet("/Admin/Monitor")
 public class OrderMonitorServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final TableService tableService;
 
     public OrderMonitorServlet() {

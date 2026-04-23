@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * カート内の1商品を表すモデルクラスです。
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class CartItem implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -21,6 +21,7 @@ import model.TableStatusView;
  */
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final UserService userService;
     private final TableService tableService;
 
@@ -60,8 +61,6 @@ public class UserAdminServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        
         String action = request.getParameter("action");
         String id = request.getParameter("id");
         String password = request.getParameter("password");

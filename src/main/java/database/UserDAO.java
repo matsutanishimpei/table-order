@@ -6,12 +6,11 @@ import model.User;
 /**
  * ユーザー情報のデータベース操作を行うDAOインターフェースです。
  */
-public interface UserDAO extends BaseDAO<User> {
+public interface UserDAO {
     /**
      * 全てのユーザーを取得します。
      * @return ユーザーリスト
      */
-    @Override
     List<User> findAll();
 
     /**

@@ -16,14 +16,15 @@ import model.Product;
  * 商品詳細画面を制御するサーブレットです。
  */
 @WebServlet("/ProductDetail")
-public class ProductDetail extends HttpServlet {
+public class ProductDetailServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final ProductService productService;
 
-    public ProductDetail() {
+    public ProductDetailServlet() {
         this(new ProductServiceImpl());
     }
 
-    public ProductDetail(ProductService productService) {
+    public ProductDetailServlet(ProductService productService) {
         this.productService = productService;
     }
 
