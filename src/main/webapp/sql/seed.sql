@@ -1,4 +1,5 @@
 SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- ユーザーデータの初期投入 (role: 1:管理者, 2:キッチン, 3:ホール, 4:会計, 10:テーブル)
 -- 全初期ユーザーのパスワードは 'pass' に設定されています
@@ -33,3 +34,5 @@ INSERT INTO shop_tables (table_name) VALUES ('A-1');
 INSERT INTO shop_tables (table_name) VALUES ('A-2');
 INSERT INTO shop_tables (table_name) VALUES ('B-1');
 INSERT INTO shop_tables (table_name) VALUES ('B-2');
+
+SET FOREIGN_KEY_CHECKS = 1;
