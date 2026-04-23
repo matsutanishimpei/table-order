@@ -37,11 +37,14 @@ jobs:
 
     - name: Prepare database.properties
       run: |
-        cp src/main/resources/database.properties.template src/main/resources/database.properties
-        # テンプレート内のプレースホルダを正確に置換
-        sed -i 's|db.mysql.url=jdbc:mysql://localhost:3306/table_order_db?useSSL=false&serverTimezone=UTC|db.mysql.url=jdbc:mysql://127.0.0.1:3306/table_order?useSSL=false\&serverTimezone=UTC|' src/main/resources/database.properties
-        sed -i 's/db.mysql.pass=YOUR_MYSQL_PASSWORD_HERE/db.mysql.pass=password/' src/main/resources/database.properties
-        sed -i 's/app.security.pepper=YOUR_SECRET_PEPPER_HERE/app.security.pepper=test_pepper/' src/main/resources/database.properties
+        cat <<EOF > src/main/resources/database.properties
+        db.is_oracle=false
+        db.mysql.driver=com.mysql.cj.jdbc.Driver
+        db.mysql.url=jdbc:mysql://127.0.0.1:3306/table_order?useSSL=false&serverTimezone=UTC
+        db.mysql.user=root
+        db.mysql.pass=password
+        app.security.pepper=test_pepper
+        EOF
 
     - name: Build and Test with Maven
       run: mvn clean test
