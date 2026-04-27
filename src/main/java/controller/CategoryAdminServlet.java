@@ -51,31 +51,50 @@ public class CategoryAdminServlet extends BaseServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String name = request.getParameter("name");
-        
+        int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
+
+        // バリデーション
+        util.ValidationResult vr = util.ValidationUtil.validateRequired(name, "カテゴリ名");
+        if (vr.isInvalid()) {
+            handleError(request, response, vr.getMessage(), id, name, action);
+            return;
+        }
+
         if ("update".equals(action)) {
-            int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
-            if (id > 0 && name != null && !name.trim().isEmpty()) {
-                Category c = new Category();
-                c.setId(id);
-                c.setName(name.trim());
-                if (categoryService.update(c)) {
-                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
-                    return;
-                }
+            if (id <= 0) {
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
+                return;
             }
-            response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?action=edit&id=" + request.getParameter("id") + "&msg=error");
+            Category c = new Category();
+            c.setId(id);
+            c.setName(name.trim());
+            if (categoryService.update(c)) {
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
+            } else {
+                handleError(request, response, "更新に失敗しました。", id, name, action);
+            }
         } else {
             // 新規追加
-            if (name != null && !name.trim().isEmpty()) {
-                boolean success = categoryService.insert(name.trim());
-                if (success) {
-                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
-                } else {
-                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=error");
-                }
+            if (categoryService.insert(name.trim())) {
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
             } else {
-                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
+                handleError(request, response, "追加に失敗しました。", -1, name, action);
             }
+        }
+    }
+
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String message, int id, String name, String action) throws ServletException, IOException {
+        request.setAttribute(AppConstants.ATTR_ERROR, message);
+        if ("update".equals(action) && id > 0) {
+            Category c = new Category();
+            c.setId(id);
+            c.setName(name);
+            request.setAttribute(AppConstants.ATTR_CATEGORY, c);
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORY_EDIT).forward(request, response);
+        } else {
+            List<Category> list = categoryService.findAll();
+            request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, list);
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORIES).forward(request, response);
         }
     }
 }

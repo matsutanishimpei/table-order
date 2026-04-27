@@ -22,6 +22,8 @@ import util.CloudinaryUtil;
 import util.ImageStorageProvider;
 import util.ValidationUtil;
 
+import util.ValidationResult;
+
 /**
  * 管理者用の商品管理を制御するサーブレットです。
  */
@@ -94,36 +96,42 @@ public class ProductAdminServlet extends BaseServlet {
 
         // 基本情報の更新
         p.setName(request.getParameter("name"));
-        p.setCategoryId(ValidationUtil.parseIntSafe(request.getParameter("categoryId"), p.getCategoryId()));
-        p.setPrice(ValidationUtil.parseIntSafe(request.getParameter("price"), p.getPrice()));
+        p.setCategoryId(ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0));
+        p.setPrice(ValidationUtil.parseIntSafe(request.getParameter("price"), 0));
         p.setDescription(request.getParameter("description"));
         p.setAllergyInfo(request.getParameter("allergyInfo"));
         p.setAvailable(request.getParameter("isAvailable") != null);
 
-        // 画像のアップロード処理 (バリデーション、エラーハンドリング、旧画像削除付き)
+        // バリデーション実行
+        ValidationResult vr = validateProduct(p, request.getPart("imageFile"), !isUpdate);
+        if (vr.isInvalid()) {
+            request.setAttribute(AppConstants.ATTR_ERROR, vr.getMessage());
+            request.setAttribute(AppConstants.ATTR_PRODUCT, p);
+            request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
+            return;
+        }
+
+        // 画像のアップロード処理
         Part filePart = request.getPart("imageFile");
         if (filePart != null && filePart.getSize() > 0) {
-            if (ValidationUtil.isValidImage(filePart)) {
-                // アップロード前に古い識別子を保持
-                String oldImageId = p.getImagePath();
+            // アップロード前に古い識別子を保持
+            String oldImageId = p.getImagePath();
+            
+            // ImageStorageProviderを使用してアップロード
+            String imageId = imageStorageProvider.upload(filePart);
+            if (imageId != null) {
+                p.setImagePath(imageId);
                 
-                // ImageStorageProviderを使用してアップロード
-                String imageId = imageStorageProvider.upload(filePart);
-                if (imageId != null) {
-                    p.setImagePath(imageId);
-                    
-                    // 新しい画像のアップロードに成功した場合、古い画像を削除（孤立防止）
-                    if (oldImageId != null && !oldImageId.isEmpty()) {
-                        imageStorageProvider.delete(oldImageId);
-                    }
-                } else {
-                    // アップロード失敗時
-                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=edit&id=" + id + "&msg=upload_failed");
-                    return;
+                // 新しい画像のアップロードに成功した場合、古い画像を削除
+                if (oldImageId != null && !oldImageId.isEmpty()) {
+                    imageStorageProvider.delete(oldImageId);
                 }
             } else {
-                // 不正な形式の場合
-                response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=edit&id=" + id + "&msg=invalid_format");
+                request.setAttribute(AppConstants.ATTR_ERROR, "画像のアップロードに失敗しました。");
+                request.setAttribute(AppConstants.ATTR_PRODUCT, p);
+                request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
+                request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
                 return;
             }
         }
@@ -138,8 +146,33 @@ public class ProductAdminServlet extends BaseServlet {
         if (success) {
             response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?msg=success");
         } else {
-            String redirectUrl = AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=" + (isUpdate ? "edit" : "add") + (isUpdate ? "&id=" + id : "") + "&msg=error";
-            response.sendRedirect(redirectUrl);
+            request.setAttribute(AppConstants.ATTR_ERROR, "データベースの更新に失敗しました。");
+            request.setAttribute(AppConstants.ATTR_PRODUCT, p);
+            request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
         }
+    }
+
+    private ValidationResult validateProduct(Product p, Part filePart, boolean imageRequired) {
+        ValidationResult res = ValidationUtil.validateRequired(p.getName(), "商品名");
+        if (res.isInvalid()) return res;
+
+        res = ValidationUtil.validateMaxLength(p.getName(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
+        if (res.isInvalid()) return res;
+
+        res = ValidationUtil.validatePositive(p.getCategoryId(), "カテゴリ");
+        if (res.isInvalid()) return res;
+
+        res = ValidationUtil.validatePositive(p.getPrice(), "価格");
+        if (res.isInvalid()) return res;
+
+        if (filePart != null && filePart.getSize() > 0) {
+            res = ValidationUtil.validateImage(filePart);
+            if (res.isInvalid()) return res;
+        } else if (imageRequired) {
+            return ValidationResult.failure("画像は必須です。");
+        }
+
+        return ValidationResult.success();
     }
 }

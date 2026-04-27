@@ -62,6 +62,18 @@ public class LoginServlet extends BaseServlet {
         String id = request.getParameter("id");
         String pw = request.getParameter("pw");
 
+        // バリデーション
+        util.ValidationResult vr = util.ValidationUtil.validateRequired(id, "ユーザーID");
+        if (vr.isValid()) {
+            vr = util.ValidationUtil.validateRequired(pw, "パスワード");
+        }
+
+        if (vr.isInvalid()) {
+            request.setAttribute(AppConstants.ATTR_ERROR, vr.getMessage());
+            request.getRequestDispatcher(AppConstants.VIEW_LOGIN).forward(request, response);
+            return;
+        }
+
         Optional<User> userOpt = userService.login(id, pw);
 
         if (userOpt.isPresent()) {
