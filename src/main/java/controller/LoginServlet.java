@@ -20,7 +20,7 @@ import util.CsrfUtil;
  * ログイン処理を制御するサーブレットクラスです。
  */
 @WebServlet("/Login")
-public class LoginServlet extends HttpServlet {
+public class LoginServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(LoginServlet.class.getName());
     private final UserService userService;

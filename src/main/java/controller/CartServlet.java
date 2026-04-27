@@ -20,7 +20,7 @@ import model.CartItem;
  * カート操作（追加・削除・表示）を制御するサーブレットです。
  */
 @WebServlet("/Cart")
-public class CartServlet extends HttpServlet {
+public class CartServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final ProductService productService;
 

@@ -31,7 +31,7 @@ import util.ValidationUtil;
     maxFileSize = 1024 * 1024 * 10,      // 10MB
     maxRequestSize = 1024 * 1024 * 15   // 15MB
 )
-public class ProductAdminServlet extends HttpServlet {
+public class ProductAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final ProductService productService;
     private final CategoryService categoryService;

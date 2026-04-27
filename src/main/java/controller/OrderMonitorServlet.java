@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * 全テーブルの状態を一覧表示するモニター用サーブレットです。
  */
 @WebServlet("/Admin/Monitor")
-public class OrderMonitorServlet extends HttpServlet {
+public class OrderMonitorServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final TableService tableService;
 

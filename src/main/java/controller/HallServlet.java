@@ -17,7 +17,7 @@ import model.OrderItemView;
  * 配膳（ホール）モニター画面を制御するサーブレットです。
  */
 @WebServlet("/Hall/Home")
-public class HallServlet extends HttpServlet {
+public class HallServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final OrderService orderService;
 

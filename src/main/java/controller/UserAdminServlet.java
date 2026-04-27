@@ -19,7 +19,7 @@ import model.User;
  * 管理者用のユーザー管理（一覧・追加・更新・削除）を制御するサーブレットです。
  */
 @WebServlet("/Admin/User")
-public class UserAdminServlet extends HttpServlet {
+public class UserAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final UserService userService;
     private final TableService tableService;

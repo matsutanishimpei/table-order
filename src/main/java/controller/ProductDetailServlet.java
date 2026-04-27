@@ -17,7 +17,7 @@ import model.Product;
  * 商品詳細画面を制御するサーブレットです。
  */
 @WebServlet("/ProductDetail")
-public class ProductDetailServlet extends HttpServlet {
+public class ProductDetailServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final ProductService productService;
 

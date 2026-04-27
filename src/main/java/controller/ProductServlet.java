@@ -16,7 +16,7 @@ import util.ValidationUtil;
  * 商品詳細画面を表示するサーブレットクラスです。
  */
 @WebServlet("/Product")
-public class ProductServlet extends HttpServlet {
+public class ProductServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final ProductService productService;
 

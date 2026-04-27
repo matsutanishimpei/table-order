@@ -19,7 +19,7 @@ import model.User;
  * 座席ごとの注文履歴を表示するサーブレットです。
  */
 @WebServlet("/OrderHistory")
-public class OrderHistoryServlet extends HttpServlet {
+public class OrderHistoryServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final TableService tableService;
 

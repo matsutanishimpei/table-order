@@ -18,7 +18,7 @@ import model.Category;
  * 管理者用のカテゴリ管理を制御するサーブレットです。
  */
 @WebServlet("/Admin/Category")
-public class CategoryAdminServlet extends HttpServlet {
+public class CategoryAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final CategoryService categoryService;
 

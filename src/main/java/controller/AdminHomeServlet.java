@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * 管理者のホーム画面を表示するサーブレットです。
  */
 @WebServlet("/Admin/Home")
-public class AdminHomeServlet extends HttpServlet {
+public class AdminHomeServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

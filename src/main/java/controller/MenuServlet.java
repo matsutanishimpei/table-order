@@ -19,7 +19,7 @@ import model.Product;
  * メニュー画面を表示するサーブレットクラスです。
  */
 @WebServlet("/Menu")
-public class MenuServlet extends HttpServlet {
+public class MenuServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final CategoryService categoryService;
     private final ProductService productService;

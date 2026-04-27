@@ -17,7 +17,7 @@ import model.OrderItemView;
  * キッチンモニター画面を制御するサーブレットです。
  */
 @WebServlet("/Kitchen/Home")
-public class KitchenServlet extends HttpServlet {
+public class KitchenServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final OrderService orderService;
 

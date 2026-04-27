@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
  * ログアウト処理を行うサーブレットです。
  */
 @WebServlet("/Logout")
-public class LogoutServlet extends HttpServlet {
+public class LogoutServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
 
     /**

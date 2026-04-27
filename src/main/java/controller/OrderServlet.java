@@ -19,7 +19,7 @@ import model.User;
  * 注文の確定処理を行うサーブレットです。
  */
 @WebServlet("/Order")
-public class OrderServlet extends HttpServlet {
+public class OrderServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final OrderService orderService;
 

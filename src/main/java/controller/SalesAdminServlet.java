@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * 管理者用の売上管理画面を制御するサーブレットです。
  */
 @WebServlet("/Admin/Sales")
-public class SalesAdminServlet extends HttpServlet {
+public class SalesAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final SalesService salesService;
 

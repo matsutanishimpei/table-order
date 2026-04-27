@@ -20,7 +20,7 @@ import service.impl.TableServiceImpl;
  * 会計（レジ）用の管理サーブレットです。
  */
 @WebServlet("/Cashier/Home")
-public class CashierServlet extends HttpServlet {
+public class CashierServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
     private final OrderService orderService;
     private final TableService tableService;
