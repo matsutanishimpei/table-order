@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ page import="util.CloudinaryUtil" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -17,9 +18,19 @@
 
         <main class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
             <!-- 商品画像セクション -->
-            <section class="premium-card aspect-square bg-white flex items-center justify-center text-8xl shadow-2xl relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <span class="relative z-10">🍲</span>
+            <section class="relative aspect-square rounded-[3rem] overflow-hidden bg-white shadow-2xl shadow-slate-200 group">
+                <c:choose>
+                    <c:when test="${not empty product.imagePath}">
+                        <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)request.getAttribute("product")).getImagePath(), 800, 600) %>" 
+                             alt="${product.name}" class="w-full h-full object-cover relative z-10" loading="lazy">
+                    </c:when>
+                    <c:otherwise>
+                        <div class="absolute inset-0 flex items-center justify-center text-8xl bg-slate-50">
+                            <span class="grayscale opacity-20">🍲</span>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+                
                 <c:if test="${!product.available}">
                     <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-20">
                         <span class="text-xl font-black text-white border-2 border-white/20 px-10 py-4 rounded-full tracking-widest">売り切れ</span>

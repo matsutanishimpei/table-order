@@ -36,7 +36,7 @@ public class MenuServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // カテゴリ一覧の取得
         List<Category> categories = categoryService.findAll();
-        request.setAttribute("categories", categories);
+        request.setAttribute("categoryList", categories);
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
         int categoryId = util.ValidationUtil.parseIntSafe(request.getParameter("categoryId"),
@@ -44,7 +44,7 @@ public class MenuServlet extends HttpServlet {
         
         // 当該カテゴリの商品一覧を取得
         List<Product> products = productService.findByCategory(categoryId);
-        request.setAttribute("products", products);
+        request.setAttribute("productList", products);
         request.setAttribute("selectedCategoryId", categoryId);
 
         // メニュー画面にフォワード

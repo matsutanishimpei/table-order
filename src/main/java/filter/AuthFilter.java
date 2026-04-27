@@ -18,7 +18,7 @@ import util.CsrfUtil;
 /**
  * 認証・認可およびCSRF対策を行うフィルタークラスです。
  */
-@WebFilter(urlPatterns = {"/Admin/*", "/Kitchen/*", "/Hall/*", "/Cashier/*", "/Order", "/Cart", "/OrderHistory", "/ProductDetail"})
+@WebFilter(urlPatterns = {"/Admin/*", "/Kitchen/*", "/Hall/*", "/Cashier/*", "/Order", "/Cart", "/OrderHistory"})
 public class AuthFilter implements Filter {
 
     public void init(FilterConfig fConfig) throws ServletException {}
