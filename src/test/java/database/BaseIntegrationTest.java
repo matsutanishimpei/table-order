@@ -31,7 +31,7 @@ public abstract class BaseIntegrationTest {
 
         // スキーマの初期化
         JdbcDatabaseDelegate containerDelegate = new JdbcDatabaseDelegate(mysql, "");
-        ScriptUtils.runInitScript(containerDelegate, "/sql/schema.sql");
-        ScriptUtils.runInitScript(containerDelegate, "/sql/seed.sql");
+        ScriptUtils.runInitScript(containerDelegate, "sql/schema.sql");
+        ScriptUtils.runInitScript(containerDelegate, "sql/seed.sql");
     }
 }
