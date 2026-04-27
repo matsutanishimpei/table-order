@@ -50,11 +50,17 @@ public class ProductAdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         
-        if ("edit".equals(action)) {
-            int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
-            Optional<Product> productOpt = productService.findById(id);
-            if (productOpt.isPresent()) {
-                request.setAttribute("product", productOpt.get());
+        if ("edit".equals(action) || "add".equals(action)) {
+            Product product;
+            if ("edit".equals(action)) {
+                int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
+                product = productService.findById(id).orElse(null);
+            } else {
+                product = new Product(); // 新規登録用（ID=0）
+            }
+
+            if (product != null) {
+                request.setAttribute("product", product);
                 request.setAttribute("categoryList", categoryService.findAll());
                 request.getRequestDispatcher("/WEB-INF/view/admin_product_edit.jsp").forward(request, response);
                 return;
@@ -71,19 +77,20 @@ public class ProductAdminServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
-        if (id < 0) {
-            response.sendRedirect("Product");
-            return;
+        int id = ValidationUtil.parseIntSafe(request.getParameter("id"), 0);
+        Product p;
+        boolean isUpdate = (id > 0);
+        
+        if (isUpdate) {
+            Optional<Product> productOpt = productService.findById(id);
+            if (productOpt.isEmpty()) {
+                response.sendRedirect("Product");
+                return;
+            }
+            p = productOpt.get();
+        } else {
+            p = new Product();
         }
-
-        Optional<Product> productOpt = productService.findById(id);
-        if (productOpt.isEmpty()) {
-            response.sendRedirect("Product");
-            return;
-        }
-
-        Product p = productOpt.get();
 
         // 基本情報の更新
         p.setName(request.getParameter("name"));
@@ -121,10 +128,18 @@ public class ProductAdminServlet extends HttpServlet {
             }
         }
 
-        if (productService.update(p)) {
+        boolean success;
+        if (isUpdate) {
+            success = productService.update(p);
+        } else {
+            success = productService.insert(p);
+        }
+
+        if (success) {
             response.sendRedirect("Product?msg=success");
         } else {
-            response.sendRedirect("Product?action=edit&id=" + id + "&msg=error");
+            String redirectUrl = "Product?action=" + (isUpdate ? "edit" : "add") + (isUpdate ? "&id=" + id : "") + "&msg=error";
+            response.sendRedirect(redirectUrl);
         }
     }
 }

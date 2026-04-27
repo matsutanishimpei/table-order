@@ -32,4 +32,14 @@ public class CategoryServiceImpl implements CategoryService {
     public boolean insert(String name) {
         return categoryDAO.insert(name);
     }
+
+    @Override
+    public java.util.Optional<Category> findById(int id) {
+        return categoryDAO.findById(id);
+    }
+
+    @Override
+    public boolean update(Category category) {
+        return categoryDAO.update(category);
+    }
 }

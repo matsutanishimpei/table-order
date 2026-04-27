@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import model.Category;
 
@@ -47,6 +48,39 @@ public class CategoryDAOImpl implements CategoryDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("カテゴリ登録中にエラーが発生しました。name=" + name, e);
+        }
+    }
+
+    @Override
+    public Optional<Category> findById(int id) {
+        String sql = "SELECT id, name FROM categories WHERE id = ?";
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Category c = new Category();
+                    c.setId(rs.getInt("id"));
+                    c.setName(rs.getString("name"));
+                    return Optional.of(c);
+                }
+            }
+        } catch (SQLException e) {
+            throw new exception.DatabaseException("カテゴリ取得中にエラーが発生しました。id=" + id, e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean update(Category category) {
+        String sql = "UPDATE categories SET name = ? WHERE id = ?";
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, category.getName());
+            ps.setInt(2, category.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new exception.DatabaseException("カテゴリ更新中にエラーが発生しました。id=" + category.getId(), e);
         }
     }
 }

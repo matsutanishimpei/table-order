@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import service.CategoryService;
 import service.impl.CategoryServiceImpl;
@@ -30,22 +31,50 @@ public class CategoryAdminServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if ("edit".equals(action)) {
+            int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
+            Optional<Category> categoryOpt = categoryService.findById(id);
+            if (categoryOpt.isPresent()) {
+                request.setAttribute("category", categoryOpt.get());
+                request.getRequestDispatcher("/WEB-INF/view/admin_category_edit.jsp").forward(request, response);
+                return;
+            }
+        }
+        
         List<Category> list = categoryService.findAll();
         request.setAttribute("categoryList", list);
         request.getRequestDispatcher("/WEB-INF/view/admin_categories.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
         String name = request.getParameter("name");
-        if (name != null && !name.trim().isEmpty()) {
-            boolean success = categoryService.insert(name.trim());
-            if (success) {
-                response.sendRedirect("Category?msg=success");
-            } else {
-                response.sendRedirect("Category?msg=error");
+        
+        if ("update".equals(action)) {
+            int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
+            if (id > 0 && name != null && !name.trim().isEmpty()) {
+                Category c = new Category();
+                c.setId(id);
+                c.setName(name.trim());
+                if (categoryService.update(c)) {
+                    response.sendRedirect("Category?msg=success");
+                    return;
+                }
             }
+            response.sendRedirect("Category?action=edit&id=" + request.getParameter("id") + "&msg=error");
         } else {
-            response.sendRedirect("Category");
+            // 新規追加
+            if (name != null && !name.trim().isEmpty()) {
+                boolean success = categoryService.insert(name.trim());
+                if (success) {
+                    response.sendRedirect("Category?msg=success");
+                } else {
+                    response.sendRedirect("Category?msg=error");
+                }
+            } else {
+                response.sendRedirect("Category");
+            }
         }
     }
 }

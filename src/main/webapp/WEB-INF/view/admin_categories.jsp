@@ -84,9 +84,14 @@
                                         </div>
                                     </td>
                                     <td class="px-10 py-8 text-right">
-                                        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic">
-                                            <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> Internal Node
-                                        </span>
+                                        <div class="flex items-center justify-end gap-2">
+                                            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic">
+                                                <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> Internal Node
+                                            </span>
+                                            <a href="Category?action=edit&id=${cat.id}" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
+                                                <span class="text-base">⚙️</span>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>

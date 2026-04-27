@@ -36,8 +36,11 @@
         <main class="premium-card bg-white overflow-hidden shadow-2xl border-none">
             <header class="data-header bg-slate-50/50">
                 <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Registered Products</h2>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-6">
                     <span class="text-[10px] font-black uppercase text-slate-400 border border-slate-200 px-3 py-1 rounded-full">${productList.size()} <span class="opacity-40">Items</span></span>
+                    <a href="Product?action=add" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white text-[10px] font-black rounded-xl hover:bg-emerald-700 transition-all uppercase tracking-widest no-underline shadow-lg shadow-emerald-600/20">
+                        <span>+</span> 新規商品を追加
+                    </a>
                 </div>
             </header>
 

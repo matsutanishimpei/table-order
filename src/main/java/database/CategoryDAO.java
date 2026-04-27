@@ -18,4 +18,18 @@ public interface CategoryDAO {
      * @return 登録成功時は true
      */
     boolean insert(String name);
+    
+    /**
+     * 指定されたIDのカテゴリを取得します。
+     * @param id カテゴリID
+     * @return カテゴリ（存在しない場合は empty）
+     */
+    java.util.Optional<model.Category> findById(int id);
+
+    /**
+     * カテゴリ情報を更新します。
+     * @param category カテゴリ情報
+     * @return 更新成功時は true
+     */
+    boolean update(model.Category category);
 }

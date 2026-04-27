@@ -9,4 +9,6 @@ import model.Category;
 public interface CategoryService {
     List<Category> findAll();
     boolean insert(String name);
+    java.util.Optional<model.Category> findById(int id);
+    boolean update(model.Category category);
 }

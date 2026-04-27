@@ -21,9 +21,9 @@
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Asset Revision Module</span>
             </div>
             <h1 class="text-6xl font-black tracking-tighter text-slate-950 leading-tight">
-                商品の編集<span class="text-emerald-600">.</span>
+                商品の${product.id == 0 ? '登録' : '編集'}<span class="text-emerald-600">.</span>
             </h1>
-            <p class="text-slate-500 font-medium italic opacity-60">商品情報の修正および掲載ステータスの更新</p>
+            <p class="text-slate-500 font-medium italic opacity-60">商品情報の${product.id == 0 ? '新規登録' : '修正'}および掲載ステータスの更新</p>
         </header>
 
         <c:choose>
@@ -50,7 +50,7 @@
         <main class="premium-card p-16 shadow-2xl border-none bg-white relative overflow-hidden">
             <!-- Background ID Decoration -->
             <div class="absolute -top-10 -right-10 text-[10rem] font-black text-slate-50 italic opacity-5 pointer-events-none select-none italic">
-                #${product.id}
+                #${product.id == 0 ? 'NEW' : product.id}
             </div>
 
             <form action="Product" method="post" enctype="multipart/form-data" class="relative z-10 space-y-12">
@@ -137,7 +137,7 @@
 
                 <footer class="pt-12 border-t border-slate-50 flex gap-6">
                     <button type="submit" class="btn-primary bg-emerald-600 hover:bg-emerald-700 flex-grow py-6 text-base tracking-[0.4em] shadow-2xl shadow-emerald-600/20">
-                        変更を保存する
+                        ${product.id == 0 ? '新規登録を実行' : '変更を保存する'}
                     </button>
                     <a href="Product" class="inline-flex items-center justify-center px-10 py-6 bg-slate-100 text-slate-400 text-xs font-black rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all uppercase tracking-widest no-underline">
                         キャンセル
