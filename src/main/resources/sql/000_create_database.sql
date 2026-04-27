@@ -1,0 +1,1 @@
+CREATE DATABASE table_order_db;

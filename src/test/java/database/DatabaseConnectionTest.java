@@ -13,9 +13,9 @@ import java.util.Optional;
 
 /**
  * データベース層の統合テストクラスです。
- * 実際のDB接続を使用し、DAOのロジックとデータの整合性を検証します。
+ * Testcontainersを利用し、本物のMySQLコンテナに対してDAOのロジックとデータの整合性を検証します。
  */
-public class DatabaseConnectionTest {
+public class DatabaseConnectionTest extends BaseIntegrationTest {
 
     private final UserDAOImpl userDAO = new UserDAOImpl();
     private final ProductDAOImpl productDAO = new ProductDAOImpl();

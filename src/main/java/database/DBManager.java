@@ -61,6 +61,34 @@ public class DBManager {
     }
 
     /**
+     * テスト用にデータソースを再初期化します（Testcontainers用）。
+     * @param url 接続URL
+     * @param user ユーザ名
+     * @param password パスワード
+     */
+    public static void initForTest(String url, String user, String password) {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+        
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(user);
+        config.setPassword(password);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        
+        config.setMaximumPoolSize(5);
+        config.setConnectionTimeout(30000);
+        
+        dataSource = new HikariDataSource(config);
+        
+        // Pepperが未設定の場合はデフォルト値を設定
+        if (pepper == null) {
+            pepper = "test-pepper";
+        }
+    }
+
+    /**
      * データベースへの接続を取得します。
      * プールからコネクションを払い出します。
      * @return Connectionオブジェクト
