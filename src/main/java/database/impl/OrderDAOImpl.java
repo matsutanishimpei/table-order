@@ -1,6 +1,7 @@
 package database.impl;
 
 import database.DBManager;
+import database.SqlConstants;
 import database.OrderDAO;
 
 import java.sql.Connection;
@@ -37,7 +38,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public int insertOrder(Connection con, int tableId, int status) throws SQLException {
-        String sqlOrder = "INSERT INTO orders (table_id, status) VALUES (?, ?)";
+        String sqlOrder = SqlConstants.ORDER_INSERT;
         try (PreparedStatement psOrder = con.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
             psOrder.setInt(1, tableId);
             psOrder.setInt(2, status);
@@ -54,7 +55,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems, int status) throws SQLException {
-        String sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, unit_price, status) VALUES (?, ?, ?, ?, ?)";
+        String sqlItem = SqlConstants.ORDER_ITEM_INSERT;
         try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
             cartItems.forEach(item -> {
                 try {
@@ -75,13 +76,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public List<OrderItemView> findActiveOrderItems() {
         List<OrderItemView> list = new ArrayList<>();
-        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status, oi.unit_price " +
-                     "FROM order_items oi " +
-                     "JOIN products p ON oi.product_id = p.id " +
-                     "JOIN orders o ON oi.order_id = o.id " +
-                     "JOIN shop_tables st ON o.table_id = st.id " +
-                     "WHERE oi.status = ? " +
-                     "ORDER BY oi.created_at ASC";
+        String sql = SqlConstants.ORDER_ITEM_SELECT_ACTIVE;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -99,7 +94,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public boolean updateItemStatus(int itemId, int status) {
-        String sql = "UPDATE order_items SET status = ? WHERE id = ?";
+        String sql = SqlConstants.ORDER_ITEM_UPDATE_STATUS;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, status);
@@ -113,13 +108,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public List<OrderItemView> findReadyOrderItems() {
         List<OrderItemView> list = new ArrayList<>();
-        String sql = "SELECT oi.id, p.name as product_name, oi.quantity, st.table_name, oi.created_at, oi.status, oi.unit_price " +
-                     "FROM order_items oi " +
-                     "JOIN products p ON oi.product_id = p.id " +
-                     "JOIN orders o ON oi.order_id = o.id " +
-                     "JOIN shop_tables st ON o.table_id = st.id " +
-                     "WHERE oi.status = ? " +
-                     "ORDER BY oi.created_at ASC";
+        String sql = SqlConstants.ORDER_ITEM_SELECT_ACTIVE;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -137,7 +126,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
-        String sqlItems = "UPDATE order_items SET status = ? WHERE status < ? AND order_id IN (SELECT id FROM orders WHERE table_id = ?)";
+        String sqlItems = SqlConstants.ORDER_ITEMS_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlItems)) {
             ps.setInt(1, targetStatus);
             ps.setInt(2, conditionStatusLt);
@@ -148,7 +137,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
-        String sqlOrders = "UPDATE orders SET status = ? WHERE status < ? AND table_id = ?";
+        String sqlOrders = SqlConstants.ORDER_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlOrders)) {
             ps.setInt(1, targetStatus);
             ps.setInt(2, conditionStatusLt);

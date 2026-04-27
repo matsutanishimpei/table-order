@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
+import util.AppConstants;
 import util.CsrfUtil;
 
 /**
@@ -31,23 +32,23 @@ public class AuthFilter implements Filter {
         String path = req.getServletPath();
 
         // 1. ログインチェック
-        if (session == null || session.getAttribute("user") == null) {
-            res.sendRedirect(req.getContextPath() + "/Login");
+        if (session == null || session.getAttribute(AppConstants.ATTR_USER) == null) {
+            res.sendRedirect(req.getContextPath() + "/" + AppConstants.REDIRECT_LOGIN);
             return;
         }
 
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AppConstants.ATTR_USER);
 
-        String sessionToken = (String) session.getAttribute("csrf_token");
+        String sessionToken = (String) session.getAttribute(AppConstants.ATTR_CSRF_TOKEN);
         if (sessionToken == null) {
             sessionToken = CsrfUtil.generateToken();
-            session.setAttribute("csrf_token", sessionToken);
+            session.setAttribute(AppConstants.ATTR_CSRF_TOKEN, sessionToken);
         }
         // JSPから ${csrf_token} で参照できるようにリクエスト属性にセット
-        req.setAttribute("csrf_token", sessionToken);
+        req.setAttribute(AppConstants.ATTR_CSRF_TOKEN, sessionToken);
 
         if ("POST".equalsIgnoreCase(req.getMethod())) {
-            String requestToken = req.getParameter("csrf_token");
+            String requestToken = req.getParameter(AppConstants.ATTR_CSRF_TOKEN);
             
             // トークンが送信されていない、または一致しない場合はエラー
             if (!CsrfUtil.validateToken(requestToken, sessionToken)) {
@@ -57,7 +58,7 @@ public class AuthFilter implements Filter {
             
             // トークンをローテーション（使用済みトークンを無効化）
             String newToken = CsrfUtil.generateToken();
-            session.setAttribute("csrf_token", newToken);
+            session.setAttribute(AppConstants.ATTR_CSRF_TOKEN, newToken);
         }
 
         // 3. 権限（認可）チェック

@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import util.AppConstants;
+
 /**
  * 管理者のホーム画面を表示するサーブレットです。
  */
@@ -16,6 +18,6 @@ public class AdminHomeServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 管理者用メニュー画面へ遷移
-        request.getRequestDispatcher("/WEB-INF/view/admin_home.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_ADMIN_HOME).forward(request, response);
     }
 }

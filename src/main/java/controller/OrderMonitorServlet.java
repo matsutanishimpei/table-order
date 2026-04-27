@@ -11,6 +11,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import util.AppConstants;
+
 /**
  * 全テーブルの状態を一覧表示するモニター用サーブレットです。
  */
@@ -29,7 +31,7 @@ public class OrderMonitorServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<model.TableStatusView> tables = tableService.findAllTableStatus();
-        request.setAttribute("tableList", tables);
-        request.getRequestDispatcher("/WEB-INF/view/admin_order_monitor.jsp").forward(request, response);
+        request.setAttribute(AppConstants.ATTR_TABLE_LIST, tables);
+        request.getRequestDispatcher(AppConstants.VIEW_ADMIN_ORDER_MONITOR).forward(request, response);
     }
 }

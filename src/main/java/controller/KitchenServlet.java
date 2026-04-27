@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.OrderItemView;
 
+import util.AppConstants;
+
 /**
  * キッチンモニター画面を制御するサーブレットです。
  */
@@ -30,14 +32,14 @@ public class KitchenServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<OrderItemView> orders = orderService.findActiveOrderItems();
-        request.setAttribute("activeItems", orders);
-        request.getRequestDispatcher("/WEB-INF/view/kitchen.jsp").forward(request, response);
+        request.setAttribute(AppConstants.ATTR_ACTIVE_ITEMS, orders);
+        request.getRequestDispatcher(AppConstants.VIEW_KITCHEN).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
         if (itemId < 0) {
-            response.sendRedirect("Home");
+            response.sendRedirect(AppConstants.REDIRECT_HOME);
             return;
         }
 
@@ -45,6 +47,6 @@ public class KitchenServlet extends BaseServlet {
         if ("complete".equals(action)) {
             orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
         }
-        response.sendRedirect("Home");
+        response.sendRedirect(AppConstants.REDIRECT_HOME);
     }
 }

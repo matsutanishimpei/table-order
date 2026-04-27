@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpSession;
 import model.CartItem;
 import model.User;
 
+import util.AppConstants;
+
 /**
  * 注文の確定処理を行うサーブレットです。
  */
@@ -32,20 +34,20 @@ public class OrderServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AppConstants.ATTR_USER);
         @SuppressWarnings("unchecked")
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
+        List<CartItem> cart = (List<CartItem>) session.getAttribute(AppConstants.ATTR_CART);
 
         if (user == null || cart == null || cart.isEmpty()) {
-            response.sendRedirect("Menu");
+            response.sendRedirect(AppConstants.REDIRECT_MENU);
             return;
         }
 
         // DBに保存
         Integer tableId = user.getTableId();
         if (tableId == null) {
-            request.setAttribute("error", "このアカウントには座席（テーブル番号）が割り当てられていないため、注文できません。");
-            request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
+            request.setAttribute(AppConstants.ATTR_ERROR, "このアカウントには座席（テーブル番号）が割り当てられていないため、注文できません。");
+            request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);
             return;
         }
 
@@ -55,9 +57,9 @@ public class OrderServlet extends BaseServlet {
             // カートを空にする
             cart.clear();
             // 完了画面、または完了メッセージ付きのメニュー画面へリダイレクト
-            response.sendRedirect("Menu?msg=success");
+            response.sendRedirect(AppConstants.REDIRECT_MENU + "?msg=success");
         } else {
-            response.sendRedirect("Menu?msg=error");
+            response.sendRedirect(AppConstants.REDIRECT_MENU + "?msg=error");
         }
     }
 }

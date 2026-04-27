@@ -33,6 +33,8 @@ public class ValidationUtil {
         return str == null || str.trim().isEmpty();
     }
 
+    private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
+
     /**
      * アップロードされたファイルが許可された画像形式かどうかを検証します。
      * @param filePart 検証対象のPart
@@ -48,7 +50,6 @@ public class ValidationUtil {
             return false;
         }
 
-        List<String> allowedTypes = Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
-        return allowedTypes.contains(contentType.toLowerCase());
+        return ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase());
     }
 }

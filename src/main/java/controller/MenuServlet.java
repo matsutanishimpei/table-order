@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Category;
 import model.Product;
 
+import util.AppConstants;
+
 /**
  * メニュー画面を表示するサーブレットクラスです。
  */
@@ -35,7 +37,7 @@ public class MenuServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // カテゴリ一覧の取得
         List<Category> categories = categoryService.findAll();
-        request.setAttribute("categoryList", categories);
+        request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categories);
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
         int categoryId = util.ValidationUtil.parseIntSafe(request.getParameter("categoryId"),
@@ -43,10 +45,10 @@ public class MenuServlet extends BaseServlet {
         
         // 当該カテゴリの商品一覧を取得
         List<Product> products = productService.findByCategory(categoryId);
-        request.setAttribute("productList", products);
-        request.setAttribute("selectedCategoryId", categoryId);
+        request.setAttribute(AppConstants.ATTR_PRODUCT_LIST, products);
+        request.setAttribute(AppConstants.ATTR_SELECTED_CATEGORY_ID, categoryId);
 
         // メニュー画面にフォワード
-        request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);
     }
 }

@@ -1,6 +1,7 @@
 package database.impl;
 
 import database.DBManager;
+import database.SqlConstants;
 import database.UserDAO;
 
 import java.sql.Connection;
@@ -24,7 +25,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> findAll() {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT id, role, table_id FROM users ORDER BY id";
+        String sql = SqlConstants.USER_SELECT_ALL;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -45,7 +46,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public Optional<User> login(String id, String password) {
         User user = null;
-        String sql = "SELECT id, password, salt, role, table_id FROM users WHERE id = ?";
+        String sql = SqlConstants.USER_SELECT_LOGIN;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -108,7 +109,7 @@ public class UserDAOImpl implements UserDAO {
      * @param newBcryptHash 新しく生成された BCrypt ハッシュ
      */
     private void upgradeToBcrypt(String userId, String newBcryptHash) {
-        String sql = "UPDATE users SET password = ?, salt = NULL WHERE id = ?";
+        String sql = SqlConstants.USER_UPGRADE_BCRYPT;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
              
@@ -127,7 +128,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public Optional<User> findById(String id) {
         User user = null;
-        String sql = "SELECT id, role, table_id FROM users WHERE id = ?";
+        String sql = SqlConstants.USER_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -147,7 +148,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean insert(User user) {
-        String sql = "INSERT INTO users (id, password, role, table_id) VALUES (?, ?, ?, ?)";
+        String sql = SqlConstants.USER_INSERT;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
@@ -167,7 +168,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean update(User user) {
-        String sql = "UPDATE users SET role = ?, table_id = ? WHERE id = ?";
+        String sql = SqlConstants.USER_UPDATE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
@@ -183,7 +184,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean updatePassword(String id, String newPassword) {
-        String sql = "UPDATE users SET password = ?, salt = NULL WHERE id = ?";
+        String sql = SqlConstants.USER_UPDATE_PASSWORD;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
@@ -201,7 +202,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean delete(String id) {
-        String sql = "DELETE FROM users WHERE id = ?";
+        String sql = SqlConstants.USER_DELETE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);

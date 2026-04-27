@@ -15,6 +15,8 @@ import service.impl.OrderServiceImpl;
 import service.TableService;
 import service.impl.TableServiceImpl;
 
+import util.AppConstants;
+
 /**
  * 会計（レジ）用の管理サーブレットです。
  */
@@ -37,7 +39,7 @@ public class CashierServlet extends BaseServlet {
 
         // 未精算の座席一覧を取得
         List<TableOrderSummary> tables = tableService.findUnsettledTables();
-        request.setAttribute("unsettledTables", tables);
+        request.setAttribute(AppConstants.ATTR_UNSETTLED_TABLES, tables);
 
         // 特定の座席が選択されている場合、その詳細を取得
         String tableIdStr = request.getParameter("tableId");
@@ -45,10 +47,10 @@ public class CashierServlet extends BaseServlet {
 
         if (tableId > 0) {
             Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(tableId);
-            summaryOpt.ifPresent(summary -> request.setAttribute("selectedSummary", summary));
+            summaryOpt.ifPresent(summary -> request.setAttribute(AppConstants.ATTR_SELECTED_SUMMARY, summary));
         }
 
-        request.getRequestDispatcher("/WEB-INF/view/cashier.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_CASHIER).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -61,13 +63,13 @@ public class CashierServlet extends BaseServlet {
             if (tableId > 0) {
                 boolean success = orderService.completeCheckout(tableId);
                 if (!success) {
-                    request.setAttribute("error", "会計処理に失敗しました。未提供の商品が残っている可能性があります。");
+                    request.setAttribute(AppConstants.ATTR_ERROR, "会計処理に失敗しました。未提供の商品が残っている可能性があります。");
                     doGet(request, response);
                     return;
                 }
             }
         }
 
-        response.sendRedirect("Home");
+        response.sendRedirect(AppConstants.REDIRECT_HOME);
     }
 }

@@ -1,6 +1,7 @@
 package database.impl;
 
 import database.DBManager;
+import database.SqlConstants;
 import database.ProductDAO;
 
 import java.sql.Connection;
@@ -37,7 +38,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public List<Product> findAll() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products ORDER BY id";
+        String sql = SqlConstants.PRODUCT_SELECT_ALL;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -54,7 +55,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public List<Product> findByCategory(int categoryId) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE category_id = ? AND is_available = true ORDER BY id";
+        String sql = SqlConstants.PRODUCT_SELECT_BY_CATEGORY;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -74,7 +75,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public Optional<Product> findById(int productId) {
         Product p = null;
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE id = ?";
+        String sql = SqlConstants.PRODUCT_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, productId);
@@ -91,7 +92,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean insert(Product p) {
-        String sql = "INSERT INTO products (category_id, name, price, description, allergy_info, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = SqlConstants.PRODUCT_INSERT;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.getCategoryId());
@@ -109,7 +110,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean update(Product p) {
-        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, description = ?, allergy_info = ?, image_path = ?, is_available = ? WHERE id = ?";
+        String sql = SqlConstants.PRODUCT_UPDATE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.getCategoryId());
@@ -128,7 +129,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean updateAvailability(int productId, boolean isAvailable) {
-        String sql = "UPDATE products SET is_available = ? WHERE id = ?";
+        String sql = SqlConstants.PRODUCT_UPDATE_AVAILABILITY;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setBoolean(1, isAvailable);

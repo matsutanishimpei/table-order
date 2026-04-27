@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpSession;
 import model.TableOrderSummary;
 import model.User;
 
+import util.AppConstants;
+
 /**
  * 座席ごとの注文履歴を表示するサーブレットです。
  */
@@ -32,16 +34,16 @@ public class OrderHistoryServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute(AppConstants.ATTR_USER);
 
         if (user == null || user.getTableId() == null) {
-            response.sendRedirect("Login");
+            response.sendRedirect(AppConstants.REDIRECT_LOGIN);
             return;
         }
 
         Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(user.getTableId());
         
         request.setAttribute("summary", summaryOpt.orElse(null));
-        request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_ORDER_HISTORY).forward(request, response);
     }
 }

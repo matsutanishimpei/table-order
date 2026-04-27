@@ -2,6 +2,7 @@ package database.impl;
 
 import database.CategoryDAO;
 import database.DBManager;
+import database.SqlConstants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +22,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     @Override
     public List<Category> findAll() {
         List<Category> list = new ArrayList<>();
-        String sql = "SELECT id, name FROM categories ORDER BY id";
+        String sql = SqlConstants.CATEGORY_SELECT_ALL;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -41,7 +42,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public boolean insert(String name) {
-        String sql = "INSERT INTO categories (name) VALUES (?)";
+        String sql = SqlConstants.CATEGORY_INSERT;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, name);
@@ -53,7 +54,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public Optional<Category> findById(int id) {
-        String sql = "SELECT id, name FROM categories WHERE id = ?";
+        String sql = SqlConstants.CATEGORY_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -73,7 +74,7 @@ public class CategoryDAOImpl implements CategoryDAO {
 
     @Override
     public boolean update(Category category) {
-        String sql = "UPDATE categories SET name = ? WHERE id = ?";
+        String sql = SqlConstants.CATEGORY_UPDATE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, category.getName());

@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.CartItem;
 
+import util.AppConstants;
+
 /**
  * カート操作（追加・削除・表示）を制御するサーブレットです。
  */
@@ -32,16 +34,16 @@ public class CartServlet extends BaseServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/view/menu.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
-        List<CartItem> sessionCart = (List<CartItem>) session.getAttribute("cart");
+        List<CartItem> sessionCart = (List<CartItem>) session.getAttribute(AppConstants.ATTR_CART);
         if (sessionCart == null) {
             sessionCart = new ArrayList<>();
-            session.setAttribute("cart", sessionCart);
+            session.setAttribute(AppConstants.ATTR_CART, sessionCart);
         }
         final List<CartItem> cart = sessionCart;
 
@@ -50,7 +52,7 @@ public class CartServlet extends BaseServlet {
             int productId = util.ValidationUtil.parseIntSafe(request.getParameter("productId"), -1);
             int quantity = util.ValidationUtil.parseIntSafe(request.getParameter("quantity"), 0);
             if (productId < 0 || quantity <= 0) {
-                response.sendRedirect("Menu");
+                response.sendRedirect(AppConstants.REDIRECT_MENU);
                 return;
             }
 
@@ -78,9 +80,9 @@ public class CartServlet extends BaseServlet {
         // メニュー画面に戻る（categoryIdが取得できない場合はデフォルト値を想定）
         String categoryId = request.getParameter("categoryId");
         if (categoryId == null || categoryId.isEmpty()) {
-            response.sendRedirect("Menu");
+            response.sendRedirect(AppConstants.REDIRECT_MENU);
         } else {
-            response.sendRedirect("Menu?categoryId=" + categoryId);
+            response.sendRedirect(AppConstants.REDIRECT_MENU + "?categoryId=" + categoryId);
         }
     }
 }

@@ -10,6 +10,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import util.AppConstants;
+
 /**
  * 管理者用の売上管理画面を制御するサーブレットです。
  */
@@ -27,10 +29,10 @@ public class SalesAdminServlet extends BaseServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("totalSales", salesService.getTotalSales());
-        request.setAttribute("dailySales", salesService.findDailySales());
-        request.setAttribute("productRanking", salesService.findProductSalesRanking());
+        request.setAttribute(AppConstants.ATTR_TOTAL_SALES, salesService.getTotalSales());
+        request.setAttribute(AppConstants.ATTR_DAILY_SALES, salesService.findDailySales());
+        request.setAttribute(AppConstants.ATTR_PRODUCT_RANKING, salesService.findProductSalesRanking());
 
-        request.getRequestDispatcher("/WEB-INF/view/admin_sales.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_ADMIN_SALES).forward(request, response);
     }
 }

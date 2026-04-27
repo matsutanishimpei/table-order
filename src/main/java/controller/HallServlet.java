@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.OrderItemView;
 
+import util.AppConstants;
+
 /**
  * 配膳（ホール）モニター画面を制御するサーブレットです。
  */
@@ -30,14 +32,14 @@ public class HallServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<OrderItemView> orders = orderService.findReadyOrderItems();
-        request.setAttribute("readyItems", orders);
-        request.getRequestDispatcher("/WEB-INF/view/hall.jsp").forward(request, response);
+        request.setAttribute(AppConstants.ATTR_READY_ITEMS, orders);
+        request.getRequestDispatcher(AppConstants.VIEW_HALL).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
         if (itemId < 0) {
-            response.sendRedirect("Home");
+            response.sendRedirect(AppConstants.REDIRECT_HOME);
             return;
         }
 
@@ -45,6 +47,6 @@ public class HallServlet extends BaseServlet {
         if ("serve".equals(action)) {
             orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
         }
-        response.sendRedirect("Home");
+        response.sendRedirect(AppConstants.REDIRECT_HOME);
     }
 }

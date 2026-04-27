@@ -17,6 +17,7 @@ import model.Category;
 import model.Product;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
+import util.AppConstants;
 import util.CloudinaryUtil;
 import util.ImageStorageProvider;
 import util.ValidationUtil;
@@ -59,9 +60,9 @@ public class ProductAdminServlet extends BaseServlet {
             }
 
             if (product != null) {
-                request.setAttribute("product", product);
-                request.setAttribute("categoryList", categoryService.findAll());
-                request.getRequestDispatcher("/WEB-INF/view/admin_product_edit.jsp").forward(request, response);
+                request.setAttribute(AppConstants.ATTR_PRODUCT, product);
+                request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
+                request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
                 return;
             }
         }
@@ -69,10 +70,10 @@ public class ProductAdminServlet extends BaseServlet {
         List<Product> products = productService.findAll();
         List<Category> categories = categoryService.findAll();
 
-        request.setAttribute("productList", products);
-        request.setAttribute("categoryList", categories);
+        request.setAttribute(AppConstants.ATTR_PRODUCT_LIST, products);
+        request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categories);
 
-        request.getRequestDispatcher("/WEB-INF/view/admin_products.jsp").forward(request, response);
+        request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCTS).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -83,7 +84,7 @@ public class ProductAdminServlet extends BaseServlet {
         if (isUpdate) {
             Optional<Product> productOpt = productService.findById(id);
             if (productOpt.isEmpty()) {
-                response.sendRedirect("Product");
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT);
                 return;
             }
             p = productOpt.get();
@@ -117,12 +118,12 @@ public class ProductAdminServlet extends BaseServlet {
                     }
                 } else {
                     // アップロード失敗時
-                    response.sendRedirect("Product?action=edit&id=" + id + "&msg=upload_failed");
+                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=edit&id=" + id + "&msg=upload_failed");
                     return;
                 }
             } else {
                 // 不正な形式の場合
-                response.sendRedirect("Product?action=edit&id=" + id + "&msg=invalid_format");
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=edit&id=" + id + "&msg=invalid_format");
                 return;
             }
         }
@@ -135,9 +136,9 @@ public class ProductAdminServlet extends BaseServlet {
         }
 
         if (success) {
-            response.sendRedirect("Product?msg=success");
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?msg=success");
         } else {
-            String redirectUrl = "Product?action=" + (isUpdate ? "edit" : "add") + (isUpdate ? "&id=" + id : "") + "&msg=error";
+            String redirectUrl = AppConstants.REDIRECT_ADMIN_PRODUCT + "?action=" + (isUpdate ? "edit" : "add") + (isUpdate ? "&id=" + id : "") + "&msg=error";
             response.sendRedirect(redirectUrl);
         }
     }

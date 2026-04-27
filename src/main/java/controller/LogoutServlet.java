@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import util.AppConstants;
+
 /**
  * ログアウト処理を行うサーブレットです。
  */
@@ -24,7 +26,7 @@ public class LogoutServlet extends BaseServlet {
             session.invalidate();
         }
         // コンテキストパス付きでログイン画面へリダイレクト
-        response.sendRedirect(request.getContextPath() + "/Login");
+        response.sendRedirect(request.getContextPath() + "/" + AppConstants.REDIRECT_LOGIN);
     }
 
     /**

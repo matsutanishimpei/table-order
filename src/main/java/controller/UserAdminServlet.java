@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.User;
 
+import util.AppConstants;
+
 /**
  * 管理者用のユーザー管理（一覧・追加・更新・削除）を制御するサーブレットです。
  */
@@ -47,14 +49,14 @@ public class UserAdminServlet extends BaseServlet {
             
             // 空席確認（テーブル番号選択用）
             List<model.TableStatusView> tables = tableService.findAllTableStatus();
-            request.setAttribute("tableList", tables);
+            request.setAttribute(AppConstants.ATTR_TABLE_LIST, tables);
             
-            request.getRequestDispatcher("/WEB-INF/view/admin_user_edit.jsp").forward(request, response);
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_USER_EDIT).forward(request, response);
         } else {
             // 一覧表示
             List<User> list = userService.findAll();
-            request.setAttribute("userList", list);
-            request.getRequestDispatcher("/WEB-INF/view/admin_users.jsp").forward(request, response);
+            request.setAttribute(AppConstants.ATTR_USER_LIST, list);
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_USERS).forward(request, response);
         }
     }
 
@@ -64,7 +66,7 @@ public class UserAdminServlet extends BaseServlet {
         String password = request.getParameter("password");
         int role = util.ValidationUtil.parseIntSafe(request.getParameter("role"), -1);
         if (role < 0) {
-            response.sendRedirect("User");
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
             return;
         }
         String tableIdStr = request.getParameter("tableId");
@@ -85,6 +87,6 @@ public class UserAdminServlet extends BaseServlet {
             userService.register(targetUser);
         }
 
-        response.sendRedirect("User");
+        response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
     }
 }

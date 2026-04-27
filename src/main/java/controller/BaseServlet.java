@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import util.AppConstants;
+
 /**
  * すべてのサーブレットの基底クラスです。
  * 共通の例外ハンドリングやユーティリティメソッドを提供します。
@@ -25,9 +27,9 @@ public abstract class BaseServlet extends HttpServlet {
             
             // レスポンスが既にコミットされているか確認
             if (!resp.isCommitted()) {
-                req.setAttribute("errorMessage", "サーバー内部でエラーが発生しました。時間をおいて再度お試しください。");
-                req.setAttribute("exception", e);
-                req.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(req, resp);
+                req.setAttribute(AppConstants.ATTR_ERROR_MESSAGE, "サーバー内部でエラーが発生しました。時間をおいて再度お試しください。");
+                req.setAttribute(AppConstants.ATTR_EXCEPTION, e);
+                req.getRequestDispatcher(AppConstants.VIEW_ERROR).forward(req, resp);
             } else {
                 // 既に書き込みが始まっている場合は、標準のエラー処理に任せるか、単にスローする
                 throw new ServletException(e);

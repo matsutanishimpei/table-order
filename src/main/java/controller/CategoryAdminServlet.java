@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Category;
 
+import util.AppConstants;
+
 /**
  * 管理者用のカテゴリ管理を制御するサーブレットです。
  */
@@ -35,15 +37,15 @@ public class CategoryAdminServlet extends BaseServlet {
             int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
             Optional<Category> categoryOpt = categoryService.findById(id);
             if (categoryOpt.isPresent()) {
-                request.setAttribute("category", categoryOpt.get());
-                request.getRequestDispatcher("/WEB-INF/view/admin_category_edit.jsp").forward(request, response);
+                request.setAttribute(AppConstants.ATTR_CATEGORY, categoryOpt.get());
+                request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORY_EDIT).forward(request, response);
                 return;
             }
         }
         
         List<Category> list = categoryService.findAll();
-        request.setAttribute("categoryList", list);
-        request.getRequestDispatcher("/WEB-INF/view/admin_categories.jsp").forward(request, response);
+        request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, list);
+        request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORIES).forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -57,22 +59,22 @@ public class CategoryAdminServlet extends BaseServlet {
                 c.setId(id);
                 c.setName(name.trim());
                 if (categoryService.update(c)) {
-                    response.sendRedirect("Category?msg=success");
+                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
                     return;
                 }
             }
-            response.sendRedirect("Category?action=edit&id=" + request.getParameter("id") + "&msg=error");
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?action=edit&id=" + request.getParameter("id") + "&msg=error");
         } else {
             // 新規追加
             if (name != null && !name.trim().isEmpty()) {
                 boolean success = categoryService.insert(name.trim());
                 if (success) {
-                    response.sendRedirect("Category?msg=success");
+                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
                 } else {
-                    response.sendRedirect("Category?msg=error");
+                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=error");
                 }
             } else {
-                response.sendRedirect("Category");
+                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
             }
         }
     }
