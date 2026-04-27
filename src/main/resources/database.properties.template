@@ -15,6 +15,11 @@ db.mysql.url=jdbc:mysql://localhost:3306/table_order_db?useSSL=false&serverTimez
 db.mysql.user=root
 db.mysql.pass=YOUR_MYSQL_PASSWORD_HERE
 
-# アプリケーション共通の秘密鍵（Pepper）
-# 入力を推奨。変更すると既存のハッシュ化済みパスワードは使えなくなります。
-app.security.pepper=YOUR_SECRET_PEPPER_HERE
+# Cloudinary の設定
+# アカウント作成後にダッシュボードから取得した値を設定してください。
+cloudinary.cloud_name=YOUR_CLOUD_NAME
+cloudinary.api_key=YOUR_API_KEY
+cloudinary.api_secret=YOUR_API_SECRET
+
+# セキュリティ設定
+app.security.pepper=YOUR_SECURE_PEPPER_HERE

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ page import="util.CloudinaryUtil" %>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -44,6 +45,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                            <th class="px-10 py-6 w-24 text-center">画像</th>
                             <th class="px-10 py-6">商品名 / ID</th>
                             <th class="px-6 py-6">カテゴリー</th>
                             <th class="px-6 py-6 text-right">単価</th>
@@ -54,6 +56,17 @@
                     <tbody class="divide-y divide-slate-50">
                         <c:forEach var="p" items="${productList}">
                             <tr class="group hover:bg-slate-50/50 transition-colors">
+                                <td class="px-10 py-8 text-center">
+                                    <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden mx-auto flex items-center justify-center text-2xl group-hover:scale-105 transition-transform duration-500">
+                                        <c:choose>
+                                            <c:when test="${not empty p.imagePath}">
+                                                <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).getImagePath(), 200, 200) %>" 
+                                                     alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+                                            </c:when>
+                                            <c:otherwise>🍲</c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
                                 <td class="px-10 py-8">
                                     <div class="text-lg font-black text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">
                                         <c:out value="${p.name}" />
@@ -96,7 +109,7 @@
                         </c:forEach>
                         <c:if test="${empty productList}">
                             <tr>
-                                <td colspan="5" class="px-10 py-32 text-center">
+                                <td colspan="6" class="px-10 py-32 text-center">
                                     <p class="text-xs font-black text-slate-300 uppercase tracking-[0.5em] italic leading-relaxed">No culinary assets detected.<br>Product matrix is void.</p>
                                 </td>
                             </tr>

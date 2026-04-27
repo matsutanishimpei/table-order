@@ -1,5 +1,9 @@
 package util;
 
+import jakarta.servlet.http.Part;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 入力値検証などのユーティリティメソッドを提供するクラスです。
  */
@@ -21,13 +25,30 @@ public class ValidationUtil {
             return defaultValue;
         }
     }
-    
+
     /**
-     * 文字列が null または空文字かどうかを判定します。
-     * @param str 判定対象の文字列
-     * @return null または空文字の場合は true
+     * 文字列が null または空文字（空白のみを含む）かどうかを判定します。
      */
     public static boolean isNullOrEmpty(String str) {
         return str == null || str.trim().isEmpty();
+    }
+
+    /**
+     * アップロードされたファイルが許可された画像形式かどうかを検証します。
+     * @param filePart 検証対象のPart
+     * @return 許可された画像形式（JPEG, PNG, WEBP, GIF）であればtrue
+     */
+    public static boolean isValidImage(Part filePart) {
+        if (filePart == null || filePart.getSize() == 0) {
+            return false;
+        }
+
+        String contentType = filePart.getContentType();
+        if (contentType == null) {
+            return false;
+        }
+
+        List<String> allowedTypes = Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
+        return allowedTypes.contains(contentType.toLowerCase());
     }
 }

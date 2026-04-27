@@ -44,6 +44,9 @@ jobs:
         db.mysql.user=root
         db.mysql.pass=password
         app.security.pepper=test_pepper
+        cloudinary.cloud_name=test_cloud
+        cloudinary.api_key=test_key
+        cloudinary.api_secret=test_secret
         EOF
 
     - name: Build and Test with Maven

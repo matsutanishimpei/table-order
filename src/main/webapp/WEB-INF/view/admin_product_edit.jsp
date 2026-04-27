@@ -26,12 +26,26 @@
             <p class="text-slate-500 font-medium italic opacity-60">商品情報の修正および掲載ステータスの更新</p>
         </header>
 
-        <c:if test="${not empty param.msg}">
-            <div class="mb-10 p-5 rounded-2xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-4 animate-fadeIn">
-                <span class="text-lg">⚠️</span>
-                <span class="text-xs font-bold uppercase tracking-wide">Validation error. 入力内容を確認してください (ID: ${product.id})</span>
-            </div>
-        </c:if>
+        <c:choose>
+            <c:when test="${param.msg == 'invalid_format'}">
+                <div class="mb-10 p-5 rounded-2xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-4 animate-fadeIn">
+                    <span class="text-lg">⚠️</span>
+                    <span class="text-xs font-bold uppercase tracking-wide">許可されていないファイル形式です。JPEG, PNG, WEBP, GIFのみアップロード可能です。</span>
+                </div>
+            </c:when>
+            <c:when test="${param.msg == 'upload_failed'}">
+                <div class="mb-10 p-5 rounded-2xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-4 animate-fadeIn">
+                    <span class="text-lg">⚠️</span>
+                    <span class="text-xs font-bold uppercase tracking-wide">画像アップロードに失敗しました。Cloudinaryの設定またはネットワークを確認してください。</span>
+                </div>
+            </c:when>
+            <c:when test="${not empty param.msg}">
+                <div class="mb-10 p-5 rounded-2xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-4 animate-fadeIn">
+                    <span class="text-lg">⚠️</span>
+                    <span class="text-xs font-bold uppercase tracking-wide">Validation error. 入力内容を確認してください (ID: ${product.id})</span>
+                </div>
+            </c:when>
+        </c:choose>
 
         <main class="premium-card p-16 shadow-2xl border-none bg-white relative overflow-hidden">
             <!-- Background ID Decoration -->
@@ -39,7 +53,7 @@
                 #${product.id}
             </div>
 
-            <form action="Product" method="post" class="relative z-10 space-y-12">
+            <form action="Product" method="post" enctype="multipart/form-data" class="relative z-10 space-y-12">
                 <input type="hidden" name="csrf_token" value="${csrf_token}">
                 <input type="hidden" name="id" value="${product.id}">
                 
@@ -88,6 +102,25 @@
                         <input type="text" name="allergyInfo" placeholder="卵、乳、小麦など（不要な場合は空欄）"
                                value="<c:out value='${product.allergyInfo}' />"
                                class="w-full px-8 py-6 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-sm font-black shadow-inner">
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">商品画像 (Cloudinary)</label>
+                        <div class="flex items-center gap-8">
+                            <div class="w-32 h-32 rounded-3xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center text-4xl">
+                                <c:choose>
+                                    <c:when test="${not empty product.imagePath}">
+                                        <img src="${product.imagePath}" alt="Current" class="w-full h-full object-cover">
+                                    </c:when>
+                                    <c:otherwise>🍲</c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="flex-grow space-y-3">
+                                <input type="file" name="imageFile" accept="image/*"
+                                       class="block w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-all cursor-pointer">
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic leading-none">Recommended size: 800x600px. Max 10MB.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="p-8 bg-[#f8fafc] rounded-3xl border border-slate-100 flex items-center justify-between">

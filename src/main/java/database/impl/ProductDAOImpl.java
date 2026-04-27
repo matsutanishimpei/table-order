@@ -28,6 +28,7 @@ public class ProductDAOImpl implements ProductDAO {
         p.setPrice(rs.getInt("price"));
         p.setDescription(rs.getString("description"));
         p.setAllergyInfo(rs.getString("allergy_info"));
+        p.setImagePath(rs.getString("image_path"));
         p.setAvailable(rs.getBoolean("is_available"));
         return p;
     }
@@ -35,7 +36,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public List<Product> findAll() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, is_available FROM products ORDER BY id";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products ORDER BY id";
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -52,7 +53,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public List<Product> findByCategory(int categoryId) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, is_available FROM products WHERE category_id = ? AND is_available = true ORDER BY id";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE category_id = ? AND is_available = true ORDER BY id";
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -72,7 +73,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public Product findById(int productId) {
         Product p = null;
-        String sql = "SELECT id, category_id, name, price, description, allergy_info, is_available FROM products WHERE id = ?";
+        String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE id = ?";
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, productId);
@@ -89,7 +90,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean insert(Product p) {
-        String sql = "INSERT INTO products (category_id, name, price, description, allergy_info, is_available) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (category_id, name, price, description, allergy_info, image_path, is_available) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.getCategoryId());
@@ -97,7 +98,8 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setInt(3, p.getPrice());
             ps.setString(4, p.getDescription());
             ps.setString(5, p.getAllergyInfo());
-            ps.setBoolean(6, p.isAvailable());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isAvailable());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("商品登録中にエラーが発生しました。", e);
@@ -106,7 +108,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean update(Product p) {
-        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, description = ?, allergy_info = ?, is_available = ? WHERE id = ?";
+        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, description = ?, allergy_info = ?, image_path = ?, is_available = ? WHERE id = ?";
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.getCategoryId());
@@ -114,8 +116,9 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setInt(3, p.getPrice());
             ps.setString(4, p.getDescription());
             ps.setString(5, p.getAllergyInfo());
-            ps.setBoolean(6, p.isAvailable());
-            ps.setInt(7, p.getId());
+            ps.setString(6, p.getImagePath());
+            ps.setBoolean(7, p.isAvailable());
+            ps.setInt(8, p.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("商品更新中にエラーが発生しました。ID=" + p.getId(), e);
