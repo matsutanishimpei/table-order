@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import database.ProductDAO;
 import model.Product;
@@ -68,14 +69,14 @@ public class ProductServiceImplTest {
         int productId = 1;
         Product p = new Product();
         p.setId(productId);
-        when(productDAO.findById(productId)).thenReturn(p);
+        when(productDAO.findById(productId)).thenReturn(Optional.of(p));
 
         // Act
-        Product result = productService.findById(productId);
+        Optional<Product> result = productService.findById(productId);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(productId, result.getId());
+        assertTrue(result.isPresent());
+        assertEquals(productId, result.get().getId());
         verify(productDAO).findById(productId);
     }
 

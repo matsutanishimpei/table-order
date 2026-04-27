@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import model.OrderConstants;
 import model.OrderItemView;
@@ -54,10 +55,7 @@ public class TableDAOImpl implements TableDAO {
     }
 
     @Override
-    public TableOrderSummary getTableOrderSummary(int tableId) {
-        TableOrderSummary summary = new TableOrderSummary();
-        summary.setTableId(tableId);
-
+    public Optional<TableOrderSummary> getTableOrderSummary(int tableId) {
         String sqlTable = "SELECT table_name FROM shop_tables WHERE id = ?";
         String sqlItems = "SELECT oi.id, p.name, oi.quantity, oi.unit_price, oi.status " +
                          "FROM order_items oi " +
@@ -67,11 +65,16 @@ public class TableDAOImpl implements TableDAO {
                          "ORDER BY oi.created_at";
 
         try (Connection con = DBManager.getConnection()) {
+            TableOrderSummary summary = new TableOrderSummary();
+            summary.setTableId(tableId);
+
             try (PreparedStatement psTable = con.prepareStatement(sqlTable)) {
                 psTable.setInt(1, tableId);
                 try (ResultSet rsTable = psTable.executeQuery()) {
                     if (rsTable.next()) {
                         summary.setTableName(rsTable.getString("table_name"));
+                    } else {
+                        return Optional.empty(); // テーブルが存在しない
                     }
                 }
             }
@@ -96,10 +99,10 @@ public class TableDAOImpl implements TableDAO {
             }
             summary.setItems(items);
             summary.setTotalAmount(total);
+            return Optional.of(summary);
         } catch (SQLException e) {
             throw new exception.DatabaseException("座席別注文サマリーの取得中にエラーが発生しました。tableId=" + tableId, e);
         }
-        return summary;
     }
 
     @Override

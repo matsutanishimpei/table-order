@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 import jakarta.servlet.ServletException;
@@ -44,8 +45,8 @@ public class CashierServlet extends HttpServlet {
         int tableId = util.ValidationUtil.parseIntSafe(tableIdStr, 0);
 
         if (tableId > 0) {
-            TableOrderSummary summary = tableService.getTableOrderSummary(tableId);
-            request.setAttribute("selectedSummary", summary);
+            Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(tableId);
+            summaryOpt.ifPresent(summary -> request.setAttribute("selectedSummary", summary));
         }
 
         request.getRequestDispatcher("/WEB-INF/view/cashier.jsp").forward(request, response);

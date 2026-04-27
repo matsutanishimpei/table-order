@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class ProductAdminServletTest {
         when(request.getParameter("allergyInfo")).thenReturn("Wheat");
         when(request.getParameter("isAvailable")).thenReturn("true");
 
-        when(productService.findById(productId)).thenReturn(existingProduct);
+        when(productService.findById(productId)).thenReturn(Optional.of(existingProduct));
         when(productService.update(any(Product.class))).thenReturn(true);
 
         // 画像アップロードのモック
@@ -98,7 +99,7 @@ public class ProductAdminServletTest {
         when(request.getParameter("allergyInfo")).thenReturn("");
         when(request.getParameter("isAvailable")).thenReturn("true");
 
-        when(productService.findById(productId)).thenReturn(existingProduct);
+        when(productService.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         // 不正な画像形式（text/plain）
         when(request.getPart("imageFile")).thenReturn(filePart);

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import service.CategoryService;
 import service.impl.CategoryServiceImpl;
@@ -51,9 +52,9 @@ public class ProductAdminServlet extends HttpServlet {
         
         if ("edit".equals(action)) {
             int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
-            Product p = productService.findById(id);
-            if (p != null) {
-                request.setAttribute("product", p);
+            Optional<Product> productOpt = productService.findById(id);
+            if (productOpt.isPresent()) {
+                request.setAttribute("product", productOpt.get());
                 request.setAttribute("categoryList", categoryService.findAll());
                 request.getRequestDispatcher("/WEB-INF/view/admin_product_edit.jsp").forward(request, response);
                 return;
@@ -76,11 +77,13 @@ public class ProductAdminServlet extends HttpServlet {
             return;
         }
 
-        Product p = productService.findById(id);
-        if (p == null) {
+        Optional<Product> productOpt = productService.findById(id);
+        if (productOpt.isEmpty()) {
             response.sendRedirect("Product");
             return;
         }
+
+        Product p = productOpt.get();
 
         // 基本情報の更新
         p.setName(request.getParameter("name"));

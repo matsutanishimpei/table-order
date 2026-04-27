@@ -3,6 +3,8 @@ package service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import database.UserDAO;
 import model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +34,14 @@ public class UserServiceImplTest {
         User mockUser = new User();
         mockUser.setId(userId);
 
-        when(userDAO.login(userId, password)).thenReturn(mockUser);
+        when(userDAO.login(userId, password)).thenReturn(Optional.of(mockUser));
 
         // Act
-        User result = userService.login(userId, password);
+        Optional<User> result = userService.login(userId, password);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(userId, result.getId());
+        assertTrue(result.isPresent());
+        assertEquals(userId, result.get().getId());
         verify(userDAO).login(userId, password);
     }
 
@@ -49,13 +51,13 @@ public class UserServiceImplTest {
         String userId = "wronguser";
         String password = "wrongpassword";
 
-        when(userDAO.login(userId, password)).thenReturn(null);
+        when(userDAO.login(userId, password)).thenReturn(Optional.empty());
 
         // Act
-        User result = userService.login(userId, password);
+        Optional<User> result = userService.login(userId, password);
 
         // Assert
-        assertNull(result);
+        assertTrue(result.isEmpty());
         verify(userDAO).login(userId, password);
     }
 

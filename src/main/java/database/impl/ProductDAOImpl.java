@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import model.Product;
 
@@ -71,7 +72,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public Product findById(int productId) {
+    public Optional<Product> findById(int productId) {
         Product p = null;
         String sql = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products WHERE id = ?";
         try (Connection con = DBManager.getConnection();
@@ -85,7 +86,7 @@ public class ProductDAOImpl implements ProductDAO {
         } catch (SQLException e) {
             throw new exception.DatabaseException("商品取得中にエラーが発生しました。ID=" + productId, e);
         }
-        return p;
+        return Optional.ofNullable(p);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package controller;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import service.UserService;
-import util.CsrfUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class LoginServletTest {
@@ -73,7 +72,7 @@ public class LoginServletTest {
         when(request.getParameter("csrf_token")).thenReturn(token);
         when(request.getParameter("id")).thenReturn(userId);
         when(request.getParameter("pw")).thenReturn(password);
-        when(userService.login(userId, password)).thenReturn(adminUser);
+        when(userService.login(userId, password)).thenReturn(Optional.of(adminUser));
         when(request.getSession()).thenReturn(session);
 
         // Act
@@ -97,7 +96,7 @@ public class LoginServletTest {
         when(request.getParameter("csrf_token")).thenReturn(token);
         when(request.getParameter("id")).thenReturn(userId);
         when(request.getParameter("pw")).thenReturn(password);
-        when(userService.login(userId, password)).thenReturn(null);
+        when(userService.login(userId, password)).thenReturn(Optional.empty());
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
 
         // Act

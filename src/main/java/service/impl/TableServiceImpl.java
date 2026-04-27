@@ -1,6 +1,7 @@
 package service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import database.TableDAO;
 import database.impl.TableDAOImpl;
@@ -31,7 +32,7 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
-    public TableOrderSummary getTableOrderSummary(int tableId) {
+    public Optional<TableOrderSummary> getTableOrderSummary(int tableId) {
         return tableDAO.getTableOrderSummary(tableId);
     }
 

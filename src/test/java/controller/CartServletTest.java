@@ -1,12 +1,12 @@
 package controller;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,7 +57,7 @@ public class CartServletTest {
         when(request.getParameter("action")).thenReturn("add");
         when(request.getParameter("productId")).thenReturn("101");
         when(request.getParameter("quantity")).thenReturn("2");
-        when(productService.findById(101)).thenReturn(p);
+        when(productService.findById(101)).thenReturn(Optional.of(p));
         when(request.getParameter("categoryId")).thenReturn("1");
 
         // Act

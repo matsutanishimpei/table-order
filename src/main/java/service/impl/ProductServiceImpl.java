@@ -1,6 +1,7 @@
 package service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import database.ProductDAO;
 import database.impl.ProductDAOImpl;
@@ -34,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findById(int productId) {
+    public Optional<Product> findById(int productId) {
         return productDAO.findById(productId);
     }
 

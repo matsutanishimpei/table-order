@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import service.ProductService;
 import service.impl.ProductServiceImpl;
@@ -13,7 +14,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.logging.Logger;
 import model.CartItem;
 import model.Product;
 
@@ -65,8 +65,9 @@ public class CartServlet extends HttpServlet {
                 }
 
                 if (!found) {
-                    Product p = productService.findById(productId);
-                    if (p != null) {
+                    Optional<Product> productOpt = productService.findById(productId);
+                    if (productOpt.isPresent()) {
+                        Product p = productOpt.get();
                         CartItem newItem = new CartItem();
                         newItem.setProductId(p.getId());
                         newItem.setName(p.getName()); // setName に修正

@@ -7,7 +7,6 @@ import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
@@ -69,10 +68,10 @@ public class CloudinaryUtil implements ImageStorageProvider {
                 }
             }
 
-            Map uploadResult = cloudinary.uploader().upload(tempFile, ObjectUtils.asMap(
+            Map<String, Object> uploadResult = toTypedMap(cloudinary.uploader().upload(tempFile, ObjectUtils.asMap(
                 "quality", "auto",
                 "fetch_format", "auto"
-            ));
+            )));
 
             String publicId = (String) uploadResult.get("public_id");
             Object version = uploadResult.get("version");
@@ -98,7 +97,7 @@ public class CloudinaryUtil implements ImageStorageProvider {
             String publicId = extractPublicId(identifier);
             if (publicId == null) return false;
 
-            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            Map<String, Object> result = toTypedMap(cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap()));
             return "ok".equals(result.get("result"));
         } catch (Exception e) {
             System.err.println("[ERROR] Cloudinary delete failed: " + e.getMessage());
@@ -122,7 +121,7 @@ public class CloudinaryUtil implements ImageStorageProvider {
         }
 
         return cloudinary.url()
-            .transformation(new Transformation()
+            .transformation(new Transformation<>()
                 .width(width)
                 .height(height)
                 .crop("fill")
@@ -153,5 +152,14 @@ public class CloudinaryUtil implements ImageStorageProvider {
 
     public static boolean deleteByIdentifier(String identifier) {
         return INSTANCE.delete(identifier);
+    }
+
+    /**
+     * raw型のMapを型安全なMap<String, Object>に変換します。
+     * 外部ライブラリ（Cloudinary SDK）の古い設計に起因する警告をこのメソッド内に閉じ込めます。
+     */
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> toTypedMap(Map<?, ?> rawMap) {
+        return (Map<String, Object>) rawMap;
     }
 }

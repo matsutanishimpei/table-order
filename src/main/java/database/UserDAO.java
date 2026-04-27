@@ -1,6 +1,7 @@
 package database;
 
 import java.util.List;
+import java.util.Optional;
 import model.User;
 
 /**
@@ -18,16 +19,16 @@ public interface UserDAO {
      * 
      * @param id ユーザーID
      * @param password 入力されたパスワード（平文）
-     * @return 認証成功時は User インスタンス、失敗した場合は null
+     * @return 認証成功時は User インスタンスを含むOptional、失敗した場合は 空のOptional
      */
-    User login(String id, String password);
+    Optional<User> login(String id, String password);
 
     /**
      * ユーザーIDからユーザー情報を取得します。
      * @param id ユーザーID
-     * @return ユーザー情報
+     * @return ユーザー情報を含むOptional
      */
-    User findById(String id);
+    Optional<User> findById(String id);
 
     /**
      * ユーザーを新規登録します。

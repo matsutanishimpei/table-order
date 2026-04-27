@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import service.TableService;
 import service.impl.TableServiceImpl;
@@ -39,9 +40,9 @@ public class OrderHistoryServlet extends HttpServlet {
             return;
         }
 
-        TableOrderSummary summary = tableService.getTableOrderSummary(user.getTableId());
+        Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(user.getTableId());
         
-        request.setAttribute("summary", summary);
+        request.setAttribute("summary", summaryOpt.orElse(null));
         request.getRequestDispatcher("/WEB-INF/view/order_history.jsp").forward(request, response);
     }
 }

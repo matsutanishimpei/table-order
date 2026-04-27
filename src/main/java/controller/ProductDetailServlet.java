@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import service.ProductService;
 import service.impl.ProductServiceImpl;
@@ -35,14 +36,14 @@ public class ProductDetailServlet extends HttpServlet {
             return;
         }
 
-        Product p = productService.findById(productId);
+        Optional<Product> productOpt = productService.findById(productId);
 
-        if (p == null) {
+        if (productOpt.isEmpty()) {
             response.sendRedirect("Menu");
             return;
         }
 
-        request.setAttribute("product", p);
+        request.setAttribute("product", productOpt.get());
         request.getRequestDispatcher("/WEB-INF/view/product_detail.jsp").forward(request, response);
     }
 }

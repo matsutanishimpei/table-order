@@ -1,6 +1,7 @@
 package service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import database.UserDAO;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(String id) {
+    public Optional<User> findById(String id) {
         return userDAO.findById(id);
     }
 
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(String id, String password) {
+    public Optional<User> login(String id, String password) {
         return userDAO.login(id, password);
     }
 }

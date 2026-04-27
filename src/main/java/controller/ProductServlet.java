@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Optional;
 import service.ProductService;
 import service.impl.ProductServiceImpl;
 import jakarta.servlet.ServletException;
@@ -31,13 +32,13 @@ public class ProductServlet extends HttpServlet {
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
         int categoryId = ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0);
 
-        Product p = productService.findById(id);
-        if (p == null) {
+        Optional<Product> productOpt = productService.findById(id);
+        if (productOpt.isEmpty()) {
             response.sendRedirect("Menu");
             return;
         }
 
-        request.setAttribute("product", p);
+        request.setAttribute("product", productOpt.get());
         request.setAttribute("selectedCategoryId", categoryId);
 
         // 商品詳細画面にフォワード

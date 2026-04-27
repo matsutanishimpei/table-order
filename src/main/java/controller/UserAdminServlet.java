@@ -41,7 +41,7 @@ public class UserAdminServlet extends HttpServlet {
             String id = request.getParameter("id");
             User targetUser = new User();
             if ("edit".equals(action) && id != null) {
-                targetUser = userService.findById(id);
+                targetUser = userService.findById(id).orElse(new User());
             }
             // セッションの user と競合しないよう targetUser という名前でセット
             request.setAttribute("targetUser", targetUser);

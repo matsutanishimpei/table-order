@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +44,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User login(String id, String password) {
+    public Optional<User> login(String id, String password) {
         User user = null;
         String sql = "SELECT id, password, salt, role, table_id FROM users WHERE id = ?";
 
@@ -97,7 +98,7 @@ public class UserDAOImpl implements UserDAO {
             throw new exception.DatabaseException("ログイン処理中にデータベースエラーが発生しました。ID=" + id, e);
         }
 
-        return user;
+        return Optional.ofNullable(user);
     }
 
     /**
@@ -125,7 +126,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User findById(String id) {
+    public Optional<User> findById(String id) {
         User user = null;
         String sql = "SELECT id, role, table_id FROM users WHERE id = ?";
         try (Connection con = DBManager.getConnection();
@@ -142,7 +143,7 @@ public class UserDAOImpl implements UserDAO {
         } catch (SQLException e) {
             throw new exception.DatabaseException("ユーザー取得中にエラーが発生しました。ID=" + id, e);
         }
-        return user;
+        return Optional.ofNullable(user);
     }
 
     @Override

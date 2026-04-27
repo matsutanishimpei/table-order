@@ -6,11 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import database.impl.UserDAOImpl;
 import database.impl.ProductDAOImpl;
-import database.impl.CategoryDAOImpl;
 import model.User;
 import model.Product;
-import model.Category;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * データベース層の統合テストクラスです。
@@ -20,7 +19,6 @@ public class DatabaseConnectionTest {
 
     private final UserDAOImpl userDAO = new UserDAOImpl();
     private final ProductDAOImpl productDAO = new ProductDAOImpl();
-    private final CategoryDAOImpl categoryDAO = new CategoryDAOImpl();
 
     @Nested
     @DisplayName("参照系テスト")
@@ -61,18 +59,20 @@ public class DatabaseConnectionTest {
 
                 // 2. Login (Authentication)
                 // insert直後はBCryptで保存されているため、ログインが成功するはず
-                User loggedIn = userDAO.login(testId, testPass);
-                assertNotNull(loggedIn, "作成したユーザーでログインできること");
+                Optional<User> loggedInOpt = userDAO.login(testId, testPass);
+                assertTrue(loggedInOpt.isPresent(), "作成したユーザーでログインできること");
+                User loggedIn = loggedInOpt.get();
                 assertEquals(testId, loggedIn.getId());
 
                 // 3. Update (Role変更)
                 loggedIn.setRole(2); // Kitchen
                 assertTrue(userDAO.update(loggedIn), "ユーザー情報の更新に成功すること");
-                User updated = userDAO.findById(testId);
-                assertEquals(2, updated.getRole(), "更新内容が反映されていること");
+                Optional<User> updatedOpt = userDAO.findById(testId);
+                assertTrue(updatedOpt.isPresent());
+                assertEquals(2, updatedOpt.get().getRole(), "更新内容が反映されていること");
 
                 // 4. Login Failure (Wrong password)
-                assertNull(userDAO.login(testId, "wrong_pass"), "誤ったパスワードではログインできないこと");
+                assertTrue(userDAO.login(testId, "wrong_pass").isEmpty(), "誤ったパスワードではログインできないこと");
 
             } finally {
                 // 5. Cleanup (Delete)

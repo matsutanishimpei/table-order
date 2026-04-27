@@ -1,6 +1,7 @@
 package service;
 
 import java.util.List;
+import java.util.Optional;
 import model.User;
 
 /**
@@ -16,9 +17,9 @@ public interface UserService {
     /**
      * ユーザーIDからユーザー情報を取得します。
      * @param id ユーザーID
-     * @return ユーザー情報
+     * @return ユーザー情報を含むOptional
      */
-    User findById(String id);
+    Optional<User> findById(String id);
 
     /**
      * ユーザーを新規登録します。
@@ -46,7 +47,7 @@ public interface UserService {
      * ログイン認証を行います。
      * @param id ユーザーID
      * @param password パスワード
-     * @return 成功時は User、失敗時は null
+     * @return 成功時は Userを含むOptional、失敗時は 空のOptional
      */
-    User login(String id, String password);
+    Optional<User> login(String id, String password);
 }

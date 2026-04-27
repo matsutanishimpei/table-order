@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -49,7 +50,7 @@ public class ProductServletTest {
 
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
         when(request.getParameter("categoryId")).thenReturn("2");
-        when(productService.findById(productId)).thenReturn(p);
+        when(productService.findById(productId)).thenReturn(Optional.of(p));
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
 
         // Act
@@ -66,7 +67,7 @@ public class ProductServletTest {
         // Arrange
         int productId = 999;
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
-        when(productService.findById(productId)).thenReturn(null);
+        when(productService.findById(productId)).thenReturn(Optional.empty());
 
         // Act
         servlet.doGet(request, response);

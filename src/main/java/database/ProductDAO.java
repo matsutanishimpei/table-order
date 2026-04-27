@@ -1,6 +1,7 @@
 package database;
 
 import java.util.List;
+import java.util.Optional;
 import model.Product;
 
 /**
@@ -19,7 +20,7 @@ public interface ProductDAO {
      * @param id 商品ID
      * @return 商品情報
      */
-    Product findById(int id);
+    Optional<Product> findById(int id);
 
     /**
      * 全ての商品を取得します。

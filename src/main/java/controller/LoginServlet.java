@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import service.UserService;
 import service.impl.UserServiceImpl;
@@ -61,9 +62,10 @@ public class LoginServlet extends HttpServlet {
         String id = request.getParameter("id");
         String pw = request.getParameter("pw");
 
-        User user = userService.login(id, pw);
+        Optional<User> userOpt = userService.login(id, pw);
 
-        if (user != null) {
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
             // ログイン成功時：セッション固定攻撃対策としてIDを更新
             request.changeSessionId();
             
