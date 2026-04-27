@@ -103,7 +103,29 @@ public class LoginServletTest {
         servlet.doPost(request, response);
 
         // Assert
-        verify(request).setAttribute(eq("error"), anyString());
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_ERROR), anyString());
+        verify(requestDispatcher).forward(request, response);
+    }
+
+    @Test
+    public void testDoPost_LoginFailure_EmptyFields() throws ServletException, IOException {
+        // Arrange
+        String token = "valid-token";
+
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("csrf_token")).thenReturn(token);
+        when(request.getParameter("csrf_token")).thenReturn(token);
+        when(request.getParameter("id")).thenReturn(""); // 空
+        when(request.getParameter("pw")).thenReturn("password");
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+
+        // Act
+        servlet.doPost(request, response);
+
+        // Assert
+        // userService.login() は呼ばれず、バリデーションエラーメッセージがセットされることを確認
+        verify(userService, never()).login(anyString(), anyString());
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_ERROR), contains("必須入力"));
         verify(requestDispatcher).forward(request, response);
     }
 }

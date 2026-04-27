@@ -43,6 +43,9 @@ public class ProductAdminServletTest {
     @Mock
     private Part filePart;
 
+    @Mock
+    private jakarta.servlet.RequestDispatcher requestDispatcher;
+
     @BeforeEach
     public void setUp() {
         servlet = new ProductAdminServlet(productService, categoryService, imageStorageProvider);
@@ -106,12 +109,16 @@ public class ProductAdminServletTest {
         when(filePart.getSize()).thenReturn(100L);
         when(filePart.getContentType()).thenReturn("text/plain");
 
+        // フォワードのモック
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+
         // Act
         servlet.doPost(request, response);
 
         // Assert
-        // アップロードが実行されず、エラーリダイレクトされることを確認
+        // アップロードが実行されず、エラーメッセージがセットされてフォワードされることを確認
         verify(imageStorageProvider, never()).upload(any(Part.class));
-        verify(response).sendRedirect(contains("msg=invalid_format"));
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_ERROR), contains("許可されていないファイル形式"));
+        verify(requestDispatcher).forward(request, response);
     }
 }

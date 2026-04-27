@@ -60,9 +60,9 @@ public class MenuServletTest {
         servlet.doGet(request, response);
 
         // Assert
-        verify(request).setAttribute(eq("categoryList"), anyList());
-        verify(request).setAttribute(eq("productList"), anyList());
-        verify(request).setAttribute("selectedCategoryId", 1);
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_CATEGORY_LIST), anyList());
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_PRODUCT_LIST), anyList());
+        verify(request).setAttribute(util.AppConstants.ATTR_SELECTED_CATEGORY_ID, 1);
         verify(requestDispatcher).forward(request, response);
     }
 
@@ -81,7 +81,7 @@ public class MenuServletTest {
         servlet.doGet(request, response);
 
         // Assert
-        verify(request).setAttribute("selectedCategoryId", 2);
+        verify(request).setAttribute(util.AppConstants.ATTR_SELECTED_CATEGORY_ID, 2);
         verify(productService).findByCategory(2);
     }
 }
