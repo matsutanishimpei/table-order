@@ -17,6 +17,7 @@ public class ServiceFactory {
 
     /**
      * CategoryService の実装を返します。
+     * @return カテゴリ管理サービス
      */
     public static CategoryService getCategoryService() {
         return categoryService;
@@ -24,6 +25,7 @@ public class ServiceFactory {
 
     /**
      * ProductService の実装を返します。
+     * @return 商品管理サービス
      */
     public static ProductService getProductService() {
         return productService;
@@ -31,6 +33,7 @@ public class ServiceFactory {
 
     /**
      * OrderService の実装を返します。
+     * @return 注文管理サービス
      */
     public static OrderService getOrderService() {
         return orderService;
@@ -38,6 +41,7 @@ public class ServiceFactory {
 
     /**
      * TableService の実装を返します。
+     * @return 座席状態管理サービス
      */
     public static TableService getTableService() {
         return tableService;
@@ -45,6 +49,7 @@ public class ServiceFactory {
 
     /**
      * UserService の実装を返します。
+     * @return ユーザー認証・管理サービス
      */
     public static UserService getUserService() {
         return userService;
@@ -52,6 +57,7 @@ public class ServiceFactory {
 
     /**
      * SalesService の実装を返します。
+     * @return 売上集計サービス
      */
     public static SalesService getSalesService() {
         return salesService;

@@ -17,6 +17,15 @@ import util.AppConstants;
 public abstract class BaseServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * リクエスト処理をインターセプトし、共通の例外ハンドリングを行います。
+     * 実行中に未捕捉の例外が発生した場合はログに記録し、共通エラー画面へ遷移させます。
+     * 
+     * @param req HTTPリクエスト
+     * @param resp HTTPレスポンス
+     * @throws ServletException サーブレット例外が発生した場合
+     * @throws IOException 入出力例外が発生した場合
+     */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
