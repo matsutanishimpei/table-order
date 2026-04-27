@@ -8,11 +8,10 @@ import service.impl.UserServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import model.User;
 import util.CsrfUtil;
 
@@ -20,9 +19,9 @@ import util.CsrfUtil;
  * ログイン処理を制御するサーブレットクラスです。
  */
 @WebServlet("/Login")
+@Slf4j
 public class LoginServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(LoginServlet.class.getName());
     private final UserService userService;
 
     public LoginServlet() {
@@ -86,7 +85,7 @@ public class LoginServlet extends BaseServlet {
             }
         } else {
             // ログイン失敗時
-            logger.warning("ログイン失敗試行: ID=" + id);
+            log.warn("ログイン失敗試行: ID={}", id);
             request.setAttribute("error", "ユーザーIDまたはパスワードが正しくありません。");
             request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }

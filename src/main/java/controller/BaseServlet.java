@@ -1,9 +1,7 @@
 package controller;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
  * すべてのサーブレットの基底クラスです。
  * 共通の例外ハンドリングやユーティリティメソッドを提供します。
  */
+@Slf4j
 public abstract class BaseServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(BaseServlet.class.getName());
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -23,7 +21,7 @@ public abstract class BaseServlet extends HttpServlet {
             super.service(req, resp);
         } catch (Exception e) {
             // 例外をログに出力
-            logger.log(Level.SEVERE, "想定外のエラーが発生しました: " + this.getClass().getName(), e);
+            log.error("想定外のエラーが発生しました: {}", this.getClass().getName(), e);
             
             // レスポンスが既にコミットされているか確認
             if (!resp.isCommitted()) {

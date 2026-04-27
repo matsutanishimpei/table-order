@@ -10,8 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import model.User;
 import util.PasswordUtil;
@@ -19,8 +18,8 @@ import util.PasswordUtil;
 /**
  * ユーザー情報のデータベース操作を行うDAO実装クラスです。
  */
+@Slf4j
 public class UserDAOImpl implements UserDAO {
-    private static final Logger logger = Logger.getLogger(UserDAOImpl.class.getName());
 
     @Override
     public List<User> findAll() {
@@ -85,12 +84,12 @@ public class UserDAOImpl implements UserDAO {
                         user.setRole(rs.getInt("role"));
                         user.setTableId((Integer) rs.getObject("table_id"));
                         
-                        logger.info("ログイン成功: ユーザーID=" + id);
+                        log.info("ログイン成功: ユーザーID={}", id);
                     } else {
-                        logger.warning("ログイン失敗（パスワード不一致）: ユーザーID=" + id);
+                        log.warn("ログイン失敗（パスワード不一致）: ユーザーID={}", id);
                     }
                 } else {
-                    logger.warning("ログイン失敗（ユーザー未登録）: ユーザーID=" + id);
+                    log.warn("ログイン失敗（ユーザー未登録）: ユーザーID={}", id);
                 }
             }
 
@@ -117,11 +116,11 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(2, userId);
             
             if (ps.executeUpdate() > 0) {
-                logger.info("パスワードの BCrypt 強制アップグレード（オンザフライ・マイグレーション）が完了しました。ユーザーID=" + userId);
+                log.info("パスワードの BCrypt 強制アップグレード（オンザフライ・マイグレーション）が完了しました。ユーザーID={}", userId);
             }
         } catch (SQLException e) {
             // マイグレーション自体が失敗しても、今回のログインセッションは継続させるためログ出力のみ
-            logger.log(Level.WARNING, "BCrypt マイグレーション中にエラーが発生しました。ユーザーID=" + userId, e);
+            log.warn("BCrypt マイグレーション中にエラーが発生しました。ユーザーID={}", userId, e);
         }
     }
 

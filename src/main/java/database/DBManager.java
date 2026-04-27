@@ -4,17 +4,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * データベース接続を管理するクラスです。
  */
+@Slf4j
 public class DBManager {
-    private static final Logger logger = Logger.getLogger(DBManager.class.getName());
     
     private static HikariDataSource dataSource;
     private static String pepper;
@@ -55,7 +53,7 @@ public class DBManager {
             pepper = props.getProperty("app.security.pepper");
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "DBManagerの初期化に失敗しました", e);
+            log.error("DBManagerの初期化に失敗しました", e);
             throw new RuntimeException("DBManagerの初期化に失敗しました: " + e.getMessage(), e);
         }
     }
@@ -115,7 +113,7 @@ public class DBManager {
             try {
                 con.close();
             } catch (SQLException e) {
-                logger.log(Level.WARNING, "コネクションのクローズ中にエラーが発生しました", e);
+                log.warn("コネクションのクローズ中にエラーが発生しました", e);
             }
         }
     }

@@ -10,10 +10,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Cloudinaryを使用した画像ストレージの実装クラスです。
  */
+@Slf4j
 public class CloudinaryUtil implements ImageStorageProvider {
     private static Cloudinary cloudinary;
     private static final CloudinaryUtil INSTANCE = new CloudinaryUtil();
@@ -36,13 +38,13 @@ public class CloudinaryUtil implements ImageStorageProvider {
                         "secure", true
                     ));
                 } else {
-                    System.err.println("[WARN] Cloudinary properties are missing in database.properties. Image features will be disabled.");
+                    log.warn("Cloudinary properties are missing in database.properties. Image features will be disabled.");
                 }
             } else {
-                System.err.println("[WARN] database.properties not found. Cloudinary will not be initialized.");
+                log.warn("database.properties not found. Cloudinary will not be initialized.");
             }
         } catch (Exception e) {
-            System.err.println("[WARN] Cloudinary initialization failed: " + e.getMessage());
+            log.error("Cloudinary initialization failed", e);
         }
     }
 
@@ -78,7 +80,7 @@ public class CloudinaryUtil implements ImageStorageProvider {
             return "v" + version + "/" + publicId;
 
         } catch (Exception e) {
-            System.err.println("[ERROR] Cloudinary upload failed: " + e.getMessage());
+            log.error("Cloudinary upload failed", e);
             return null;
         } finally {
             if (tempFile != null && tempFile.exists()) {
@@ -100,7 +102,7 @@ public class CloudinaryUtil implements ImageStorageProvider {
             Map<String, Object> result = toTypedMap(cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap()));
             return "ok".equals(result.get("result"));
         } catch (Exception e) {
-            System.err.println("[ERROR] Cloudinary delete failed: " + e.getMessage());
+            log.error("Cloudinary delete failed", e);
             return false;
         }
     }

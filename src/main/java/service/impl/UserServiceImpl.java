@@ -2,8 +2,7 @@ package service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
-
+import lombok.extern.slf4j.Slf4j;
 import database.UserDAO;
 import database.impl.UserDAOImpl;
 import model.User;
@@ -12,8 +11,8 @@ import service.UserService;
 /**
  * ユーザー管理業務のビジネスロジックを管理するService実装クラスです。
  */
+@Slf4j
 public class UserServiceImpl implements UserService {
-    private static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
     private final UserDAO userDAO;
 
     // プロダクション用コンストラクタ
@@ -41,13 +40,13 @@ public class UserServiceImpl implements UserService {
         try {
             boolean success = userDAO.insert(user);
             if (success) {
-                logger.info("ユーザー登録成功: id=" + user.getId());
+                log.info("ユーザー登録成功: id={}", user.getId());
             } else {
-                logger.warning("ユーザー登録失敗: id=" + user.getId());
+                log.warn("ユーザー登録失敗: id={}", user.getId());
             }
             return success;
         } catch (Exception e) {
-            logger.severe("ユーザー登録エラー: id=" + user.getId() + ", reason=" + e.getMessage());
+            log.error("ユーザー登録エラー: id={}, reason={}", user.getId(), e.getMessage());
             return false;
         }
     }
@@ -60,11 +59,11 @@ public class UserServiceImpl implements UserService {
                 success = userDAO.updatePassword(user.getId(), newPassword);
             }
             if (success) {
-                logger.info("ユーザー更新成功: id=" + user.getId());
+                log.info("ユーザー更新成功: id={}", user.getId());
             }
             return success;
         } catch (Exception e) {
-            logger.severe("ユーザー更新エラー: id=" + user.getId() + ", reason=" + e.getMessage());
+            log.error("ユーザー更新エラー: id={}, reason={}", user.getId(), e.getMessage());
             return false;
         }
     }
@@ -74,11 +73,11 @@ public class UserServiceImpl implements UserService {
         try {
             boolean success = userDAO.delete(id);
             if (success) {
-                logger.info("ユーザー削除成功: id=" + id);
+                log.info("ユーザー削除成功: id={}", id);
             }
             return success;
         } catch (Exception e) {
-            logger.severe("ユーザー削除エラー: id=" + id + ", reason=" + e.getMessage());
+            log.error("ユーザー削除エラー: id={}, reason={}", id, e.getMessage());
             return false;
         }
     }

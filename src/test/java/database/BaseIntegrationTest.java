@@ -15,6 +15,7 @@ import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 public abstract class BaseIntegrationTest {
 
     @Container
+    @SuppressWarnings("resource")
     protected static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("table_order_test")
             .withUsername("testuser")

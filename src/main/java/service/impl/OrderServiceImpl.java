@@ -2,8 +2,7 @@ package service.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Logger;
-
+import lombok.extern.slf4j.Slf4j;
 import database.OrderDAO;
 import database.TransactionManager;
 import database.impl.OrderDAOImpl;
@@ -14,8 +13,8 @@ import service.OrderService;
 /**
  * 注文業務のビジネスロジックを管理するService実装クラスです。
  */
+@Slf4j
 public class OrderServiceImpl implements OrderService {
-    private static final Logger logger = Logger.getLogger(OrderServiceImpl.class.getName());
     private final OrderDAO orderDAO;
 
     // プロダクション用コンストラクタ
@@ -41,11 +40,11 @@ public class OrderServiceImpl implements OrderService {
                 // ② order_items テーブルへ全商品をバッチ登録
                 orderDAO.insertOrderItems(con, orderId, cartItems, OrderConstants.STATUS_ORDERED);
 
-                logger.info("注文登録完了: tableId=" + tableId + ", orderId=" + orderId);
+                log.info("注文登録完了: tableId={}, orderId={}", tableId, orderId);
                 return true;
             });
         } catch (Exception e) {
-            logger.severe("注文登録失敗: tableId=" + tableId + ", reason=" + e.getMessage());
+            log.error("注文登録失敗: tableId={}, reason={}", tableId, e.getMessage());
             return false;
         }
     }
@@ -60,11 +59,11 @@ public class OrderServiceImpl implements OrderService {
                 // ② 続いて orders 自身を PAID に変更
                 orderDAO.updateOrderStatusForCheckout(con, tableId, OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
 
-                logger.info("会計完了処理成功: tableId=" + tableId);
+                log.info("会計完了処理成功: tableId={}", tableId);
                 return true;
             });
         } catch (Exception e) {
-            logger.severe("会計完了処理失敗: tableId=" + tableId + ", reason=" + e.getMessage());
+            log.error("会計完了処理失敗: tableId={}, reason={}", tableId, e.getMessage());
             return false;
         }
     }

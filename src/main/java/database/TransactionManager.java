@@ -2,16 +2,15 @@ package database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import exception.DatabaseException;
 
 /**
  * JDBC トランザクションを管理するユーティリティクラスです。
  * 開発者が明示的に rollback や commit を書かずに済むようにします。
  */
+@Slf4j
 public class TransactionManager {
-    private static final Logger logger = Logger.getLogger(TransactionManager.class.getName());
 
     /**
      * 指定された処理をトランザクション制御下で実行します。
@@ -36,9 +35,9 @@ public class TransactionManager {
             if (con != null) {
                 try {
                     con.rollback(); // 例外発生ならロールバック
-                    logger.warning("Transaction rolled back due to: " + e.getMessage());
+                    log.warn("Transaction rolled back due to: {}", e.getMessage());
                 } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Rollback failed", ex);
+                    log.error("Rollback failed", ex);
                 }
             }
             if (e instanceof DatabaseException) {
