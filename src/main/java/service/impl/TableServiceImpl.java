@@ -40,9 +40,7 @@ public class TableServiceImpl implements TableService {
     public List<TableStatusView> findAllTableStatus() {
         List<TableStatusView> list = tableDAO.findAllTableStatus();
         // DAO は生のステータスコードのみ返すため、Service 層で表示用ラベルに変換する
-        for (TableStatusView view : list) {
-            view.setStatusLabel(resolveStatusLabel(view.getStatusCode()));
-        }
+        list.forEach(view -> view.setStatusLabel(resolveStatusLabel(view.getStatusCode())));
         return list;
     }
 

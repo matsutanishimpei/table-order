@@ -56,14 +56,18 @@ public class OrderDAOImpl implements OrderDAO {
     public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems, int status) throws SQLException {
         String sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, unit_price, status) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
-            for (CartItem item : cartItems) {
-                psItem.setInt(1, orderId);
-                psItem.setInt(2, item.getProductId());
-                psItem.setInt(3, item.getQuantity());
-                psItem.setInt(4, item.getUnitPrice());
-                psItem.setInt(5, status);
-                psItem.addBatch();
-            }
+            cartItems.forEach(item -> {
+                try {
+                    psItem.setInt(1, orderId);
+                    psItem.setInt(2, item.getProductId());
+                    psItem.setInt(3, item.getQuantity());
+                    psItem.setInt(4, item.getUnitPrice());
+                    psItem.setInt(5, status);
+                    psItem.addBatch();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             psItem.executeBatch();
         }
     }

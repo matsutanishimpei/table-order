@@ -34,4 +34,18 @@ public class CategoryAdminServlet extends HttpServlet {
         request.setAttribute("categoryList", list);
         request.getRequestDispatcher("/WEB-INF/view/admin_categories.jsp").forward(request, response);
     }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String name = request.getParameter("name");
+        if (name != null && !name.trim().isEmpty()) {
+            boolean success = categoryService.insert(name.trim());
+            if (success) {
+                response.sendRedirect("Category?msg=success");
+            } else {
+                response.sendRedirect("Category?msg=error");
+            }
+        } else {
+            response.sendRedirect("Category");
+        }
+    }
 }

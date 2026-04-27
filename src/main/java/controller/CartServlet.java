@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.CartItem;
-import model.Product;
 
 /**
  * カート操作（追加・削除・表示）を制御するサーブレットです。
@@ -40,11 +39,12 @@ public class CartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
-        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-            session.setAttribute("cart", cart);
+        List<CartItem> sessionCart = (List<CartItem>) session.getAttribute("cart");
+        if (sessionCart == null) {
+            sessionCart = new ArrayList<>();
+            session.setAttribute("cart", sessionCart);
         }
+        final List<CartItem> cart = sessionCart;
 
         String action = request.getParameter("action");
         if ("add".equals(action)) {
@@ -55,27 +55,23 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-                boolean found = false;
-                for (CartItem item : cart) {
-                    if (item.getProductId() == productId) {
-                        item.setQuantity(item.getQuantity() + quantity);
-                        found = true;
-                        break;
-                    }
-                }
+            Optional<CartItem> existingItem = cart.stream()
+                .filter(item -> item.getProductId() == productId)
+                .findFirst();
 
-                if (!found) {
-                    Optional<Product> productOpt = productService.findById(productId);
-                    if (productOpt.isPresent()) {
-                        Product p = productOpt.get();
-                        CartItem newItem = new CartItem();
-                        newItem.setProductId(p.getId());
-                        newItem.setName(p.getName()); // setName に修正
-                        newItem.setUnitPrice(p.getPrice());
-                        newItem.setQuantity(quantity);
-                        cart.add(newItem);
-                    }
-                }
+            if (existingItem.isPresent()) {
+                CartItem item = existingItem.get();
+                item.setQuantity(item.getQuantity() + quantity);
+            } else {
+                productService.findById(productId).ifPresent(p -> {
+                    CartItem newItem = new CartItem();
+                    newItem.setProductId(p.getId());
+                    newItem.setName(p.getName());
+                    newItem.setUnitPrice(p.getPrice());
+                    newItem.setQuantity(quantity);
+                    cart.add(newItem);
+                });
+            }
         } else if ("clear".equals(action)) {
             cart.clear();
         }

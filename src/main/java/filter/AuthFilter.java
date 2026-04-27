@@ -38,12 +38,13 @@ public class AuthFilter implements Filter {
 
         User user = (User) session.getAttribute("user");
 
-        // 2. CSRFトークンの生成と検証
         String sessionToken = (String) session.getAttribute("csrf_token");
         if (sessionToken == null) {
             sessionToken = CsrfUtil.generateToken();
             session.setAttribute("csrf_token", sessionToken);
         }
+        // JSPから ${csrf_token} で参照できるようにリクエスト属性にセット
+        req.setAttribute("csrf_token", sessionToken);
 
         if ("POST".equalsIgnoreCase(req.getMethod())) {
             String requestToken = req.getParameter("csrf_token");
