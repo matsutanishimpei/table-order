@@ -2,18 +2,13 @@ package model;
 
 import java.io.Serializable;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * 商品別の売上集計データを保持するモデルクラスです。
+ * 商品別の売上集計データを保持するレコードです。
+ * 
+ * @param productName 商品名
+ * @param totalQuantity 売上合計数量
+ * @param totalAmount 売上合計額
  */
-@Data
-@NoArgsConstructor
-public class ProductSales implements Serializable {
+public record ProductSales(String productName, int totalQuantity, int totalAmount) implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private String productName;
-    private int totalQuantity;
-    private int totalAmount;
 }

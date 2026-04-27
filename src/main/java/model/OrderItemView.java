@@ -3,22 +3,25 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * 注文明細の表示用データを保持するモデルクラス（DTO）です。
+ * 注文明細の表示用データを保持するレコード（DTO）です。
+ * 
+ * @param orderItemId 注文明細ID
+ * @param productName 商品名
+ * @param quantity 数量
+ * @param tableName テーブル名
+ * @param orderedAt 注文日時
+ * @param status ステータス
+ * @param unitPrice 単価
  */
-@Data
-@NoArgsConstructor
-public class OrderItemView implements Serializable {
+public record OrderItemView(
+    int orderItemId,
+    String productName,
+    int quantity,
+    String tableName,
+    Timestamp orderedAt,
+    int status,
+    int unitPrice
+) implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private int orderItemId;
-    private String productName;
-    private int quantity;
-    private String tableName;
-    private Timestamp orderedAt;
-    private int status;
-    private int unitPrice;
 }

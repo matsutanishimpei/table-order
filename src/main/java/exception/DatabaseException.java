@@ -3,7 +3,7 @@ package exception;
 /**
  * データベース操作に関する例外を表すカスタム例外クラスです。
  */
-public class DatabaseException extends RuntimeException {
+public class DatabaseException extends BaseException {
     private static final long serialVersionUID = 1L;
 
     public DatabaseException(String message) {

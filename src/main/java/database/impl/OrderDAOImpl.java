@@ -25,15 +25,15 @@ public class OrderDAOImpl implements OrderDAO {
      * ResultSet の現在行から OrderItemView オブジェクトを生成します。
      */
     private OrderItemView mapOrderItemRow(ResultSet rs) throws SQLException {
-        OrderItemView view = new OrderItemView();
-        view.setOrderItemId(rs.getInt("id"));
-        view.setProductName(rs.getString("product_name"));
-        view.setQuantity(rs.getInt("quantity"));
-        view.setTableName(rs.getString("table_name"));
-        view.setOrderedAt(rs.getTimestamp("created_at"));
-        view.setStatus(rs.getInt("status"));
-        view.setUnitPrice(rs.getInt("unit_price"));
-        return view;
+        return new OrderItemView(
+            rs.getInt("id"),
+            rs.getString("product_name"),
+            rs.getInt("quantity"),
+            rs.getString("table_name"),
+            rs.getTimestamp("created_at"),
+            rs.getInt("status"),
+            rs.getInt("unit_price")
+        );
     }
 
     @Override

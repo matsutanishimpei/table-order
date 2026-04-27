@@ -39,9 +39,18 @@ public class TableServiceImpl implements TableService {
     @Override
     public List<TableStatusView> findAllTableStatus() {
         List<TableStatusView> list = tableDAO.findAllTableStatus();
-        // DAO は生のステータスコードのみ返すため、Service 層で表示用ラベルに変換する
-        list.forEach(view -> view.setStatusLabel(resolveStatusLabel(view.getStatusCode())));
-        return list;
+        // Record は不変なため、Stream API を使用して新しいラベルをセットした Record を生成して返す
+        return list.stream()
+            .map(view -> new TableStatusView(
+                view.tableId(),
+                view.tableName(),
+                resolveStatusLabel(view.statusCode()),
+                view.statusCode(),
+                view.orderCount(),
+                view.totalAmount(),
+                view.lastOrderTime()
+            ))
+            .toList();
     }
 
     /**

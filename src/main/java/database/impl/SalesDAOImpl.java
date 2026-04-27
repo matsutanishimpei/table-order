@@ -50,11 +50,11 @@ public class SalesDAOImpl implements SalesDAO {
             ps.setInt(1, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    DailySales ds = new DailySales();
-                    ds.setSalesDate(rs.getDate("sales_date"));
-                    ds.setAmount(rs.getInt("amount"));
-                    ds.setOrderCount(rs.getInt("order_count"));
-                    list.add(ds);
+                    list.add(new DailySales(
+                        rs.getDate("sales_date"),
+                        rs.getInt("amount"),
+                        rs.getInt("order_count")
+                    ));
                 }
             }
         } catch (SQLException e) {
@@ -76,11 +76,11 @@ public class SalesDAOImpl implements SalesDAO {
             ps.setInt(1, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    ProductSales psModel = new ProductSales();
-                    psModel.setProductName(rs.getString("name"));
-                    psModel.setTotalQuantity(rs.getInt("total_qty"));
-                    psModel.setTotalAmount(rs.getInt("total_amt"));
-                    list.add(psModel);
+                    list.add(new ProductSales(
+                        rs.getString("name"),
+                        rs.getInt("total_qty"),
+                        rs.getInt("total_amt")
+                    ));
                 }
             }
         } catch (SQLException e) {

@@ -1,16 +1,13 @@
 package util;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
- * バリデーション結果を保持するクラスです。
+ * バリデーション結果を保持するレコードです。
+ * Java 17 の record を使用して、不変性と簡潔性を確保しています。
+ * 
+ * @param valid 検証結果が成功かどうか
+ * @param message 失敗時のエラーメッセージ
  */
-@Getter
-@AllArgsConstructor
-public class ValidationResult {
-    private final boolean valid;
-    private final String message;
+public record ValidationResult(boolean valid, String message) {
 
     /**
      * 成功の結果を生成します。

@@ -69,7 +69,7 @@ public class LoginServlet extends BaseServlet {
         }
 
         if (vr.isInvalid()) {
-            request.setAttribute(AppConstants.ATTR_ERROR, vr.getMessage());
+            request.setAttribute(AppConstants.ATTR_ERROR, vr.message());
             request.getRequestDispatcher(AppConstants.VIEW_LOGIN).forward(request, response);
             return;
         }

@@ -86,14 +86,17 @@ public class TableDAOImpl implements TableDAO {
                 psItems.setInt(2, OrderConstants.STATUS_PAID);
                 try (ResultSet rsItems = psItems.executeQuery()) {
                     while (rsItems.next()) {
-                        OrderItemView item = new OrderItemView();
-                        item.setOrderItemId(rsItems.getInt("id"));
-                        item.setProductName(rsItems.getString("name"));
-                        item.setQuantity(rsItems.getInt("quantity"));
-                        item.setUnitPrice(rsItems.getInt("unit_price"));
-                        item.setStatus(rsItems.getInt("status"));
+                        OrderItemView item = new OrderItemView(
+                            rsItems.getInt("id"),
+                            rsItems.getString("name"),
+                            rsItems.getInt("quantity"),
+                            null, // tableName はこのクエリでは取得していない
+                            null, // orderedAt はこのクエリでは取得していない
+                            rsItems.getInt("status"),
+                            rsItems.getInt("unit_price")
+                        );
                         items.add(item);
-                        total += item.getQuantity() * item.getUnitPrice();
+                        total += item.quantity() * item.unitPrice();
                     }
                 }
             }
@@ -123,18 +126,19 @@ public class TableDAOImpl implements TableDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    TableStatusView view = new TableStatusView();
-                    view.setTableId(rs.getInt("id"));
-                    view.setTableName(rs.getString("table_name"));
-                    
                     int itemCount = rs.getInt("item_count");
                     Object minStatusObj = rs.getObject("min_status");
                     int minStatus = (minStatusObj == null || itemCount == 0) ? 0 : (Integer) minStatusObj;
-                    view.setStatusCode(String.valueOf(minStatus));
-                    
-                    view.setOrderCount(itemCount);
-                    view.setTotalAmount(rs.getInt("total_amt"));
-                    view.setLastOrderTime(rs.getTimestamp("last_order"));
+
+                    TableStatusView view = new TableStatusView(
+                        rs.getInt("id"),
+                        rs.getString("table_name"),
+                        null, // statusLabel は Service 等で設定される想定か？
+                        String.valueOf(minStatus),
+                        itemCount,
+                        rs.getInt("total_amt"),
+                        rs.getTimestamp("last_order")
+                    );
                     list.add(view);
                 }
             }

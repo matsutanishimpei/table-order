@@ -105,7 +105,7 @@ public class ProductAdminServlet extends BaseServlet {
         // バリデーション実行
         ValidationResult vr = validateProduct(p, request.getPart("imageFile"), !isUpdate);
         if (vr.isInvalid()) {
-            request.setAttribute(AppConstants.ATTR_ERROR, vr.getMessage());
+            request.setAttribute(AppConstants.ATTR_ERROR, vr.message());
             request.setAttribute(AppConstants.ATTR_PRODUCT, p);
             request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
             request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);

@@ -56,7 +56,7 @@ public class CategoryAdminServlet extends BaseServlet {
         // バリデーション
         util.ValidationResult vr = util.ValidationUtil.validateRequired(name, "カテゴリ名");
         if (vr.isInvalid()) {
-            handleError(request, response, vr.getMessage(), id, name, action);
+            handleError(request, response, vr.message(), id, name, action);
             return;
         }
 
