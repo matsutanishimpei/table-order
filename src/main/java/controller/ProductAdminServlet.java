@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import service.CategoryService;
-import service.impl.CategoryServiceImpl;
 import service.ProductService;
-import service.impl.ProductServiceImpl;
+import service.ServiceFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -40,7 +39,7 @@ public class ProductAdminServlet extends BaseServlet {
     private final ImageStorageProvider imageStorageProvider;
 
     public ProductAdminServlet() {
-        this(new ProductServiceImpl(), new CategoryServiceImpl(), CloudinaryUtil.getInstance());
+        this(ServiceFactory.getProductService(), ServiceFactory.getCategoryService(), CloudinaryUtil.getInstance());
     }
 
     public ProductAdminServlet(ProductService productService, CategoryService categoryService, ImageStorageProvider imageStorageProvider) {

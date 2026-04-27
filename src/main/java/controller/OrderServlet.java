@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import service.OrderService;
-import service.impl.OrderServiceImpl;
+import service.ServiceFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,7 +25,7 @@ public class OrderServlet extends BaseServlet {
     private final OrderService orderService;
 
     public OrderServlet() {
-        this(new OrderServiceImpl());
+        this(ServiceFactory.getOrderService());
     }
 
     public OrderServlet(OrderService orderService) {

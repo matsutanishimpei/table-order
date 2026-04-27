@@ -11,9 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.TableOrderSummary;
 import service.OrderService;
-import service.impl.OrderServiceImpl;
+import service.ServiceFactory;
 import service.TableService;
-import service.impl.TableServiceImpl;
 
 import util.AppConstants;
 
@@ -27,7 +26,7 @@ public class CashierServlet extends BaseServlet {
     private final TableService tableService;
 
     public CashierServlet() {
-        this(new OrderServiceImpl(), new TableServiceImpl());
+        this(ServiceFactory.getOrderService(), ServiceFactory.getTableService());
     }
 
     public CashierServlet(OrderService orderService, TableService tableService) {

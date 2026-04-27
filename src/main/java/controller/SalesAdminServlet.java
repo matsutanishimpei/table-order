@@ -3,7 +3,7 @@ package controller;
 import java.io.IOException;
 
 import service.SalesService;
-import service.impl.SalesServiceImpl;
+import service.ServiceFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +21,7 @@ public class SalesAdminServlet extends BaseServlet {
     private final SalesService salesService;
 
     public SalesAdminServlet() {
-        this(new SalesServiceImpl());
+        this(ServiceFactory.getSalesService());
     }
 
     public SalesAdminServlet(SalesService salesService) {

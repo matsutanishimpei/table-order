@@ -3,7 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.Optional;
 import service.ProductService;
-import service.impl.ProductServiceImpl;
+import service.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class ProductServlet extends BaseServlet {
     private final ProductService productService;
 
     public ProductServlet() {
-        this(new ProductServiceImpl());
+        this(ServiceFactory.getProductService());
     }
 
     public ProductServlet(ProductService productService) {

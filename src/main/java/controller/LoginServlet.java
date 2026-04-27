@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import service.ServiceFactory;
 import service.UserService;
-import service.impl.UserServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,7 +26,7 @@ public class LoginServlet extends BaseServlet {
     private final UserService userService;
 
     public LoginServlet() {
-        this(new UserServiceImpl());
+        this(ServiceFactory.getUserService());
     }
 
     public LoginServlet(UserService userService) {

@@ -3,10 +3,9 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
+import service.ServiceFactory;
 import service.TableService;
-import service.impl.TableServiceImpl;
 import service.UserService;
-import service.impl.UserServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,7 +25,7 @@ public class UserAdminServlet extends BaseServlet {
     private final TableService tableService;
 
     public UserAdminServlet() {
-        this(new UserServiceImpl(), new TableServiceImpl());
+        this(ServiceFactory.getUserService(), ServiceFactory.getTableService());
     }
 
     public UserAdminServlet(UserService userService, TableService tableService) {

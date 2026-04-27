@@ -3,8 +3,8 @@ package controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import service.ServiceFactory;
 import service.TableService;
-import service.impl.TableServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,7 +25,7 @@ public class OrderHistoryServlet extends BaseServlet {
     private final TableService tableService;
 
     public OrderHistoryServlet() {
-        this(new TableServiceImpl());
+        this(ServiceFactory.getTableService());
     }
 
     public OrderHistoryServlet(TableService tableService) {

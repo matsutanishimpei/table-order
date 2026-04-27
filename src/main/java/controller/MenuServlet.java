@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import service.CategoryService;
-import service.impl.CategoryServiceImpl;
 import service.ProductService;
-import service.impl.ProductServiceImpl;
+import service.ServiceFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class MenuServlet extends BaseServlet {
     private final ProductService productService;
 
     public MenuServlet() {
-        this(new CategoryServiceImpl(), new ProductServiceImpl());
+        this(ServiceFactory.getCategoryService(), ServiceFactory.getProductService());
     }
 
     public MenuServlet(CategoryService categoryService, ProductService productService) {

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import service.CategoryService;
-import service.impl.CategoryServiceImpl;
+import service.ServiceFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +24,7 @@ public class CategoryAdminServlet extends BaseServlet {
     private final CategoryService categoryService;
 
     public CategoryAdminServlet() {
-        this(new CategoryServiceImpl());
+        this(ServiceFactory.getCategoryService());
     }
 
     public CategoryAdminServlet(CategoryService categoryService) {

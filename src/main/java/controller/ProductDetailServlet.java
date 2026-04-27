@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import service.ProductService;
-import service.impl.ProductServiceImpl;
+import service.ServiceFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +21,7 @@ public class ProductDetailServlet extends BaseServlet {
     private final ProductService productService;
 
     public ProductDetailServlet() {
-        this(new ProductServiceImpl());
+        this(ServiceFactory.getProductService());
     }
 
     public ProductDetailServlet(ProductService productService) {
