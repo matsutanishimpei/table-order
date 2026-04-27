@@ -102,77 +102,49 @@ public class ProductAdminServlet extends BaseServlet {
         p.setAllergyInfo(request.getParameter("allergyInfo"));
         p.setAvailable(request.getParameter("isAvailable") != null);
 
-        // バリデーション実行
-        ValidationResult vr = validateProduct(p, request.getPart("imageFile"), !isUpdate);
-        if (vr.isInvalid()) {
-            request.setAttribute(AppConstants.ATTR_ERROR, vr.message());
-            request.setAttribute(AppConstants.ATTR_PRODUCT, p);
-            request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
-            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
-            return;
-        }
+        try {
+            // 1. 画像検証（サーブレット固有の責務）
+            Part filePart = request.getPart("imageFile");
+            validateImage(filePart, !isUpdate);
 
-        // 画像のアップロード処理
-        Part filePart = request.getPart("imageFile");
-        if (filePart != null && filePart.getSize() > 0) {
-            // アップロード前に古い識別子を保持
-            String oldImageId = p.getImagePath();
-            
-            // ImageStorageProviderを使用してアップロード
-            String imageId = imageStorageProvider.upload(filePart);
-            if (imageId != null) {
-                p.setImagePath(imageId);
-                
-                // 新しい画像のアップロードに成功した場合、古い画像を削除
-                if (oldImageId != null && !oldImageId.isEmpty()) {
-                    imageStorageProvider.delete(oldImageId);
+            // 2. 画像のアップロード処理
+            if (filePart != null && filePart.getSize() > 0) {
+                String oldImageId = p.getImagePath();
+                String imageId = imageStorageProvider.upload(filePart);
+                if (imageId != null) {
+                    p.setImagePath(imageId);
+                    if (oldImageId != null && !oldImageId.isEmpty()) {
+                        imageStorageProvider.delete(oldImageId);
+                    }
+                } else {
+                    throw new exception.BusinessException("画像のアップロードに失敗しました。");
                 }
-            } else {
-                request.setAttribute(AppConstants.ATTR_ERROR, "画像のアップロードに失敗しました。");
-                request.setAttribute(AppConstants.ATTR_PRODUCT, p);
-                request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
-                request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
-                return;
             }
-        }
 
-        boolean success;
-        if (isUpdate) {
-            success = productService.update(p);
-        } else {
-            success = productService.insert(p);
-        }
+            // 3. サービス呼び出し（内部で業務バリデーションが実行される）
+            if (isUpdate) {
+                productService.update(p);
+            } else {
+                productService.insert(p);
+            }
 
-        if (success) {
             response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?msg=success");
-        } else {
-            request.setAttribute(AppConstants.ATTR_ERROR, "データベースの更新に失敗しました。");
+
+        } catch (exception.BusinessException e) {
+            request.setAttribute(AppConstants.ATTR_ERROR, e.getMessage());
             request.setAttribute(AppConstants.ATTR_PRODUCT, p);
             request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
             request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
         }
     }
 
-    private ValidationResult validateProduct(Product p, Part filePart, boolean imageRequired) {
-        ValidationResult res = ValidationUtil.validateRequired(p.getName(), "商品名");
-        if (res.isInvalid()) return res;
-
-        res = ValidationUtil.validateMaxLength(p.getName(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
-        if (res.isInvalid()) return res;
-
-        res = ValidationUtil.validatePositive(p.getCategoryId(), "カテゴリ");
-        if (res.isInvalid()) return res;
-
-        res = ValidationUtil.validatePositive(p.getPrice(), "価格");
-        if (res.isInvalid()) return res;
-
+    private void validateImage(Part filePart, boolean imageRequired) {
         if (filePart != null && filePart.getSize() > 0) {
-            res = ValidationUtil.validateImage(filePart);
-            if (res.isInvalid()) return res;
+            ValidationResult res = ValidationUtil.validateImage(filePart);
+            if (res.isInvalid()) throw new exception.BusinessException(res.message());
         } else if (imageRequired) {
-            return ValidationResult.failure("画像は必須です。");
+            throw new exception.BusinessException("画像は必須です。");
         }
-
-        return ValidationResult.success();
     }
+
 }

@@ -2,11 +2,14 @@ package service.impl;
 
 import java.util.List;
 import java.util.Optional;
-
 import database.ProductDAO;
 import database.impl.ProductDAOImpl;
 import model.Product;
 import service.ProductService;
+import exception.BusinessException;
+import util.AppConstants;
+import util.ValidationUtil;
+import util.ValidationResult;
 
 /**
  * 商品情報のビジネスロジックを管理するService実装クラスです。
@@ -41,16 +44,37 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean insert(Product p) {
+        validate(p);
         return productDAO.insert(p);
     }
 
     @Override
     public boolean update(Product p) {
+        validate(p);
         return productDAO.update(p);
     }
 
     @Override
     public boolean updateAvailability(int productId, boolean isAvailable) {
         return productDAO.updateAvailability(productId, isAvailable);
+    }
+
+    /**
+     * 商品情報の業務バリデーションを行います。
+     * @param p 商品情報
+     * @throws BusinessException 業務ルール違反がある場合
+     */
+    private void validate(Product p) {
+        ValidationResult res = ValidationUtil.validateRequired(p.getName(), "商品名");
+        if (res.isInvalid()) throw new BusinessException(res.message());
+
+        res = ValidationUtil.validateMaxLength(p.getName(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
+        if (res.isInvalid()) throw new BusinessException(res.message());
+
+        res = ValidationUtil.validatePositive(p.getCategoryId(), "カテゴリ");
+        if (res.isInvalid()) throw new BusinessException(res.message());
+
+        res = ValidationUtil.validatePositive(p.getPrice(), "価格");
+        if (res.isInvalid()) throw new BusinessException(res.message());
     }
 }

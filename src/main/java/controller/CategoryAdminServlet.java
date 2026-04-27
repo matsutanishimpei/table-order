@@ -53,33 +53,24 @@ public class CategoryAdminServlet extends BaseServlet {
         String name = request.getParameter("name");
         int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
 
-        // バリデーション
-        util.ValidationResult vr = util.ValidationUtil.validateRequired(name, "カテゴリ名");
-        if (vr.isInvalid()) {
-            handleError(request, response, vr.message(), id, name, action);
-            return;
-        }
+        try {
+            if ("update".equals(action)) {
+                if (id <= 0) {
+                    response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
+                    return;
+                }
+                Category c = new Category();
+                c.setId(id);
+                c.setName(name); // Service 内でトリムとバリデーションが行われる
+                categoryService.update(c);
+            } else {
+                // 新規追加
+                categoryService.insert(name);
+            }
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
 
-        if ("update".equals(action)) {
-            if (id <= 0) {
-                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
-                return;
-            }
-            Category c = new Category();
-            c.setId(id);
-            c.setName(name.trim());
-            if (categoryService.update(c)) {
-                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
-            } else {
-                handleError(request, response, "更新に失敗しました。", id, name, action);
-            }
-        } else {
-            // 新規追加
-            if (categoryService.insert(name.trim())) {
-                response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
-            } else {
-                handleError(request, response, "追加に失敗しました。", -1, name, action);
-            }
+        } catch (exception.BusinessException e) {
+            handleError(request, response, e.getMessage(), id, name, action);
         }
     }
 
