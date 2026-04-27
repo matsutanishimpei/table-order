@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean update(Category category) {
-        validateName(category.getName());
+        validateName(category.name());
         return categoryDAO.update(category);
     }
 

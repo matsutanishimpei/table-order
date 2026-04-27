@@ -60,9 +60,9 @@ public class OrderDAOImpl implements OrderDAO {
             cartItems.forEach(item -> {
                 try {
                     psItem.setInt(1, orderId);
-                    psItem.setInt(2, item.getProductId());
-                    psItem.setInt(3, item.getQuantity());
-                    psItem.setInt(4, item.getUnitPrice());
+                    psItem.setInt(2, item.productId());
+                    psItem.setInt(3, item.quantity());
+                    psItem.setInt(4, item.unitPrice());
                     psItem.setInt(5, status);
                     psItem.addBatch();
                 } catch (SQLException e) {

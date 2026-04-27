@@ -39,13 +39,14 @@ public class TableDAOImpl implements TableDAO {
             ps.setInt(2, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    TableOrderSummary summary = new TableOrderSummary();
-                    summary.setTableId(rs.getInt("id"));
-                    summary.setTableName(rs.getString("table_name"));
-                    summary.setOrderCount(rs.getInt("item_count"));
-                    summary.setUnservedCount(rs.getInt("unserved_count"));
-                    summary.setTotalAmount(rs.getInt("total_amt"));
-                    list.add(summary);
+                    list.add(new TableOrderSummary(
+                        rs.getInt("id"),
+                        rs.getString("table_name"),
+                        null, // findUnsettledTables では明細リストは取得しない
+                        rs.getInt("total_amt"),
+                        rs.getInt("item_count"),
+                        rs.getInt("unserved_count")
+                    ));
                 }
             }
         } catch (SQLException e) {
@@ -65,14 +66,12 @@ public class TableDAOImpl implements TableDAO {
                          "ORDER BY oi.created_at";
 
         try (Connection con = DBManager.getConnection()) {
-            TableOrderSummary summary = new TableOrderSummary();
-            summary.setTableId(tableId);
-
+            String tableName = null;
             try (PreparedStatement psTable = con.prepareStatement(sqlTable)) {
                 psTable.setInt(1, tableId);
                 try (ResultSet rsTable = psTable.executeQuery()) {
                     if (rsTable.next()) {
-                        summary.setTableName(rsTable.getString("table_name"));
+                        tableName = rsTable.getString("table_name");
                     } else {
                         return Optional.empty(); // テーブルが存在しない
                     }
@@ -100,9 +99,14 @@ public class TableDAOImpl implements TableDAO {
                     }
                 }
             }
-            summary.setItems(items);
-            summary.setTotalAmount(total);
-            return Optional.of(summary);
+            return Optional.of(new TableOrderSummary(
+                tableId,
+                tableName,
+                items,
+                total,
+                items.size(),
+                (int) items.stream().filter(i -> i.status() < OrderConstants.STATUS_SERVED).count()
+            ));
         } catch (SQLException e) {
             throw new exception.DatabaseException("座席別注文サマリーの取得中にエラーが発生しました。tableId=" + tableId, e);
         }

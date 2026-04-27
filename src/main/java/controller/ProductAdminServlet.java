@@ -94,13 +94,26 @@ public class ProductAdminServlet extends BaseServlet {
             p = new Product();
         }
 
-        // 基本情報の更新
-        p.setName(request.getParameter("name"));
-        p.setCategoryId(ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0));
-        p.setPrice(ValidationUtil.parseIntSafe(request.getParameter("price"), 0));
-        p.setDescription(request.getParameter("description"));
-        p.setAllergyInfo(request.getParameter("allergyInfo"));
-        p.setAvailable(request.getParameter("isAvailable") != null);
+        // リクエストパラメータの取得
+        String name = request.getParameter("name");
+        int categoryId = ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0);
+        int price = ValidationUtil.parseIntSafe(request.getParameter("price"), 0);
+        String description = request.getParameter("description");
+        String allergyInfo = request.getParameter("allergyInfo");
+        boolean isAvailable = request.getParameter("isAvailable") != null;
+
+        // 一時的な Product オブジェクトの作成（バリデーション用）
+        // id と imagePath は既存のものを引き継ぐ
+        p = new Product(
+            id,
+            categoryId,
+            name,
+            price,
+            description,
+            allergyInfo,
+            p.imagePath(),
+            isAvailable
+        );
 
         try {
             // 1. 画像検証（サーブレット固有の責務）
@@ -109,10 +122,11 @@ public class ProductAdminServlet extends BaseServlet {
 
             // 2. 画像のアップロード処理
             if (filePart != null && filePart.getSize() > 0) {
-                String oldImageId = p.getImagePath();
+                String oldImageId = p.imagePath();
                 String imageId = imageStorageProvider.upload(filePart);
                 if (imageId != null) {
-                    p.setImagePath(imageId);
+                    // imagePath を更新した新しい Product インスタンスを生成
+                    p = new Product(p.id(), p.categoryId(), p.name(), p.price(), p.description(), p.allergyInfo(), imageId, p.isAvailable());
                     if (oldImageId != null && !oldImageId.isEmpty()) {
                         imageStorageProvider.delete(oldImageId);
                     }

@@ -2,19 +2,22 @@ package model;
 
 import java.io.Serializable;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
 /**
- * 商品カテゴリーを管理するモデルクラスです。
+ * 商品カテゴリーを管理するレコードです。
+ * 
+ * @param id カテゴリーID
+ * @param name カテゴリー名
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Category implements Serializable {
+public record Category(
+    int id,
+    String name
+) implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int id;
-    private String name;
+    /**
+     * 初期値付きの引数なしコンストラクタ
+     */
+    public Category() {
+        this(0, null);
+    }
 }

@@ -41,7 +41,7 @@ public class MenuServlet extends BaseServlet {
 
         // 表示するカテゴリIDの取得（未指定なら最初のカテゴリを表示）
         int categoryId = util.ValidationUtil.parseIntSafe(request.getParameter("categoryId"),
-                          categories.isEmpty() ? 0 : categories.get(0).getId());
+                          categories.isEmpty() ? 0 : categories.get(0).id());
         
         // 当該カテゴリの商品一覧を取得
         List<Product> products = productService.findByCategory(categoryId);

@@ -2,25 +2,31 @@ package model;
 
 import java.io.Serializable;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * ユーザー情報を管理するモデルクラスです。
+ * ユーザー情報を管理するレコードです。
+ * 
+ * @param id ユーザーID
+ * @param password パスワード（ハッシュ）
+ * @param role 権限
+ * @param tableId テーブルID（テーブル端末の場合のみ）
  */
-@Data
-@NoArgsConstructor
-public class User implements Serializable {
+public record User(
+    String id,
+    String password,
+    int role,
+    Integer tableId
+) implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String id;
-    private String password;
-    private int role;
-    private Integer tableId;
+    /**
+     * 初期値付きの引数なしコンストラクタ
+     */
+    public User() {
+        this(null, null, 0, null);
+    }
 
     /**
      * 管理者権限を持っているか判定します。
-     * @return 管理者の場合は true
      */
     public boolean isAdmin() {
         return role == UserConstants.ROLE_ADMIN;
@@ -28,7 +34,6 @@ public class User implements Serializable {
 
     /**
      * キッチン権限を持っているか判定します。
-     * @return キッチンの場合は true
      */
     public boolean isKitchen() {
         return role == UserConstants.ROLE_KITCHEN;
@@ -36,7 +41,6 @@ public class User implements Serializable {
 
     /**
      * ホール（配膳）権限を持っているか判定します。
-     * @return ホールの場合は true
      */
     public boolean isHall() {
         return role == UserConstants.ROLE_HALL;
@@ -44,7 +48,6 @@ public class User implements Serializable {
 
     /**
      * 会計権限を持っているか判定します。
-     * @return 会計の場合は true
      */
     public boolean isCashier() {
         return role == UserConstants.ROLE_CASHIER;
@@ -52,7 +55,6 @@ public class User implements Serializable {
 
     /**
      * テーブル端末権限を持っているか判定します。
-     * @return テーブル端末の場合は true
      */
     public boolean isTableTerminal() {
         return role == UserConstants.ROLE_TABLE_TERMINAL;

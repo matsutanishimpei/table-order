@@ -31,11 +31,12 @@ public class UserDAOImpl implements UserDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                User u = new User();
-                u.setId(rs.getString("id"));
-                u.setRole(rs.getInt("role"));
-                u.setTableId((Integer) rs.getObject("table_id"));
-                list.add(u);
+                list.add(new User(
+                    rs.getString("id"),
+                    null, // パスワードは一覧取得では不要
+                    rs.getInt("role"),
+                    (Integer) rs.getObject("table_id")
+                ));
             }
         } catch (SQLException e) {
             throw new exception.DatabaseException("全ユーザー取得中にエラーが発生しました。", e);
@@ -79,12 +80,12 @@ public class UserDAOImpl implements UserDAO {
                     }
 
                     if (isAuthenticated) {
-                        user = new User();
-                        user.setId(rs.getString("id"));
-                        user.setPassword(storedHash); // TODO: BCrypt移行直後の値は古いままセットされるが、認証後には利用されないため問題なし
-                        user.setRole(rs.getInt("role"));
-                        user.setTableId((Integer) rs.getObject("table_id"));
-                        
+                        user = new User(
+                            rs.getString("id"),
+                            storedHash,
+                            rs.getInt("role"),
+                            (Integer) rs.getObject("table_id")
+                        );
                         log.info("ログイン成功: ユーザーID={}", id);
                     } else {
                         log.warn("ログイン失敗（パスワード不一致）: ユーザーID={}", id);
@@ -134,10 +135,12 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    user = new User();
-                    user.setId(rs.getString("id"));
-                    user.setRole(rs.getInt("role"));
-                    user.setTableId((Integer) rs.getObject("table_id"));
+                    user = new User(
+                        rs.getString("id"),
+                        null, // パスワードは不要
+                        rs.getInt("role"),
+                        (Integer) rs.getObject("table_id")
+                    );
                 }
             }
         } catch (SQLException e) {
@@ -153,16 +156,16 @@ public class UserDAOImpl implements UserDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             String pepper = DBManager.getPepper();
-            String hashedPassword = PasswordUtil.hashBcrypt(user.getPassword(), pepper);
+            String hashedPassword = PasswordUtil.hashBcrypt(user.password(), pepper);
 
-            ps.setString(1, user.getId());
+            ps.setString(1, user.id());
             ps.setString(2, hashedPassword);
-            ps.setInt(3, user.getRole());
-            ps.setObject(4, user.getTableId());
+            ps.setInt(3, user.role());
+            ps.setObject(4, user.tableId());
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new exception.DatabaseException("ユーザー登録中にエラーが発生しました。ID=" + user.getId(), e);
+            throw new exception.DatabaseException("ユーザー登録中にエラーが発生しました。ID=" + user.id(), e);
         }
     }
 
@@ -172,13 +175,13 @@ public class UserDAOImpl implements UserDAO {
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
-            ps.setInt(1, user.getRole());
-            ps.setObject(2, user.getTableId());
-            ps.setString(3, user.getId());
+            ps.setInt(1, user.role());
+            ps.setObject(2, user.tableId());
+            ps.setString(3, user.id());
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new exception.DatabaseException("ユーザー更新中にエラーが発生しました。ID=" + user.getId(), e);
+            throw new exception.DatabaseException("ユーザー更新中にエラーが発生しました。ID=" + user.id(), e);
         }
     }
 

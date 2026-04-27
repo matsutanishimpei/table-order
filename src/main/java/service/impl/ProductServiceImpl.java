@@ -65,16 +65,16 @@ public class ProductServiceImpl implements ProductService {
      * @throws BusinessException 業務ルール違反がある場合
      */
     private void validate(Product p) {
-        ValidationResult res = ValidationUtil.validateRequired(p.getName(), "商品名");
+        ValidationResult res = ValidationUtil.validateRequired(p.name(), "商品名");
         if (res.isInvalid()) throw new BusinessException(res.message());
 
-        res = ValidationUtil.validateMaxLength(p.getName(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
+        res = ValidationUtil.validateMaxLength(p.name(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
         if (res.isInvalid()) throw new BusinessException(res.message());
 
-        res = ValidationUtil.validatePositive(p.getCategoryId(), "カテゴリ");
+        res = ValidationUtil.validatePositive(p.categoryId(), "カテゴリ");
         if (res.isInvalid()) throw new BusinessException(res.message());
 
-        res = ValidationUtil.validatePositive(p.getPrice(), "価格");
+        res = ValidationUtil.validatePositive(p.price(), "価格");
         if (res.isInvalid()) throw new BusinessException(res.message());
     }
 }

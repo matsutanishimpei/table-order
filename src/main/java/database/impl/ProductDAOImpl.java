@@ -23,16 +23,16 @@ public class ProductDAOImpl implements ProductDAO {
      * ResultSet の現在行から Product オブジェクトを生成します。
      */
     private Product mapRow(ResultSet rs) throws SQLException {
-        Product p = new Product();
-        p.setId(rs.getInt("id"));
-        p.setCategoryId(rs.getInt("category_id"));
-        p.setName(rs.getString("name"));
-        p.setPrice(rs.getInt("price"));
-        p.setDescription(rs.getString("description"));
-        p.setAllergyInfo(rs.getString("allergy_info"));
-        p.setImagePath(rs.getString("image_path"));
-        p.setAvailable(rs.getBoolean("is_available"));
-        return p;
+        return new Product(
+            rs.getInt("id"),
+            rs.getInt("category_id"),
+            rs.getString("name"),
+            rs.getInt("price"),
+            rs.getString("description"),
+            rs.getString("allergy_info"),
+            rs.getString("image_path"),
+            rs.getBoolean("is_available")
+        );
     }
 
     @Override
@@ -95,12 +95,12 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = SqlConstants.PRODUCT_INSERT;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setInt(3, p.getPrice());
-            ps.setString(4, p.getDescription());
-            ps.setString(5, p.getAllergyInfo());
-            ps.setString(6, p.getImagePath());
+            ps.setInt(1, p.categoryId());
+            ps.setString(2, p.name());
+            ps.setInt(3, p.price());
+            ps.setString(4, p.description());
+            ps.setString(5, p.allergyInfo());
+            ps.setString(6, p.imagePath());
             ps.setBoolean(7, p.isAvailable());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -113,17 +113,17 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = SqlConstants.PRODUCT_UPDATE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setInt(3, p.getPrice());
-            ps.setString(4, p.getDescription());
-            ps.setString(5, p.getAllergyInfo());
-            ps.setString(6, p.getImagePath());
+            ps.setInt(1, p.categoryId());
+            ps.setString(2, p.name());
+            ps.setInt(3, p.price());
+            ps.setString(4, p.description());
+            ps.setString(5, p.allergyInfo());
+            ps.setString(6, p.imagePath());
             ps.setBoolean(7, p.isAvailable());
-            ps.setInt(8, p.getId());
+            ps.setInt(8, p.id());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new exception.DatabaseException("商品更新中にエラーが発生しました。ID=" + p.getId(), e);
+            throw new exception.DatabaseException("商品更新中にエラーが発生しました。ID=" + p.id(), e);
         }
     }
 

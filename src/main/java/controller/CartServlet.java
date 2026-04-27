@@ -57,20 +57,23 @@ public class CartServlet extends BaseServlet {
             }
 
             Optional<CartItem> existingItem = cart.stream()
-                .filter(item -> item.getProductId() == productId)
+                .filter(item -> item.productId() == productId)
                 .findFirst();
 
             if (existingItem.isPresent()) {
-                CartItem item = existingItem.get();
-                item.setQuantity(item.getQuantity() + quantity);
+                CartItem oldItem = existingItem.get();
+                int index = cart.indexOf(oldItem);
+                // Record は不変なため、新しい数量で新しいインスタンスを作成して置換する
+                CartItem newItem = new CartItem(
+                    oldItem.productId(),
+                    oldItem.name(),
+                    oldItem.unitPrice(),
+                    oldItem.quantity() + quantity
+                );
+                cart.set(index, newItem);
             } else {
                 productService.findById(productId).ifPresent(p -> {
-                    CartItem newItem = new CartItem();
-                    newItem.setProductId(p.getId());
-                    newItem.setName(p.getName());
-                    newItem.setUnitPrice(p.getPrice());
-                    newItem.setQuantity(quantity);
-                    cart.add(newItem);
+                    cart.add(new CartItem(p.id(), p.name(), p.price(), quantity));
                 });
             }
         } else if ("clear".equals(action)) {

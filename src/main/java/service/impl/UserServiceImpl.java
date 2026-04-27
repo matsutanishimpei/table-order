@@ -40,13 +40,13 @@ public class UserServiceImpl implements UserService {
         try {
             boolean success = userDAO.insert(user);
             if (success) {
-                log.info("ユーザー登録成功: id={}", user.getId());
+                log.info("ユーザー登録成功: id={}", user.id());
             } else {
-                log.warn("ユーザー登録失敗: id={}", user.getId());
+                log.warn("ユーザー登録失敗: id={}", user.id());
             }
             return success;
         } catch (Exception e) {
-            log.error("ユーザー登録エラー: id={}, reason={}", user.getId(), e.getMessage());
+            log.error("ユーザー登録エラー: id={}, reason={}", user.id(), e.getMessage());
             return false;
         }
     }
@@ -56,14 +56,14 @@ public class UserServiceImpl implements UserService {
         try {
             boolean success = userDAO.update(user);
             if (success && newPassword != null && !newPassword.isEmpty()) {
-                success = userDAO.updatePassword(user.getId(), newPassword);
+                success = userDAO.updatePassword(user.id(), newPassword);
             }
             if (success) {
-                log.info("ユーザー更新成功: id={}", user.getId());
+                log.info("ユーザー更新成功: id={}", user.id());
             }
             return success;
         } catch (Exception e) {
-            log.error("ユーザー更新エラー: id={}, reason={}", user.getId(), e.getMessage());
+            log.error("ユーザー更新エラー: id={}, reason={}", user.id(), e.getMessage());
             return false;
         }
     }

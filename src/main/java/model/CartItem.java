@@ -2,21 +2,28 @@ package model;
 
 import java.io.Serializable;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * カート内の1商品を表すモデルクラスです。
+ * カート内の1商品を表すレコードです。
+ * 
+ * @param productId 商品ID
+ * @param name 商品名
+ * @param unitPrice 単価
+ * @param quantity 数量
  */
-@Data
-@NoArgsConstructor
-public class CartItem implements Serializable {
+public record CartItem(
+    int productId,
+    String name,
+    int unitPrice,
+    int quantity
+) implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int productId;
-    private String name;
-    private int unitPrice;
-    private int quantity;
+    /**
+     * 初期値付きの引数なしコンストラクタ
+     */
+    public CartItem() {
+        this(0, null, 0, 0);
+    }
 
     /**
      * 小計を計算します。

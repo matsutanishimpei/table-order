@@ -31,8 +31,7 @@ public class UserServiceImplTest {
         // Arrange
         String userId = "admin";
         String password = "password123";
-        User mockUser = new User();
-        mockUser.setId(userId);
+        User mockUser = new User(userId, null, 1, null);
 
         when(userDAO.login(userId, password)).thenReturn(Optional.of(mockUser));
 
@@ -41,7 +40,7 @@ public class UserServiceImplTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(userId, result.get().getId());
+        assertEquals(userId, result.get().id());
         verify(userDAO).login(userId, password);
     }
 
@@ -64,8 +63,7 @@ public class UserServiceImplTest {
     @Test
     public void testRegister_Success() {
         // Arrange
-        User user = new User();
-        user.setId("newuser");
+        User user = new User("newuser", "pass", 1, null);
         when(userDAO.insert(user)).thenReturn(true);
 
         // Act
@@ -79,8 +77,7 @@ public class UserServiceImplTest {
     @Test
     public void testUpdate_WithPassword() {
         // Arrange
-        User user = new User();
-        user.setId("user1");
+        User user = new User("user1", null, 1, null);
         String newPassword = "newsecret";
 
         when(userDAO.update(user)).thenReturn(true);

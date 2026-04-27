@@ -31,8 +31,8 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
                 assertNotNull(products);
                 if (!products.isEmpty()) {
                     Product p = products.get(0);
-                    assertNotNull(p.getName(), "商品名が取得できていること");
-                    assertTrue(p.getPrice() >= 0, "価格が正数であること");
+                    assertNotNull(p.name(), "商品名が取得できていること");
+                    assertTrue(p.price() >= 0, "価格が正数であること");
                 }
             });
         }
@@ -48,10 +48,7 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
             String testId = "jt_" + (System.currentTimeMillis() % 1000000000L);
             String testPass = "test_password_123";
             
-            User newUser = new User();
-            newUser.setId(testId);
-            newUser.setPassword(testPass);
-            newUser.setRole(3); // Hall
+            User newUser = new User(testId, testPass, 3, null);
 
             try {
                 // 1. Create (Insert)
@@ -62,14 +59,15 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
                 Optional<User> loggedInOpt = userDAO.login(testId, testPass);
                 assertTrue(loggedInOpt.isPresent(), "作成したユーザーでログインできること");
                 User loggedIn = loggedInOpt.get();
-                assertEquals(testId, loggedIn.getId());
+                assertEquals(testId, loggedIn.id());
 
                 // 3. Update (Role変更)
-                loggedIn.setRole(2); // Kitchen
-                assertTrue(userDAO.update(loggedIn), "ユーザー情報の更新に成功すること");
+                // record は不変なため、新しいインスタンスを作成する
+                User updatedUser = new User(loggedIn.id(), null, 2, loggedIn.tableId());
+                assertTrue(userDAO.update(updatedUser), "ユーザー情報の更新に成功すること");
                 Optional<User> updatedOpt = userDAO.findById(testId);
                 assertTrue(updatedOpt.isPresent());
-                assertEquals(2, updatedOpt.get().getRole(), "更新内容が反映されていること");
+                assertEquals(2, updatedOpt.get().role(), "更新内容が反映されていること");
 
                 // 4. Login Failure (Wrong password)
                 assertTrue(userDAO.login(testId, "wrong_pass").isEmpty(), "誤ったパスワードではログインできないこと");

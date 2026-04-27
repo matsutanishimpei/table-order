@@ -31,10 +31,8 @@ public class ProductServiceImplTest {
     @Test
     public void testFindAll() {
         // Arrange
-        Product p1 = new Product();
-        p1.setName("Product 1");
-        Product p2 = new Product();
-        p2.setName("Product 2");
+        Product p1 = new Product(1, 1, "Product 1", 100, null, null, null, true);
+        Product p2 = new Product(2, 1, "Product 2", 200, null, null, null, true);
         when(productDAO.findAll()).thenReturn(Arrays.asList(p1, p2));
 
         // Act
@@ -42,7 +40,7 @@ public class ProductServiceImplTest {
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("Product 1", result.get(0).getName());
+        assertEquals("Product 1", result.get(0).name());
         verify(productDAO).findAll();
     }
 
@@ -50,8 +48,7 @@ public class ProductServiceImplTest {
     public void testFindByCategory() {
         // Arrange
         int categoryId = 101;
-        Product p = new Product();
-        p.setCategoryId(categoryId);
+        Product p = new Product(1, categoryId, "Product", 100, null, null, null, true);
         when(productDAO.findByCategory(categoryId)).thenReturn(Arrays.asList(p));
 
         // Act
@@ -59,7 +56,7 @@ public class ProductServiceImplTest {
 
         // Assert
         assertFalse(result.isEmpty());
-        assertEquals(categoryId, result.get(0).getCategoryId());
+        assertEquals(categoryId, result.get(0).categoryId());
         verify(productDAO).findByCategory(categoryId);
     }
 
@@ -67,8 +64,7 @@ public class ProductServiceImplTest {
     public void testFindById_Existing() {
         // Arrange
         int productId = 1;
-        Product p = new Product();
-        p.setId(productId);
+        Product p = new Product(productId, 1, "Product", 100, null, null, null, true);
         when(productDAO.findById(productId)).thenReturn(Optional.of(p));
 
         // Act
@@ -76,7 +72,7 @@ public class ProductServiceImplTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(productId, result.get().getId());
+        assertEquals(productId, result.get().id());
         verify(productDAO).findById(productId);
     }
 

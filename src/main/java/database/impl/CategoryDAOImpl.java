@@ -29,10 +29,10 @@ public class CategoryDAOImpl implements CategoryDAO {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Category c = new Category();
-                c.setId(rs.getInt("id"));
-                c.setName(rs.getString("name"));
-                list.add(c);
+                list.add(new Category(
+                    rs.getInt("id"),
+                    rs.getString("name")
+                ));
             }
         } catch (SQLException e) {
             throw new exception.DatabaseException("全カテゴリ取得中にエラーが発生しました。", e);
@@ -60,10 +60,10 @@ public class CategoryDAOImpl implements CategoryDAO {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Category c = new Category();
-                    c.setId(rs.getInt("id"));
-                    c.setName(rs.getString("name"));
-                    return Optional.of(c);
+                    return Optional.of(new Category(
+                        rs.getInt("id"),
+                        rs.getString("name")
+                    ));
                 }
             }
         } catch (SQLException e) {
@@ -77,11 +77,11 @@ public class CategoryDAOImpl implements CategoryDAO {
         String sql = SqlConstants.CATEGORY_UPDATE;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, category.getName());
-            ps.setInt(2, category.getId());
+            ps.setString(1, category.name());
+            ps.setInt(2, category.id());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ更新中にエラーが発生しました。id=" + category.getId(), e);
+            throw new exception.DatabaseException("カテゴリ更新中にエラーが発生しました。id=" + category.id(), e);
         }
     }
 }

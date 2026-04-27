@@ -36,12 +36,12 @@ public class OrderHistoryServlet extends BaseServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AppConstants.ATTR_USER);
 
-        if (user == null || user.getTableId() == null) {
+        if (user == null || user.tableId() == null) {
             response.sendRedirect(AppConstants.REDIRECT_LOGIN);
             return;
         }
 
-        Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(user.getTableId());
+        Optional<TableOrderSummary> summaryOpt = tableService.getTableOrderSummary(user.tableId());
         
         request.setAttribute("summary", summaryOpt.orElse(null));
         request.getRequestDispatcher(AppConstants.VIEW_ORDER_HISTORY).forward(request, response);

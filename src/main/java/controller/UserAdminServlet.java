@@ -72,18 +72,14 @@ public class UserAdminServlet extends BaseServlet {
         String tableIdStr = request.getParameter("tableId");
         Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr)) ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
 
-        User targetUser = new User();
-        targetUser.setId(id);
-        targetUser.setRole(role);
-        targetUser.setTableId(tableId);
-
         if ("delete".equals(action)) {
             userService.delete(id);
         } else if ("update".equals(action)) {
+            User targetUser = new User(id, null, role, tableId);
             userService.update(targetUser, password);
         } else {
             // 新規追加
-            targetUser.setPassword(password);
+            User targetUser = new User(id, password, role, tableId);
             userService.register(targetUser);
         }
 

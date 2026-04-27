@@ -3,21 +3,23 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * 座席（テーブル）ごとの注文サマリーデータを保持するモデルクラスです。
+ * 座席（テーブル）ごとの注文サマリーデータを保持するレコードです。
+ * 
+ * @param tableId テーブルID
+ * @param tableName テーブル名
+ * @param items 注文明細リスト
+ * @param totalAmount 合計金額
+ * @param orderCount 注文数
+ * @param unservedCount 未配膳数
  */
-@Data
-@NoArgsConstructor
-public class TableOrderSummary implements Serializable {
+public record TableOrderSummary(
+    int tableId,
+    String tableName,
+    List<OrderItemView> items,
+    int totalAmount,
+    int orderCount,
+    int unservedCount
+) implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private int tableId;
-    private String tableName;
-    private List<OrderItemView> items;
-    private int totalAmount;
-    private int orderCount;
-    private int unservedCount;
 }

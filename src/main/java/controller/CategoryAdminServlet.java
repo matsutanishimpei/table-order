@@ -59,9 +59,7 @@ public class CategoryAdminServlet extends BaseServlet {
                     response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
                     return;
                 }
-                Category c = new Category();
-                c.setId(id);
-                c.setName(name); // Service 内でトリムとバリデーションが行われる
+                Category c = new Category(id, name); // Service 内でトリムとバリデーションが行われる
                 categoryService.update(c);
             } else {
                 // 新規追加
@@ -77,9 +75,7 @@ public class CategoryAdminServlet extends BaseServlet {
     private void handleError(HttpServletRequest request, HttpServletResponse response, String message, int id, String name, String action) throws ServletException, IOException {
         request.setAttribute(AppConstants.ATTR_ERROR, message);
         if ("update".equals(action) && id > 0) {
-            Category c = new Category();
-            c.setId(id);
-            c.setName(name);
+            Category c = new Category(id, name);
             request.setAttribute(AppConstants.ATTR_CATEGORY, c);
             request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORY_EDIT).forward(request, response);
         } else {

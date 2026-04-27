@@ -55,9 +55,7 @@ public class ProductAdminServletTest {
     public void testDoPost_SuccessWithImageUpload() throws ServletException, IOException {
         // Arrange
         int productId = 1;
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        existingProduct.setImagePath("v1/old_image");
+        Product existingProduct = new Product(productId, 2, "Old Name", 1000, null, null, "v1/old_image", true);
 
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
         when(request.getParameter("name")).thenReturn("New Burger");
@@ -83,7 +81,7 @@ public class ProductAdminServletTest {
         // 新しい画像がアップロードされ、古い画像が削除されたことを確認
         verify(imageStorageProvider).upload(filePart);
         verify(imageStorageProvider).delete("v1/old_image");
-        verify(productService).update(argThat(p -> "v2/new_image".equals(p.getImagePath())));
+        verify(productService).update(argThat(p -> "v2/new_image".equals(p.imagePath())));
         verify(response).sendRedirect("Product?msg=success");
     }
 
@@ -91,8 +89,7 @@ public class ProductAdminServletTest {
     public void testDoPost_InvalidImageFormat() throws ServletException, IOException {
         // Arrange
         int productId = 1;
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
+        Product existingProduct = new Product(productId, 1, "Name", 1000, null, null, null, true);
 
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
         when(request.getParameter("name")).thenReturn("Invalid Product");

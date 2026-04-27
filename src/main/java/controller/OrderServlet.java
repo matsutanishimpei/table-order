@@ -44,7 +44,7 @@ public class OrderServlet extends BaseServlet {
         }
 
         // DBに保存
-        Integer tableId = user.getTableId();
+        Integer tableId = user.tableId();
         if (tableId == null) {
             request.setAttribute(AppConstants.ATTR_ERROR, "このアカウントには座席（テーブル番号）が割り当てられていないため、注文できません。");
             request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);

@@ -47,10 +47,7 @@ public class CartServletTest {
     public void testDoPost_AddToCart_NewItem() throws ServletException, IOException {
         // Arrange
         List<CartItem> cart = new ArrayList<>();
-        Product p = new Product();
-        p.setId(101);
-        p.setName("Matcha Latte");
-        p.setPrice(500);
+        Product p = new Product(101, 1, "Matcha Latte", 500, null, null, null, true);
 
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("cart")).thenReturn(cart);
@@ -65,8 +62,8 @@ public class CartServletTest {
 
         // Assert
         assertEquals(1, cart.size());
-        assertEquals("Matcha Latte", cart.get(0).getName());
-        assertEquals(2, cart.get(0).getQuantity());
+        assertEquals("Matcha Latte", cart.get(0).name());
+        assertEquals(2, cart.get(0).quantity());
         verify(response).sendRedirect("Menu?categoryId=1");
     }
 
@@ -74,9 +71,7 @@ public class CartServletTest {
     public void testDoPost_AddToCart_ExistingItem() throws ServletException, IOException {
         // Arrange
         List<CartItem> cart = new ArrayList<>();
-        CartItem existingItem = new CartItem();
-        existingItem.setProductId(101);
-        existingItem.setQuantity(1);
+        CartItem existingItem = new CartItem(101, "Matcha Latte", 500, 1);
         cart.add(existingItem);
 
         when(request.getSession()).thenReturn(session);
@@ -91,7 +86,7 @@ public class CartServletTest {
 
         // Assert
         assertEquals(1, cart.size());
-        assertEquals(4, cart.get(0).getQuantity()); // 1 + 3
+        assertEquals(4, cart.get(0).quantity()); // 1 + 3
         verify(response).sendRedirect("Menu");
     }
 

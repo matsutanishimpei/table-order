@@ -63,9 +63,7 @@ public class LoginServletTest {
         String userId = "admin";
         String password = "password";
         String token = "valid-token";
-        User adminUser = new User();
-        adminUser.setId(userId);
-        adminUser.setRole(model.UserConstants.ROLE_ADMIN);
+        User adminUser = new User(userId, null, model.UserConstants.ROLE_ADMIN, null);
 
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);
