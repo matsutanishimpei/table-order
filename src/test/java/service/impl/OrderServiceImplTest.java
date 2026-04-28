@@ -67,6 +67,7 @@ class OrderServiceImplTest {
 
     @Test
     @DisplayName("注文作成失敗: OrderID生成失敗時にfalseを返すこと")
+    @SuppressWarnings("unchecked")
     void createOrder_Failure_OrderIdMinus1() throws Exception {
         // Arrange
         int tableId = 1;
@@ -91,6 +92,7 @@ class OrderServiceImplTest {
 
     @Test
     @DisplayName("会計完了: トランザクション内で正しく更新されること")
+    @SuppressWarnings("unchecked")
     void completeCheckout_Success() throws Exception {
         // Arrange
         int tableId = 5;

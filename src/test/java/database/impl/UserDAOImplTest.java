@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import database.BaseIntegrationTest;
 import database.UserDAO;
 import model.User;
-import util.PasswordUtil;
-import database.DBManager;
 
 /**
  * UserDAOImpl の統合テストクラスです。
