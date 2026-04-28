@@ -126,4 +126,40 @@ public class ProductServiceImplTest {
         assertTrue(ex.getMessage().contains("存在しません"));
         verify(productDAO, never()).insert(any());
     }
+
+    @Test
+    public void testInsert_Failure_EmptyName() {
+        Product p = new Product(0, 1, "", 1000, "Desc", null, null, true);
+        assertThrows(exception.BusinessException.class, () -> productService.insert(p));
+    }
+
+    @Test
+    public void testInsert_Failure_LongName() {
+        String longName = "a".repeat(util.AppConstants.MAX_PRODUCT_NAME_LENGTH + 1);
+        Product p = new Product(0, 1, longName, 1000, "Desc", null, null, true);
+        assertThrows(exception.BusinessException.class, () -> productService.insert(p));
+    }
+
+    @Test
+    public void testInsert_Failure_InvalidCategoryId() {
+        Product p = new Product(0, -1, "Product", 1000, "Desc", null, null, true);
+        assertThrows(exception.BusinessException.class, () -> productService.insert(p));
+    }
+
+    @Test
+    public void testInsert_Failure_InvalidPrice() {
+        Product p = new Product(0, 1, "Product", 0, "Desc", null, null, true);
+        when(categoryDAO.findAll()).thenReturn(Arrays.asList(new model.Category(1, "Food")));
+        assertThrows(exception.BusinessException.class, () -> productService.insert(p));
+    }
+
+    @Test
+    public void testUpdate_Success() {
+        Product p = new Product(1, 1, "Updated", 1000, "Desc", null, null, true);
+        when(categoryDAO.findAll()).thenReturn(Arrays.asList(new model.Category(1, "Food")));
+        when(productDAO.update(p)).thenReturn(true);
+
+        assertTrue(productService.update(p));
+        verify(productDAO).update(p);
+    }
 }

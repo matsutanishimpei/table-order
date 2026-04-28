@@ -300,4 +300,65 @@ class OrderServiceImplTest {
             verify(orderDAO).insertOrderItems(eq(connection), eq(existingOrderId), any(), anyInt());
         }
     }
+
+    @Test
+    @DisplayName("注文失敗: 商品が存在しない場合にfalseを返すこと")
+    @SuppressWarnings("unchecked")
+    void createOrder_Failure_ProductNotFound() throws Exception {
+        // Arrange
+        int tableId = 1;
+        List<CartItem> items = List.of(new CartItem(999, "Non-existent", 100, 1));
+
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品が見つからない（Optional.empty）状態をシミュレート
+            when(productDAO.findById(999)).thenReturn(java.util.Optional.empty());
+
+            // Act
+            boolean result = orderService.createOrder(tableId, items);
+
+            // Assert
+            assertFalse(result);
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
+        }
+    }
+
+    @Test
+    @DisplayName("会計失敗: 例外発生時にfalseを返すこと")
+    @SuppressWarnings("unchecked")
+    void completeCheckout_Failure_Exception() throws Exception {
+        // Arrange
+        int tableId = 5;
+
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            // TransactionManager.execute 自体が例外を投げるケースを想定
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                    .thenThrow(new RuntimeException("Unexpected DB Error"));
+
+            // Act
+            boolean result = orderService.completeCheckout(tableId);
+
+            // Assert
+            assertFalse(result, "例外発生時は false が返るべき");
+        }
+    }
+
+    @Test
+    @DisplayName("商品ステータス更新失敗: 指定された明細が存在しない場合にfalseを返すこと")
+    void updateItemStatus_Failure_ItemNotFound() {
+        // DAO が -1 を返す（存在しない）
+        when(orderDAO.findItemStatusById(999)).thenReturn(-1);
+
+        // Act
+        boolean result = orderService.updateItemStatus(999, OrderConstants.STATUS_SERVED);
+
+        // Assert
+        assertFalse(result);
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt());
+    }
 }

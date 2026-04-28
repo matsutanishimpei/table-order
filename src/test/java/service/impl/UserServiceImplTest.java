@@ -107,4 +107,84 @@ public class UserServiceImplTest {
         verify(userDAO).update(user);
         verify(userDAO).updatePassword("user1", newPassword);
     }
+
+    @Test
+    public void testUpdate_NoPassword() {
+        // Arrange
+        User user = new User("user1", null, 1, null);
+        when(userDAO.update(user)).thenReturn(true);
+
+        // Act
+        boolean result = userService.update(user, null);
+
+        // Assert
+        assertTrue(result);
+        verify(userDAO).update(user);
+        verify(userDAO, never()).updatePassword(anyString(), anyString());
+    }
+
+    @Test
+    public void testUpdate_Failure() {
+        // Arrange
+        User user = new User("user1", null, 1, null);
+        when(userDAO.update(user)).thenThrow(new RuntimeException("DB Error"));
+
+        // Act
+        boolean result = userService.update(user, "pass");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    public void testRegister_Failure_Exception() {
+        // Arrange
+        User user = new User("newuser", "pass", 1, null);
+        when(userDAO.findById(anyString())).thenThrow(new RuntimeException("DB Error"));
+
+        // Act
+        boolean result = userService.register(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    public void testDelete_Success() {
+        // Arrange
+        String id = "user1";
+        when(userDAO.delete(id)).thenReturn(true);
+
+        // Act
+        boolean result = userService.delete(id);
+
+        // Assert
+        assertTrue(result);
+        verify(userDAO).delete(id);
+    }
+
+    @Test
+    public void testDelete_Failure_Exception() {
+        // Arrange
+        String id = "user1";
+        when(userDAO.delete(id)).thenThrow(new RuntimeException("DB Error"));
+
+        // Act
+        boolean result = userService.delete(id);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    public void testFindAll() {
+        userService.findAll();
+        verify(userDAO).findAll();
+    }
+
+    @Test
+    public void testFindById() {
+        userService.findById("user1");
+        verify(userDAO).findById("user1");
+    }
 }

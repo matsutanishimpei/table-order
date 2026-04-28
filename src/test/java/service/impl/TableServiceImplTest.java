@@ -64,6 +64,23 @@ class TableServiceImplTest {
     }
 
     @Test
+    @DisplayName("ステータスラベルの解決: 不正な形式や未定義のコードは空席として扱うこと")
+    void findAllTableStatus_HandlesInvalidCodes() {
+        // Arrange
+        TableStatusView v1 = new TableStatusView(1, "Table 1", null, "invalid", 0, 0, null);
+        TableStatusView v2 = new TableStatusView(2, "Table 2", null, "999", 0, 0, null);
+        
+        when(tableDAO.findAllTableStatus()).thenReturn(List.of(v1, v2));
+
+        // Act
+        List<TableStatusView> result = tableService.findAllTableStatus();
+
+        // Assert
+        assertEquals("空席", result.get(0).statusLabel(), "数値でない場合は空席");
+        assertEquals("空席", result.get(1).statusLabel(), "定義外のコードは空席");
+    }
+
+    @Test
     @DisplayName("特定テーブルのサマリー取得: Optionalが返ること")
     void getTableOrderSummary_ReturnsOptional() {
         TableOrderSummary summary = mock(TableOrderSummary.class);
