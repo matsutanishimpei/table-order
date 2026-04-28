@@ -1,6 +1,7 @@
 package database.impl;
 
 import database.DBManager;
+import database.SqlConstants;
 import database.TableDAO;
 
 import java.sql.Connection;
@@ -24,14 +25,7 @@ public class TableDAOImpl implements TableDAO {
     @Override
     public List<TableOrderSummary> findUnsettledTables() {
         List<TableOrderSummary> list = new ArrayList<>();
-        String sql = "SELECT st.id, st.table_name, COUNT(oi.id) as item_count, SUM(oi.quantity * oi.unit_price) as total_amt, " +
-                     "SUM(CASE WHEN oi.status < ? THEN 1 ELSE 0 END) as unserved_count " +
-                     "FROM shop_tables st " +
-                     "JOIN orders o ON st.id = o.table_id " +
-                     "JOIN order_items oi ON o.id = oi.order_id " +
-                     "WHERE oi.status < ? " +
-                     "GROUP BY st.id, st.table_name " +
-                     "ORDER BY st.id";
+        String sql = SqlConstants.TABLE_SELECT_UNSETTLED;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -57,13 +51,8 @@ public class TableDAOImpl implements TableDAO {
 
     @Override
     public Optional<TableOrderSummary> getTableOrderSummary(int tableId) {
-        String sqlTable = "SELECT table_name FROM shop_tables WHERE id = ?";
-        String sqlItems = "SELECT oi.id, p.name, oi.quantity, oi.unit_price, oi.status " +
-                         "FROM order_items oi " +
-                         "JOIN products p ON oi.product_id = p.id " +
-                         "JOIN orders o ON oi.order_id = o.id " +
-                         "WHERE o.table_id = ? AND oi.status < ? " +
-                         "ORDER BY oi.created_at";
+        String sqlTable = SqlConstants.TABLE_SELECT_NAME_BY_ID;
+        String sqlItems = SqlConstants.TABLE_SELECT_ITEMS_BY_TABLE_ID;
 
         try (Connection con = DBManager.getConnection()) {
             String tableName = null;
@@ -115,12 +104,7 @@ public class TableDAOImpl implements TableDAO {
     @Override
     public List<TableStatusView> findAllTableStatus() {
         List<TableStatusView> list = new ArrayList<>();
-        String sql = "SELECT st.id, st.table_name, MIN(oi.status) as min_status, " +
-                     "COUNT(oi.id) as item_count, SUM(oi.quantity * oi.unit_price) as total_amt, MAX(oi.created_at) as last_order " +
-                     "FROM shop_tables st " +
-                     "LEFT JOIN orders o ON st.id = o.table_id AND o.status < ? " +
-                     "LEFT JOIN order_items oi ON o.id = oi.order_id AND oi.status < ? " +
-                     "GROUP BY st.id, st.table_name ORDER BY st.id";
+        String sql = SqlConstants.TABLE_SELECT_ALL_STATUS;
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

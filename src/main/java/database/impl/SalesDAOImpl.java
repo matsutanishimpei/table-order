@@ -2,6 +2,7 @@ package database.impl;
 
 import database.DBManager;
 import database.SalesDAO;
+import database.SqlConstants;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +22,7 @@ public class SalesDAOImpl implements SalesDAO {
 
     @Override
     public int getTotalSales() {
-        String sql = "SELECT SUM(quantity * unit_price) FROM order_items WHERE status = ?";
+        String sql = SqlConstants.SALES_SELECT_TOTAL;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
@@ -39,12 +40,7 @@ public class SalesDAOImpl implements SalesDAO {
     @Override
     public List<DailySales> findDailySales() {
         List<DailySales> list = new ArrayList<>();
-        String sql = "SELECT DATE(updated_at) as sales_date, SUM(quantity * unit_price) as amount, COUNT(DISTINCT o.id) as order_count " +
-                     "FROM orders o JOIN order_items oi ON o.id = oi.order_id " +
-                     "WHERE o.status = ? " +
-                     "GROUP BY sales_date " +
-                     "ORDER BY sales_date DESC " +
-                     "LIMIT 7";
+        String sql = SqlConstants.SALES_SELECT_DAILY;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
@@ -66,11 +62,7 @@ public class SalesDAOImpl implements SalesDAO {
     @Override
     public List<ProductSales> findProductSalesRanking() {
         List<ProductSales> list = new ArrayList<>();
-        String sql = "SELECT p.name, SUM(oi.quantity) as total_qty, SUM(oi.quantity * oi.unit_price) as total_amt " +
-                     "FROM order_items oi JOIN products p ON oi.product_id = p.id " +
-                     "WHERE oi.status = ? " +
-                     "GROUP BY p.name " +
-                     "ORDER BY total_qty DESC";
+        String sql = SqlConstants.SALES_SELECT_RANKING;
         try (Connection con = DBManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
