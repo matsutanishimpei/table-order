@@ -18,7 +18,7 @@ import util.AppConstants;
 @WebServlet("/Admin/Sales")
 public class SalesAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final SalesService salesService;
+    private transient final SalesService salesService;
 
     public SalesAdminServlet() {
         this(ServiceFactory.getSalesService());

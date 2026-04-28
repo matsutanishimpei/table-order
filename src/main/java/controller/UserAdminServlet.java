@@ -21,8 +21,8 @@ import util.AppConstants;
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final UserService userService;
-    private final TableService tableService;
+    private transient final UserService userService;
+    private transient final TableService tableService;
 
     public UserAdminServlet() {
         this(ServiceFactory.getUserService(), ServiceFactory.getTableService());

@@ -19,7 +19,7 @@ import util.AppConstants;
 @WebServlet("/Admin/Monitor")
 public class OrderMonitorServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final TableService tableService;
+    private transient final TableService tableService;
 
     public OrderMonitorServlet() {
         this(ServiceFactory.getTableService());

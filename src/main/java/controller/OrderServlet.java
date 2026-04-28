@@ -22,7 +22,7 @@ import util.AppConstants;
 @WebServlet("/Order")
 public class OrderServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderService orderService;
+    private transient final OrderService orderService;
 
     public OrderServlet() {
         this(ServiceFactory.getOrderService());

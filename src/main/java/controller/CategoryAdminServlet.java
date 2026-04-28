@@ -21,7 +21,7 @@ import util.AppConstants;
 @WebServlet("/Admin/Category")
 public class CategoryAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final CategoryService categoryService;
+    private transient final CategoryService categoryService;
 
     public CategoryAdminServlet() {
         this(ServiceFactory.getCategoryService());

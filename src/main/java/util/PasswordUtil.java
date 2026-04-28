@@ -1,5 +1,6 @@
 package util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -11,6 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
  * レガシーなSHA-256方式と、モダンなBCrypt方式の両方をサポートします。
  */
 public class PasswordUtil {
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     /**
      * BCrypt を使用してパスワードをハッシュ化します。
@@ -47,7 +49,7 @@ public class PasswordUtil {
     public static String hashLegacy(String password, String salt, String pepper) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update((password + salt + pepper).getBytes());
+            md.update((password + salt + pepper).getBytes(StandardCharsets.UTF_8));
             byte[] cipherText = md.digest();
             StringBuilder sb = new StringBuilder();
             for (byte b : cipherText) {
@@ -66,8 +68,12 @@ public class PasswordUtil {
      * @return 一致すれば true
      */
     public static boolean isEqualConstantTime(String a, String b) {
-        if (a == null || b == null) return false;
-        if (a.length() != b.length()) return false;
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.length() != b.length()) {
+            return false;
+        }
         int result = 0;
         for (int i = 0; i < a.length(); i++) {
             result |= a.charAt(i) ^ b.charAt(i);
@@ -80,9 +86,8 @@ public class PasswordUtil {
      * @return ソルト文字列
      */
     public static String generateLegacySalt() {
-        SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
-        random.nextBytes(salt);
+        SECURE_RANDOM.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
     }
 }

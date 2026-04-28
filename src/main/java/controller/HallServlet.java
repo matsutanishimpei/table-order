@@ -20,7 +20,7 @@ import util.AppConstants;
 @WebServlet("/Hall/Home")
 public class HallServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderService orderService;
+    private transient final OrderService orderService;
 
     public HallServlet() {
         this(ServiceFactory.getOrderService());

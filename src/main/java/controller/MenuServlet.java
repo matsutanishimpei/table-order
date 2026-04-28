@@ -21,8 +21,8 @@ import util.AppConstants;
 @WebServlet("/Menu")
 public class MenuServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final CategoryService categoryService;
-    private final ProductService productService;
+    private transient final CategoryService categoryService;
+    private transient final ProductService productService;
 
     public MenuServlet() {
         this(ServiceFactory.getCategoryService(), ServiceFactory.getProductService());

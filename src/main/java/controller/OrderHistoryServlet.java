@@ -22,7 +22,7 @@ import util.AppConstants;
 @WebServlet("/OrderHistory")
 public class OrderHistoryServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final TableService tableService;
+    private transient final TableService tableService;
 
     public OrderHistoryServlet() {
         this(ServiceFactory.getTableService());

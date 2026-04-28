@@ -23,7 +23,7 @@ import util.CsrfUtil;
 @Slf4j
 public class LoginServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final UserService userService;
+    private transient final UserService userService;
 
     public LoginServlet() {
         this(ServiceFactory.getUserService());

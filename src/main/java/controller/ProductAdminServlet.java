@@ -34,9 +34,9 @@ import util.ValidationResult;
 )
 public class ProductAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final ImageStorageProvider imageStorageProvider;
+    private transient final ProductService productService;
+    private transient final CategoryService categoryService;
+    private transient final ImageStorageProvider imageStorageProvider;
 
     public ProductAdminServlet() {
         this(ServiceFactory.getProductService(), ServiceFactory.getCategoryService(), CloudinaryUtil.getInstance());

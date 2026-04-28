@@ -22,8 +22,8 @@ import util.AppConstants;
 @WebServlet("/Cashier/Home")
 public class CashierServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final OrderService orderService;
-    private final TableService tableService;
+    private transient final OrderService orderService;
+    private transient final TableService tableService;
 
     public CashierServlet() {
         this(ServiceFactory.getOrderService(), ServiceFactory.getTableService());

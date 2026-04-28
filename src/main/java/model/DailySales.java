@@ -12,4 +12,18 @@ import java.sql.Date;
  */
 public record DailySales(Date salesDate, int amount, int orderCount) implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 防御的コピーを行うコンストラクタです。
+     */
+    public DailySales(Date salesDate, int amount, int orderCount) {
+        this.salesDate = salesDate != null ? new Date(salesDate.getTime()) : null;
+        this.amount = amount;
+        this.orderCount = orderCount;
+    }
+
+    @Override
+    public Date salesDate() {
+        return salesDate != null ? new Date(salesDate.getTime()) : null;
+    }
 }

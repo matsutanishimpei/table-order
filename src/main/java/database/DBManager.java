@@ -60,6 +60,7 @@ public class DBManager {
 
     /**
      * テスト用にデータソースを再初期化します（Testcontainers用）。
+     *
      * @param url 接続URL
      * @param user ユーザ名
      * @param password パスワード
@@ -89,6 +90,7 @@ public class DBManager {
     /**
      * データベースへの接続を取得します。
      * プールからコネクションを払い出します。
+     *
      * @return Connectionオブジェクト
      * @throws SQLException 接続失敗時
      */
@@ -98,6 +100,7 @@ public class DBManager {
 
     /**
      * パスワードハッシュ化用の共通ソルト(Pepper)を取得します。
+     *
      * @return Pepper文字列
      */
     public static String getPepper() {
@@ -106,6 +109,7 @@ public class DBManager {
 
     /**
      * コネクションをクローズします（ユーティリティ）。
+     *
      * @param con Connectionオブジェクト
      */
     public static void closeConnection(Connection con) {

@@ -1,6 +1,11 @@
 package service;
 
-import service.impl.*;
+import service.impl.CategoryServiceImpl;
+import service.impl.OrderServiceImpl;
+import service.impl.ProductServiceImpl;
+import service.impl.SalesServiceImpl;
+import service.impl.TableServiceImpl;
+import service.impl.UserServiceImpl;
 
 /**
  * サービスインスタンスを提供するファクトリクラスです。

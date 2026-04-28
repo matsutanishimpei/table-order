@@ -23,7 +23,7 @@ import util.AppConstants;
 @WebServlet("/Cart")
 public class CartServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final ProductService productService;
+    private transient final ProductService productService;
 
     public CartServlet() {
         this(ServiceFactory.getProductService());
@@ -33,7 +33,8 @@ public class CartServlet extends BaseServlet {
         this.productService = productService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);
     }
 

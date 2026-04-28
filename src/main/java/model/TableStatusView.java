@@ -24,4 +24,23 @@ public record TableStatusView(
     Timestamp lastOrderTime
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 防御的コピーを行うコンストラクタです。
+     */
+    public TableStatusView(int tableId, String tableName, String statusLabel, String statusCode,
+                           int orderCount, int totalAmount, Timestamp lastOrderTime) {
+        this.tableId = tableId;
+        this.tableName = tableName;
+        this.statusLabel = statusLabel;
+        this.statusCode = statusCode;
+        this.orderCount = orderCount;
+        this.totalAmount = totalAmount;
+        this.lastOrderTime = lastOrderTime != null ? new Timestamp(lastOrderTime.getTime()) : null;
+    }
+
+    @Override
+    public Timestamp lastOrderTime() {
+        return lastOrderTime != null ? new Timestamp(lastOrderTime.getTime()) : null;
+    }
 }

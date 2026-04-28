@@ -17,7 +17,7 @@ import util.ValidationUtil;
 @WebServlet("/Product")
 public class ProductServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final ProductService productService;
+    private transient final ProductService productService;
 
     public ProductServlet() {
         this(ServiceFactory.getProductService());

@@ -18,7 +18,7 @@ import model.Product;
 @WebServlet("/ProductDetail")
 public class ProductDetailServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
-    private final ProductService productService;
+    private transient final ProductService productService;
 
     public ProductDetailServlet() {
         this(ServiceFactory.getProductService());

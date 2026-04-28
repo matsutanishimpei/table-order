@@ -22,4 +22,22 @@ public record TableOrderSummary(
     int unservedCount
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 防御的コピーを行うコンストラクタです。
+     */
+    public TableOrderSummary(int tableId, String tableName, List<OrderItemView> items,
+                             int totalAmount, int orderCount, int unservedCount) {
+        this.tableId = tableId;
+        this.tableName = tableName;
+        this.items = items != null ? List.copyOf(items) : null;
+        this.totalAmount = totalAmount;
+        this.orderCount = orderCount;
+        this.unservedCount = unservedCount;
+    }
+
+    @Override
+    public List<OrderItemView> items() {
+        return items != null ? List.copyOf(items) : null;
+    }
 }

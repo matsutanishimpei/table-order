@@ -16,7 +16,8 @@ import util.AppConstants;
 public class AdminHomeServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // 管理者用メニュー画面へ遷移
         request.getRequestDispatcher(AppConstants.VIEW_ADMIN_HOME).forward(request, response);
     }

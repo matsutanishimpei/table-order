@@ -24,4 +24,23 @@ public record OrderItemView(
     int unitPrice
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 防御的コピーを行うコンストラクタです。
+     */
+    public OrderItemView(int orderItemId, String productName, int quantity, String tableName,
+                         Timestamp orderedAt, int status, int unitPrice) {
+        this.orderItemId = orderItemId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.tableName = tableName;
+        this.orderedAt = orderedAt != null ? new Timestamp(orderedAt.getTime()) : null;
+        this.status = status;
+        this.unitPrice = unitPrice;
+    }
+
+    @Override
+    public Timestamp orderedAt() {
+        return orderedAt != null ? new Timestamp(orderedAt.getTime()) : null;
+    }
 }
