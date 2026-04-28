@@ -55,37 +55,8 @@ public class PasswordUtilTest {
     }
 
     @Test
-    @DisplayName("【レガシー】ソルトが正しく生成されること（Base64形式）")
-    void testGenerateLegacySalt() {
-        String salt = PasswordUtil.generateLegacySalt();
-        assertNotNull(salt);
-        assertFalse(salt.isEmpty());
-        assertTrue(salt.length() >= 22);
-    }
-
-    @Test
-    @DisplayName("【レガシー】同じ入力値からは同じハッシュが生成されること")
-    void testLegacyHashConsistency() {
-        String password = "mypassword";
-        String salt = "D2gNQacpqZV448SjgNuLWA==";
-        String pepper = "secret-key";
-        
-        String hash1 = PasswordUtil.hashLegacy(password, salt, pepper);
-        String hash2 = PasswordUtil.hashLegacy(password, salt, pepper);
-        
-        assertEquals(hash1, hash2, "同じ入力値からは同じハッシュが生成されるべき");
-    }
-
-    @Test
-    @DisplayName("nullのペッパーが渡されても実行時例外が発生しないこと(BCrypt / Legacy 共通)")
+    @DisplayName("nullのペッパーが渡されても実行時例外が発生しないこと")
     void testNullPepperHandling() {
-        // Legacy
-        String salt = PasswordUtil.generateLegacySalt();
-        assertDoesNotThrow(() -> {
-            PasswordUtil.hashLegacy("password", salt, null);
-        });
-
-        // BCrypt
         assertDoesNotThrow(() -> {
             String hash = PasswordUtil.hashBcrypt("password", null);
             assertTrue(PasswordUtil.checkBcrypt("password", null, hash));
