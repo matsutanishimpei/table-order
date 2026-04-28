@@ -6,6 +6,12 @@
 ![JUnit 5](https://img.shields.io/badge/JUnit%205-101%20tests%20passed-brightgreen)
 ![JaCoCo](https://img.shields.io/badge/JaCoCo-80%25+-brightgreen)
 
+![Java 17](https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apache-maven&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-Managed-3448C5?logo=cloudinary&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)
+
 飲食店向けの次世代テーブルオーダー・店舗管理システムです。お客様のモバイル注文から、厨房での調理管理、ホールでの配膳、レジでの精算、そして管理者による経営分析まで、店舗運営の全フローをカバーする統合ソリューションです。
 
 ## 🌟 主な機能
