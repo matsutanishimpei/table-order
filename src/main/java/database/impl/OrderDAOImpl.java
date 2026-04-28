@@ -145,4 +145,19 @@ public class OrderDAOImpl implements OrderDAO {
             ps.executeUpdate();
         }
     }
+
+    @Override
+    public int countUnservedItemsByTable(Connection con, int tableId) throws SQLException {
+        String sql = SqlConstants.ORDER_ITEM_COUNT_UNSERVED;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, tableId);
+            ps.setInt(2, OrderConstants.STATUS_SERVED);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
 }

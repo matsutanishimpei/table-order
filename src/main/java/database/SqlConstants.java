@@ -8,12 +8,11 @@ public class SqlConstants {
     // --- Users ---
     public static final String USER_SELECT_ALL = "SELECT id, role, table_id FROM users ORDER BY id";
     public static final String USER_SELECT_BY_ID = "SELECT id, role, table_id FROM users WHERE id = ?";
-    public static final String USER_SELECT_LOGIN = "SELECT id, password, salt, role, table_id FROM users WHERE id = ?";
+    public static final String USER_SELECT_LOGIN = "SELECT id, password, role, table_id FROM users WHERE id = ?";
     public static final String USER_INSERT = "INSERT INTO users (id, password, role, table_id) VALUES (?, ?, ?, ?)";
     public static final String USER_UPDATE = "UPDATE users SET role = ?, table_id = ? WHERE id = ?";
-    public static final String USER_UPDATE_PASSWORD = "UPDATE users SET password = ?, salt = NULL WHERE id = ?";
+    public static final String USER_UPDATE_PASSWORD = "UPDATE users SET password = ? WHERE id = ?";
     public static final String USER_DELETE = "DELETE FROM users WHERE id = ?";
-    public static final String USER_UPGRADE_BCRYPT = "UPDATE users SET password = ?, salt = NULL WHERE id = ?";
 
     // --- Products ---
     public static final String PRODUCT_SELECT_ALL = "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available FROM products ORDER BY id";
@@ -64,6 +63,11 @@ public class SqlConstants {
         "JOIN orders o ON oi.order_id = o.id " +
         "WHERE o.table_id = ? AND oi.status < ? " +
         "ORDER BY oi.created_at";
+
+    public static final String ORDER_ITEM_COUNT_UNSERVED = 
+        "SELECT COUNT(*) FROM order_items oi " +
+        "JOIN orders o ON oi.order_id = o.id " +
+        "WHERE o.table_id = ? AND oi.status < ?";
 
     public static final String TABLE_SELECT_ALL_STATUS = 
         "SELECT st.id, st.table_name, MIN(oi.status) as min_status, " +

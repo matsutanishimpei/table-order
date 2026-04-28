@@ -136,4 +136,62 @@ class OrderServiceImplTest {
         when(orderDAO.updateItemStatus(123, 2)).thenReturn(true);
         assertTrue(orderService.updateItemStatus(123, 2));
     }
+
+    @Test
+    @DisplayName("部分失敗時のロールバック: order_items登録失敗時に例外がスローされ、falseが返ること")
+    @SuppressWarnings("unchecked")
+    void createOrder_PartialFailure_Rollback() throws Exception {
+        // Arrange
+        int tableId = 1;
+        List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
+        
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                .thenAnswer(invocation -> {
+                    TransactionExecutor<?> executor = invocation.getArgument(0);
+                    return executor.execute(connection);
+                });
+            
+            // ① 最初の注文登録は成功
+            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(100);
+            // ② 続く明細登録で例外発生（DBエラー等を想定）
+            doThrow(new RuntimeException("DB Error during items insertion"))
+                .when(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+
+            // Act
+            boolean result = orderService.createOrder(tableId, items);
+
+            // Assert
+            assertFalse(result, "例外発生時は false が返るべき");
+            verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt());
+            verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+            // TransactionManager 内でロールバックが行われるはず（モック化しているため挙動のみ確認）
+        }
+    }
+    @Test
+    @DisplayName("会計失敗: 未提供の商品が残っている場合にfalseを返すこと")
+    @SuppressWarnings("unchecked")
+    void completeCheckout_Failure_UnservedItemsExist() throws Exception {
+        // Arrange
+        int tableId = 5;
+        
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                .thenAnswer(invocation -> {
+                    TransactionExecutor<?> executor = invocation.getArgument(0);
+                    return executor.execute(connection);
+                });
+
+            // 未提供商品が 2 件ある状態をシミュレート
+            when(orderDAO.countUnservedItemsByTable(eq(connection), eq(tableId))).thenReturn(2);
+
+            // Act
+            boolean result = orderService.completeCheckout(tableId);
+
+            // Assert
+            assertFalse(result, "未提供商品がある場合は会計失敗（false）になるべき");
+            // update メソッドが呼ばれていないことを確認
+            verify(orderDAO, never()).updateOrderItemsStatusForCheckout(any(), anyInt(), anyInt(), anyInt());
+        }
+    }
 }

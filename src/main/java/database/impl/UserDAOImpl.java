@@ -57,29 +57,10 @@ public class UserDAOImpl implements UserDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String storedHash = rs.getString("password");
-                    String salt = rs.getString("salt");
                     String pepper = DBManager.getPepper();
                     
-                    boolean isAuthenticated = false;
-
-                    if (storedHash != null && storedHash.startsWith("$2a$")) {
-                        // 【新規】BCrypt による堅牢な認証
-                        isAuthenticated = PasswordUtil.checkBcrypt(password, pepper, storedHash);
-                    } else {
-                        // 【後方互換】過去のセキュアでないハッシュ方式での認証
-                        String legacyInputHash = (salt != null) ? PasswordUtil.hashLegacy(password, salt, pepper) : password;
-                        
-                        // タイミング攻撃対策の定数時間比較を使用
-                        if (PasswordUtil.isEqualConstantTime(storedHash, legacyInputHash)) {
-                            isAuthenticated = true;
-                            
-                            // ★ ログイン成功のタイミングで、安全なBCrypt形式へオンザフライ移行する ★
-                            String newBcryptHash = PasswordUtil.hashBcrypt(password, pepper);
-                            upgradeToBcrypt(id, newBcryptHash);
-                        }
-                    }
-
-                    if (isAuthenticated) {
+                    // BCrypt による堅牢な認証のみをサポート
+                    if (storedHash != null && PasswordUtil.checkBcrypt(password, pepper, storedHash)) {
                         user = new User(
                             rs.getString("id"),
                             storedHash,
@@ -88,7 +69,7 @@ public class UserDAOImpl implements UserDAO {
                         );
                         log.info("ログイン成功: ユーザーID={}", id);
                     } else {
-                        log.warn("ログイン失敗（パスワード不一致）: ユーザーID={}", id);
+                        log.warn("ログイン失敗（パスワード不一致または形式不正）: ユーザーID={}", id);
                     }
                 } else {
                     log.warn("ログイン失敗（ユーザー未登録）: ユーザーID={}", id);
@@ -100,30 +81,6 @@ public class UserDAOImpl implements UserDAO {
         }
 
         return Optional.ofNullable(user);
-    }
-
-    /**
-     * 旧パスワード形式から BCrypt へオンザフライで移行します。
-     * 移行完了後は無用となる salt カラムも NULL にクリアします。
-     * 
-     * @param userId 対象のユーザーID
-     * @param newBcryptHash 新しく生成された BCrypt ハッシュ
-     */
-    private void upgradeToBcrypt(String userId, String newBcryptHash) {
-        String sql = SqlConstants.USER_UPGRADE_BCRYPT;
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-             
-            ps.setString(1, newBcryptHash);
-            ps.setString(2, userId);
-            
-            if (ps.executeUpdate() > 0) {
-                log.info("パスワードの BCrypt 強制アップグレード（オンザフライ・マイグレーション）が完了しました。ユーザーID={}", userId);
-            }
-        } catch (SQLException e) {
-            // マイグレーション自体が失敗しても、今回のログインセッションは継続させるためログ出力のみ
-            log.warn("BCrypt マイグレーション中にエラーが発生しました。ユーザーID={}", userId, e);
-        }
     }
 
     @Override

@@ -53,10 +53,17 @@ public class OrderServiceImpl implements OrderService {
     public boolean completeCheckout(int tableId) {
         try {
             return TransactionManager.execute(con -> {
-                // ① まず order_items を PAID に変更
+                // ① 未提供の商品（status < STATUS_SERVED）がないかチェック
+                int unservedCount = orderDAO.countUnservedItemsByTable(con, tableId);
+                if (unservedCount > 0) {
+                    log.warn("会計完了処理を中断しました（未提供商品あり）: tableId={}, count={}", tableId, unservedCount);
+                    return false;
+                }
+
+                // ② まず order_items を PAID に変更
                 orderDAO.updateOrderItemsStatusForCheckout(con, tableId, OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
 
-                // ② 続いて orders 自身を PAID に変更
+                // ③ 続いて orders 自身を PAID に変更
                 orderDAO.updateOrderStatusForCheckout(con, tableId, OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
 
                 log.info("会計完了処理成功: tableId={}", tableId);

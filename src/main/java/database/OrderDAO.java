@@ -74,4 +74,12 @@ public interface OrderDAO {
      * @throws SQLException データベースエラーが発生した場合
      */
     void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException;
+    /**
+     * 特定の座席において、まだ配膳が完了していない（提供待ち）商品の件数を取得します。
+     * @param con データベース接続オブジェクト
+     * @param tableId 対象の座席ID
+     * @return 未提供商品の件数
+     * @throws SQLException データベースエラーが発生した場合
+     */
+    int countUnservedItemsByTable(Connection con, int tableId) throws SQLException;
 }
