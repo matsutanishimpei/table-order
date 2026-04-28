@@ -23,9 +23,12 @@ public class ProductServiceImplTest {
     @Mock
     private ProductDAO productDAO;
 
+    @Mock
+    private database.CategoryDAO categoryDAO;
+
     @BeforeEach
     public void setUp() {
-        productService = new ProductServiceImpl(productDAO);
+        productService = new ProductServiceImpl(productDAO, categoryDAO);
     }
 
     @Test
@@ -89,5 +92,38 @@ public class ProductServiceImplTest {
         // Assert
         assertTrue(result);
         verify(productDAO).updateAvailability(productId, isAvailable);
+    }
+
+    @Test
+    public void testInsert_Success() {
+        // Arrange
+        Product p = new Product(0, 1, "New Product", 1000, "Desc", null, null, true);
+        // カテゴリ1が存在する状態
+        when(categoryDAO.findAll()).thenReturn(Arrays.asList(new model.Category(1, "Food")));
+        when(productDAO.insert(p)).thenReturn(true);
+
+        // Act
+        boolean result = productService.insert(p);
+
+        // Assert
+        assertTrue(result);
+        verify(categoryDAO).findAll();
+        verify(productDAO).insert(p);
+    }
+
+    @Test
+    public void testInsert_Failure_InvalidCategory() {
+        // Arrange
+        Product p = new Product(0, 999, "Bad Product", 1000, "Desc", null, null, true);
+        // カテゴリ999は存在しない（空リストを返す）
+        when(categoryDAO.findAll()).thenReturn(Arrays.asList(new model.Category(1, "Food")));
+
+        // Act & Assert
+        exception.BusinessException ex = assertThrows(exception.BusinessException.class, () -> {
+            productService.insert(p);
+        });
+        
+        assertTrue(ex.getMessage().contains("存在しません"));
+        verify(productDAO, never()).insert(any());
     }
 }

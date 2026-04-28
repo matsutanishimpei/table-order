@@ -10,13 +10,14 @@ import model.User;
 public interface UserDAO {
     /**
      * 全てのユーザーを取得します。
+     *
      * @return ユーザーリスト
      */
     List<User> findAll();
 
     /**
      * ログイン認証を行い、ユーザー情報を取得します。
-     * 
+     *
      * @param id ユーザーID
      * @param password 入力されたパスワード（平文）
      * @return 認証成功時は User インスタンスを含むOptional、失敗した場合は 空のOptional
@@ -25,6 +26,7 @@ public interface UserDAO {
 
     /**
      * ユーザーIDからユーザー情報を取得します。
+     *
      * @param id ユーザーID
      * @return ユーザー情報を含むOptional
      */
@@ -32,6 +34,7 @@ public interface UserDAO {
 
     /**
      * ユーザーを新規登録します。
+     *
      * @param user ユーザー情報
      * @return 登録成功時は true
      */
@@ -39,6 +42,7 @@ public interface UserDAO {
 
     /**
      * ユーザー情報を更新します（パスワード以外）。
+     *
      * @param user ユーザー情報
      * @return 更新成功時は true
      */
@@ -46,6 +50,7 @@ public interface UserDAO {
 
     /**
      * ユーザーのパスワードを更新します。
+     *
      * @param id ユーザーID
      * @param newPassword 新しいパスワード（平文）
      * @return 更新成功時は true
@@ -54,6 +59,7 @@ public interface UserDAO {
 
     /**
      * ユーザーを削除します。
+     *
      * @param id ユーザーID
      * @return 削除成功時は true
      */

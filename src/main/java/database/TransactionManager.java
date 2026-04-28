@@ -10,12 +10,12 @@ import exception.DatabaseException;
  * 開発者が明示的に rollback や commit を書かずに済むようにします。
  */
 @Slf4j
-public class TransactionManager {
+public final class TransactionManager {
 
     /**
      * 指定された処理をトランザクション制御下で実行します。
      * 正常終了時はコミット、例外発生時はロールバックを自動的に行います。
-     * 
+     *
      * @param <T> 戻り値の型
      * @param executor 実行する処理 (Lambda式)
      * @return 処理結果
@@ -47,5 +47,9 @@ public class TransactionManager {
         } finally {
             DBManager.closeConnection(con);
         }
+    }
+
+    private TransactionManager() {
+        // インスタンス化防止
     }
 }

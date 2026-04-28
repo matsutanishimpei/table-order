@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.ServiceFactory;
 import service.UserService;
 
@@ -23,12 +24,15 @@ import util.CsrfUtil;
 @Slf4j
 public class LoginServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final UserService userService;
 
     public LoginServlet() {
         this(ServiceFactory.getUserService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public LoginServlet(UserService userService) {
         this.userService = userService;
     }
@@ -36,7 +40,8 @@ public class LoginServlet extends BaseServlet {
     /**
      * ログイン画面を表示します。
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // ログイン画面用の CSRF トークンを生成してセッションにセット
         HttpSession session = request.getSession();
         String token = CsrfUtil.generateToken();
@@ -48,7 +53,8 @@ public class LoginServlet extends BaseServlet {
     /**
      * ログイン認証を実行します。
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // CSRF トークンの検証（AuthFilter 対象外のため自前で実施）
         HttpSession session = request.getSession(false);
         String sessionToken = (session != null) ? (String) session.getAttribute(AppConstants.ATTR_CSRF_TOKEN) : null;

@@ -40,8 +40,8 @@ public class ProductDAOImpl implements ProductDAO {
         List<Product> list = new ArrayList<>();
         String sql = SqlConstants.PRODUCT_SELECT_ALL;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -58,7 +58,7 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = SqlConstants.PRODUCT_SELECT_BY_CATEGORY;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, categoryId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -77,7 +77,7 @@ public class ProductDAOImpl implements ProductDAO {
         Product p = null;
         String sql = SqlConstants.PRODUCT_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, productId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -94,7 +94,7 @@ public class ProductDAOImpl implements ProductDAO {
     public boolean insert(Product p) {
         String sql = SqlConstants.PRODUCT_INSERT;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.categoryId());
             ps.setString(2, p.name());
             ps.setInt(3, p.price());
@@ -112,7 +112,7 @@ public class ProductDAOImpl implements ProductDAO {
     public boolean update(Product p) {
         String sql = SqlConstants.PRODUCT_UPDATE;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, p.categoryId());
             ps.setString(2, p.name());
             ps.setInt(3, p.price());
@@ -131,7 +131,7 @@ public class ProductDAOImpl implements ProductDAO {
     public boolean updateAvailability(int productId, boolean isAvailable) {
         String sql = SqlConstants.PRODUCT_UPDATE_AVAILABILITY;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setBoolean(1, isAvailable);
             ps.setInt(2, productId);
             return ps.executeUpdate() > 0;

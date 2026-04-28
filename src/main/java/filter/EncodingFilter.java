@@ -17,10 +17,11 @@ import jakarta.servlet.annotation.WebFilter;
 public class EncodingFilter implements Filter {
 
     @Override
-    public void init(FilterConfig fConfig) throws ServletException {}
+    public void init(FilterConfig fConfig) throws ServletException { }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         // リクエストのエンコーディングを UTF-8 に設定
         request.setCharacterEncoding("UTF-8");
         // 必要に応じてレスポンスのエンコーディングも設定
@@ -30,5 +31,5 @@ public class EncodingFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() { }
 }

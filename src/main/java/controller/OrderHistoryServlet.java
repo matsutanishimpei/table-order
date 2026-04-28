@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.ServiceFactory;
 import service.TableService;
 
@@ -22,17 +23,21 @@ import util.AppConstants;
 @WebServlet("/OrderHistory")
 public class OrderHistoryServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final TableService tableService;
 
     public OrderHistoryServlet() {
         this(ServiceFactory.getTableService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public OrderHistoryServlet(TableService tableService) {
         this.tableService = tableService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AppConstants.ATTR_USER);
 

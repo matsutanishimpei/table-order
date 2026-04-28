@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.ServiceFactory;
 import service.TableService;
 import service.UserService;
@@ -21,19 +22,25 @@ import util.AppConstants;
 @WebServlet("/Admin/User")
 public class UserAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final UserService userService;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final TableService tableService;
 
     public UserAdminServlet() {
         this(ServiceFactory.getUserService(), ServiceFactory.getTableService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UserAdminServlet(UserService userService, TableService tableService) {
         this.userService = userService;
         this.tableService = tableService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
 
         if ("edit".equals(action) || "add".equals(action)) {
@@ -59,7 +66,8 @@ public class UserAdminServlet extends BaseServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
         String id = request.getParameter("id");
         String password = request.getParameter("password");
@@ -69,7 +77,8 @@ public class UserAdminServlet extends BaseServlet {
             return;
         }
         String tableIdStr = request.getParameter("tableId");
-        Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr)) ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
+        Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr))
+                ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
 
         if ("delete".equals(action)) {
             userService.delete(id);

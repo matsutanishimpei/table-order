@@ -10,6 +10,7 @@ public class PasswordUtil {
 
     /**
      * BCrypt を使用してパスワードをハッシュ化します。
+     *
      * @param password 生のパスワード
      * @param pepper 共通ソルト
      * @return ハッシュ化された文字列
@@ -20,6 +21,7 @@ public class PasswordUtil {
 
     /**
      * BCrypt 形式のハッシュと生のパスワードが一致するか検証します。
+     *
      * @param password 生のパスワード
      * @param pepper 共通ソルト
      * @param hashedBCrypt ハッシュ化されたパスワード
@@ -35,6 +37,7 @@ public class PasswordUtil {
 
     /**
      * 二つの文字列を定数時間で比較します（タイミング攻撃対策）。
+     *
      * @param a 文字列A
      * @param b 文字列B
      * @return 一致すれば true

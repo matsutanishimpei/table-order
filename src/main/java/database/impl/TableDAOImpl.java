@@ -28,18 +28,18 @@ public class TableDAOImpl implements TableDAO {
         String sql = SqlConstants.TABLE_SELECT_UNSETTLED;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_SERVED);
             ps.setInt(2, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(new TableOrderSummary(
-                        rs.getInt("id"),
-                        rs.getString("table_name"),
-                        null, // findUnsettledTables では明細リストは取得しない
-                        rs.getInt("total_amt"),
-                        rs.getInt("item_count"),
-                        rs.getInt("unserved_count")
+                            rs.getInt("id"),
+                            rs.getString("table_name"),
+                            null, // findUnsettledTables では明細リストは取得しない
+                            rs.getInt("total_amt"),
+                            rs.getInt("item_count"),
+                            rs.getInt("unserved_count")
                     ));
                 }
             }
@@ -75,13 +75,13 @@ public class TableDAOImpl implements TableDAO {
                 try (ResultSet rsItems = psItems.executeQuery()) {
                     while (rsItems.next()) {
                         OrderItemView item = new OrderItemView(
-                            rsItems.getInt("id"),
-                            rsItems.getString("name"),
-                            rsItems.getInt("quantity"),
-                            null, // tableName はこのクエリでは取得していない
-                            null, // orderedAt はこのクエリでは取得していない
-                            rsItems.getInt("status"),
-                            rsItems.getInt("unit_price")
+                                rsItems.getInt("id"),
+                                rsItems.getString("name"),
+                                rsItems.getInt("quantity"),
+                                null, // tableName はこのクエリでは取得していない
+                                null, // orderedAt はこのクエリでは取得していない
+                                rsItems.getInt("status"),
+                                rsItems.getInt("unit_price")
                         );
                         items.add(item);
                         total += item.quantity() * item.unitPrice();
@@ -107,7 +107,7 @@ public class TableDAOImpl implements TableDAO {
         String sql = SqlConstants.TABLE_SELECT_ALL_STATUS;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, OrderConstants.STATUS_PAID);
             ps.setInt(2, OrderConstants.STATUS_PAID);
@@ -119,13 +119,13 @@ public class TableDAOImpl implements TableDAO {
                     int minStatus = (minStatusObj == null || itemCount == 0) ? 0 : (Integer) minStatusObj;
 
                     TableStatusView view = new TableStatusView(
-                        rs.getInt("id"),
-                        rs.getString("table_name"),
-                        null, // statusLabel は Service 等で設定される想定か？
-                        String.valueOf(minStatus),
-                        itemCount,
-                        rs.getInt("total_amt"),
-                        rs.getTimestamp("last_order")
+                            rs.getInt("id"),
+                            rs.getString("table_name"),
+                            null, // statusLabel は Service 等で設定される想定か？
+                            String.valueOf(minStatus),
+                            itemCount,
+                            rs.getInt("total_amt"),
+                            rs.getTimestamp("last_order")
                     );
                     list.add(view);
                 }

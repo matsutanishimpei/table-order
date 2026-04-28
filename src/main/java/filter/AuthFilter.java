@@ -22,11 +22,14 @@ import util.CsrfUtil;
 @WebFilter(urlPatterns = {"/Admin/*", "/Kitchen/*", "/Hall/*", "/Cashier/*", "/Order", "/Cart", "/OrderHistory"})
 public class AuthFilter implements Filter {
 
-    public void init(FilterConfig fConfig) throws ServletException {}
+    public void init(FilterConfig fConfig) throws ServletException { }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = (HttpServletResponse) response;
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        if (!(request instanceof HttpServletRequest req) || !(response instanceof HttpServletResponse res)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         HttpSession session = req.getSession(false);
         String path = req.getServletPath();
@@ -80,5 +83,5 @@ public class AuthFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    public void destroy() {}
+    public void destroy() { }
 }

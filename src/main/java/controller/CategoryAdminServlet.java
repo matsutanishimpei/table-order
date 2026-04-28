@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.CategoryService;
 import service.ServiceFactory;
 
@@ -21,17 +22,21 @@ import util.AppConstants;
 @WebServlet("/Admin/Category")
 public class CategoryAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final CategoryService categoryService;
 
     public CategoryAdminServlet() {
         this(ServiceFactory.getCategoryService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CategoryAdminServlet(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
         if ("edit".equals(action)) {
             int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
@@ -48,7 +53,8 @@ public class CategoryAdminServlet extends BaseServlet {
         request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORIES).forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
         String name = request.getParameter("name");
         int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
@@ -72,7 +78,8 @@ public class CategoryAdminServlet extends BaseServlet {
         }
     }
 
-    private void handleError(HttpServletRequest request, HttpServletResponse response, String message, int id, String name, String action) throws ServletException, IOException {
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String message,
+            int id, String name, String action) throws ServletException, IOException {
         request.setAttribute(AppConstants.ATTR_ERROR, message);
         if ("update".equals(action) && id > 0) {
             Category c = new Category(id, name);

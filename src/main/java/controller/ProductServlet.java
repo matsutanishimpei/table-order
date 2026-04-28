@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.ProductService;
 import service.ServiceFactory;
 import jakarta.servlet.ServletException;
@@ -17,17 +19,21 @@ import util.ValidationUtil;
 @WebServlet("/Product")
 public class ProductServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final ProductService productService;
 
     public ProductServlet() {
         this(ServiceFactory.getProductService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ProductServlet(ProductService productService) {
         this.productService = productService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
         int categoryId = ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0);
 

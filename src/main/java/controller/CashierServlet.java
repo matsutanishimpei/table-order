@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,19 +22,25 @@ import util.AppConstants;
 @WebServlet("/Cashier/Home")
 public class CashierServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final OrderService orderService;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final TableService tableService;
 
     public CashierServlet() {
         this(ServiceFactory.getOrderService(), ServiceFactory.getTableService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CashierServlet(OrderService orderService, TableService tableService) {
         this.orderService = orderService;
         this.tableService = tableService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         // 未精算の座席一覧を取得
         List<TableOrderSummary> tables = tableService.findUnsettledTables();
@@ -52,7 +58,8 @@ public class CashierServlet extends BaseServlet {
         request.getRequestDispatcher(AppConstants.VIEW_CASHIER).forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         String action = request.getParameter("action");
 

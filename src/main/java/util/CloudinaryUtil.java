@@ -3,10 +3,12 @@ package util;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.servlet.http.Part;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
@@ -16,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * Cloudinaryを使用した画像ストレージの実装クラスです。
  */
 @Slf4j
-public class CloudinaryUtil implements ImageStorageProvider {
+public final class CloudinaryUtil implements ImageStorageProvider {
     private static Cloudinary cloudinary;
     private static final CloudinaryUtil INSTANCE = new CloudinaryUtil();
 
@@ -25,29 +27,35 @@ public class CloudinaryUtil implements ImageStorageProvider {
             Properties props = new Properties();
             if (is != null) {
                 props.load(is);
-                
+
                 String cloudName = props.getProperty("cloudinary.cloud_name");
                 String apiKey = props.getProperty("cloudinary.api_key");
                 String apiSecret = props.getProperty("cloudinary.api_secret");
 
                 if (cloudName != null && apiKey != null && apiSecret != null) {
                     cloudinary = new Cloudinary(ObjectUtils.asMap(
-                        "cloud_name", cloudName,
-                        "api_key", apiKey,
-                        "api_secret", apiSecret,
-                        "secure", true
+                            "cloud_name", cloudName,
+                            "api_key", apiKey,
+                            "api_secret", apiSecret,
+                            "secure", true
                     ));
                 } else {
-                    log.warn("Cloudinary properties are missing in database.properties. Image features will be disabled.");
+                    log.warn("Cloudinary properties are missing in database.properties. "
+                            + "Image features will be disabled.");
                 }
             } else {
                 log.warn("database.properties not found. Cloudinary will not be initialized.");
             }
-        } catch (Exception e) {
-            log.error("Cloudinary initialization failed", e);
+        } catch (IOException e) {
+            log.error("Cloudinary initialization failed due to I/O error", e);
         }
     }
 
+    private CloudinaryUtil() {
+        // シングルトン
+    }
+
+    @SuppressFBWarnings("MS_EXPOSE_REP")
     public static CloudinaryUtil getInstance() {
         return INSTANCE;
     }
@@ -62,7 +70,7 @@ public class CloudinaryUtil implements ImageStorageProvider {
         try {
             tempFile = File.createTempFile("upload_", "_" + filePart.getSubmittedFileName());
             try (InputStream input = filePart.getInputStream();
-                 FileOutputStream output = new FileOutputStream(tempFile)) {
+                    FileOutputStream output = new FileOutputStream(tempFile)) {
                 byte[] buffer = new byte[1024];
                 int length;
                 while ((length = input.read(buffer)) > 0) {
@@ -71,20 +79,25 @@ public class CloudinaryUtil implements ImageStorageProvider {
             }
 
             Map<String, Object> uploadResult = toTypedMap(cloudinary.uploader().upload(tempFile, ObjectUtils.asMap(
-                "quality", "auto",
-                "fetch_format", "auto"
+                    "quality", "auto",
+                    "fetch_format", "auto"
             )));
 
             String publicId = (String) uploadResult.get("public_id");
             Object version = uploadResult.get("version");
             return "v" + version + "/" + publicId;
 
+        } catch (IOException e) {
+            log.error("Cloudinary upload failed due to I/O error", e);
+            return null;
         } catch (Exception e) {
             log.error("Cloudinary upload failed", e);
             return null;
         } finally {
             if (tempFile != null && tempFile.exists()) {
-                tempFile.delete();
+                if (!tempFile.delete()) {
+                    log.warn("Failed to delete temporary file: {}", tempFile.getAbsolutePath());
+                }
             }
         }
     }
@@ -97,10 +110,15 @@ public class CloudinaryUtil implements ImageStorageProvider {
 
         try {
             String publicId = extractPublicId(identifier);
-            if (publicId == null) return false;
+            if (publicId == null) {
+                return false;
+            }
 
             Map<String, Object> result = toTypedMap(cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap()));
             return "ok".equals(result.get("result"));
+        } catch (IOException e) {
+            log.error("Cloudinary delete failed due to I/O error", e);
+            return false;
         } catch (Exception e) {
             log.error("Cloudinary delete failed", e);
             return false;
@@ -123,18 +141,20 @@ public class CloudinaryUtil implements ImageStorageProvider {
         }
 
         return cloudinary.url()
-            .transformation(new Transformation<>()
-                .width(width)
-                .height(height)
-                .crop("fill")
-                .gravity("auto")
-                .quality("auto")
-                .fetchFormat("auto"))
-            .generate(sourcePath);
+                .transformation(new Transformation<>()
+                        .width(width)
+                        .height(height)
+                        .crop("fill")
+                        .gravity("auto")
+                        .quality("auto")
+                        .fetchFormat("auto"))
+                .generate(sourcePath);
     }
 
     private static String extractPublicId(String identifier) {
-        if (identifier == null) return null;
+        if (identifier == null) {
+            return null;
+        }
         String path = identifier;
         if (identifier.contains("/upload/")) {
             path = identifier.split("/upload/")[1];
@@ -157,8 +177,11 @@ public class CloudinaryUtil implements ImageStorageProvider {
     }
 
     /**
-     * raw型のMapを型安全なMap<String, Object>に変換します。
+     * raw型のMapを型安全な {@code Map<String, Object>} に変換します。
      * 外部ライブラリ（Cloudinary SDK）の古い設計に起因する警告をこのメソッド内に閉じ込めます。
+     *
+     * @param rawMap 変換前のMap
+     * @return 型安全なMap
      */
     @SuppressWarnings("unchecked")
     private static Map<String, Object> toTypedMap(Map<?, ?> rawMap) {

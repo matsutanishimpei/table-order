@@ -2,6 +2,7 @@ package database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import com.zaxxer.hikari.HikariConfig;
@@ -13,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class DBManager {
-    
+
     private static HikariDataSource dataSource;
     private static String pepper;
 
@@ -21,13 +22,14 @@ public class DBManager {
         // 設定ファイルの読み込み
         try (InputStream is = DBManager.class.getClassLoader().getResourceAsStream("database.properties")) {
             if (is == null) {
-                throw new RuntimeException("database.properties が見つかりません。src/main/resources に配置されているか確認してください。");
+                throw new RuntimeException("database.properties が見つかりません。"
+                        + "src/main/resources に配置されているか確認してください。");
             }
             Properties props = new Properties();
             props.load(is);
 
             HikariConfig config = new HikariConfig();
-            
+
             boolean isOracle = Boolean.parseBoolean(props.getProperty("db.is_oracle", "false"));
             if (isOracle) {
                 config.setJdbcUrl(props.getProperty("db.oracle.url"));
@@ -40,21 +42,21 @@ public class DBManager {
                 config.setPassword(props.getProperty("db.mysql.pass"));
                 config.setDriverClassName(props.getProperty("db.mysql.driver", "com.mysql.cj.jdbc.Driver"));
             }
-            
+
             // プーリングの詳細設定
             config.setMaximumPoolSize(10);
             config.setMinimumIdle(2);
             config.setConnectionTimeout(30000); // 30秒
             config.setIdleTimeout(600000);      // 10分
             config.setMaxLifetime(1800000);     // 30分
-            
+
             dataSource = new HikariDataSource(config);
-            
+
             pepper = props.getProperty("app.security.pepper");
 
-        } catch (Exception e) {
-            log.error("DBManagerの初期化に失敗しました", e);
-            throw new RuntimeException("DBManagerの初期化に失敗しました: " + e.getMessage(), e);
+        } catch (IOException e) {
+            log.error("DBManagerの初期化に失敗しました（入出力エラー）", e);
+            throw new RuntimeException("DBManagerの初期化に失敗しました", e);
         }
     }
 
@@ -65,22 +67,22 @@ public class DBManager {
      * @param user ユーザ名
      * @param password パスワード
      */
-    public static void initForTest(String url, String user, String password) {
+    public static synchronized void initForTest(String url, String user, String password) {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
         }
-        
+
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(user);
         config.setPassword(password);
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        
+
         config.setMaximumPoolSize(5);
         config.setConnectionTimeout(30000);
-        
+
         dataSource = new HikariDataSource(config);
-        
+
         // Pepperが未設定の場合はデフォルト値を設定
         if (pepper == null) {
             pepper = "test-pepper";
@@ -120,5 +122,9 @@ public class DBManager {
                 log.warn("コネクションのクローズ中にエラーが発生しました", e);
             }
         }
+    }
+
+    private DBManager() {
+        // インスタンス化防止
     }
 }

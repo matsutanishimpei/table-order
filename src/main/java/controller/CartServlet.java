@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.ProductService;
 import service.ServiceFactory;
 
@@ -23,12 +24,15 @@ import util.AppConstants;
 @WebServlet("/Cart")
 public class CartServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final ProductService productService;
 
     public CartServlet() {
         this(ServiceFactory.getProductService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CartServlet(ProductService productService) {
         this.productService = productService;
     }
@@ -38,7 +42,8 @@ public class CartServlet extends BaseServlet {
         request.getRequestDispatcher(AppConstants.VIEW_MENU).forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
         List<CartItem> sessionCart = (List<CartItem>) session.getAttribute(AppConstants.ATTR_CART);
@@ -58,18 +63,18 @@ public class CartServlet extends BaseServlet {
             }
 
             Optional<CartItem> existingItem = cart.stream()
-                .filter(item -> item.productId() == productId)
-                .findFirst();
+                    .filter(item -> item.productId() == productId)
+                    .findFirst();
 
             if (existingItem.isPresent()) {
                 CartItem oldItem = existingItem.get();
                 int index = cart.indexOf(oldItem);
                 // Record は不変なため、新しい数量で新しいインスタンスを作成して置換する
                 CartItem newItem = new CartItem(
-                    oldItem.productId(),
-                    oldItem.name(),
-                    oldItem.unitPrice(),
-                    oldItem.quantity() + quantity
+                        oldItem.productId(),
+                        oldItem.name(),
+                        oldItem.unitPrice(),
+                        oldItem.quantity() + quantity
                 );
                 cart.set(index, newItem);
             } else {

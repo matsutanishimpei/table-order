@@ -64,14 +64,30 @@ public class UserServiceImplTest {
     public void testRegister_Success() {
         // Arrange
         User user = new User("newuser", "pass", 1, null);
+        when(userDAO.findById("newuser")).thenReturn(Optional.empty()); // 重複なし
         when(userDAO.insert(user)).thenReturn(true);
+ 
+        // Act
+        boolean result = userService.register(user);
+ 
+        // Assert
+        assertTrue(result);
+        verify(userDAO).findById("newuser");
+        verify(userDAO).insert(user);
+    }
+
+    @Test
+    public void testRegister_Failure_DuplicateId() {
+        // Arrange
+        User user = new User("existinguser", "pass", 1, null);
+        when(userDAO.findById("existinguser")).thenReturn(Optional.of(user)); // 重複あり
 
         // Act
         boolean result = userService.register(user);
 
         // Assert
-        assertTrue(result);
-        verify(userDAO).insert(user);
+        assertFalse(result, "既に存在するIDの場合は登録失敗になるべき");
+        verify(userDAO, never()).insert(any());
     }
 
     @Test

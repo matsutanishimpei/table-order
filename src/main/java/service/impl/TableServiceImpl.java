@@ -41,16 +41,16 @@ public class TableServiceImpl implements TableService {
         List<TableStatusView> list = tableDAO.findAllTableStatus();
         // Record は不変なため、Stream API を使用して新しいラベルをセットした Record を生成して返す
         return list.stream()
-            .map(view -> new TableStatusView(
-                view.tableId(),
-                view.tableName(),
-                resolveStatusLabel(view.statusCode()),
-                view.statusCode(),
-                view.orderCount(),
-                view.totalAmount(),
-                view.lastOrderTime()
-            ))
-            .toList();
+                .map(view -> new TableStatusView(
+                        view.tableId(),
+                        view.tableName(),
+                        resolveStatusLabel(view.statusCode()),
+                        view.statusCode(),
+                        view.orderCount(),
+                        view.totalAmount(),
+                        view.lastOrderTime()
+                ))
+                .toList();
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import database.CategoryDAO;
 import database.impl.CategoryDAOImpl;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import model.Category;
 import service.CategoryService;
 import exception.BusinessException;
@@ -22,6 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     // テスト・DI用コンストラクタ
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CategoryServiceImpl(CategoryDAO categoryDAO) {
         this.categoryDAO = categoryDAO;
     }
@@ -50,6 +52,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void validateName(String name) {
         ValidationResult res = ValidationUtil.validateRequired(name, "カテゴリ名");
-        if (res.isInvalid()) throw new BusinessException(res.message());
+        if (res.isInvalid()) {
+            throw new BusinessException(res.message());
+        }
     }
 }

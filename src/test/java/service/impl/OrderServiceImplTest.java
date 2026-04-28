@@ -16,10 +16,13 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import database.OrderDAO;
+import database.ProductDAO;
 import database.TransactionManager;
 import database.TransactionExecutor;
 import model.CartItem;
 import model.OrderItemView;
+import model.Product;
+import model.OrderConstants;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -28,13 +31,16 @@ class OrderServiceImplTest {
     private OrderDAO orderDAO;
 
     @Mock
+    private ProductDAO productDAO;
+
+    @Mock
     private Connection connection;
 
     private OrderServiceImpl orderService;
 
     @BeforeEach
     void setUp() {
-        orderService = new OrderServiceImpl(orderDAO);
+        orderService = new OrderServiceImpl(orderDAO, productDAO);
     }
 
     @Test
@@ -44,15 +50,21 @@ class OrderServiceImplTest {
         // Arrange
         int tableId = 1;
         List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
-        
+
         // TransactionManager.execute を Mock 化
         try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
             mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
-                .thenAnswer(invocation -> {
-                    TransactionExecutor<?> executor = invocation.getArgument(0);
-                    return executor.execute(connection);
-                });
-            
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品は利用可能として設定
+            Product p = mock(Product.class);
+            when(p.isAvailable()).thenReturn(true);
+            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+            // 既存注文なし
+            when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
             when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(100);
 
             // Act
@@ -72,14 +84,21 @@ class OrderServiceImplTest {
         // Arrange
         int tableId = 1;
         List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
-        
+
         try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
             mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
-                .thenAnswer(invocation -> {
-                    TransactionExecutor<?> executor = invocation.getArgument(0);
-                    return executor.execute(connection);
-                });
-            
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品は利用可能
+            Product p = mock(Product.class);
+            when(p.isAvailable()).thenReturn(true);
+            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+
+            // 既存注文なし
+            when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
             when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(-1);
 
             // Act
@@ -96,13 +115,13 @@ class OrderServiceImplTest {
     void completeCheckout_Success() throws Exception {
         // Arrange
         int tableId = 5;
-        
+
         try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
             mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
-                .thenAnswer(invocation -> {
-                    TransactionExecutor<?> executor = invocation.getArgument(0);
-                    return executor.execute(connection);
-                });
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
 
             // Act
             boolean result = orderService.completeCheckout(tableId);
@@ -133,8 +152,22 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("商品ステータス更新: DAOの結果が返ること")
     void updateItemStatus_ReturnsResult() {
-        when(orderDAO.updateItemStatus(123, 2)).thenReturn(true);
-        assertTrue(orderService.updateItemStatus(123, 2));
+        when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_ORDERED);
+        when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE)).thenReturn(true);
+        assertTrue(orderService.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE));
+    }
+
+    @Test
+    @DisplayName("商品ステータス更新失敗: 過去のステータスへの逆行を防ぐこと")
+    void updateItemStatus_Failure_BackwardTransition() {
+        // 現在が「配膳済み(30)」
+        when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_SERVED);
+
+        // 「調理待ち(10)」に戻そうとする
+        boolean result = orderService.updateItemStatus(123, OrderConstants.STATUS_ORDERED);
+
+        assertFalse(result, "ステータスの逆行は拒否されるべき");
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt());
     }
 
     @Test
@@ -144,19 +177,26 @@ class OrderServiceImplTest {
         // Arrange
         int tableId = 1;
         List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
-        
+
         try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
             mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
-                .thenAnswer(invocation -> {
-                    TransactionExecutor<?> executor = invocation.getArgument(0);
-                    return executor.execute(connection);
-                });
-            
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品は利用可能
+            Product p = mock(Product.class);
+            when(p.isAvailable()).thenReturn(true);
+            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+
+            // 既存注文なし
+            when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
             // ① 最初の注文登録は成功
             when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(100);
             // ② 続く明細登録で例外発生（DBエラー等を想定）
             doThrow(new RuntimeException("DB Error during items insertion"))
-                .when(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+                    .when(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
 
             // Act
             boolean result = orderService.createOrder(tableId, items);
@@ -168,19 +208,20 @@ class OrderServiceImplTest {
             // TransactionManager 内でロールバックが行われるはず（モック化しているため挙動のみ確認）
         }
     }
+
     @Test
     @DisplayName("会計失敗: 未提供の商品が残っている場合にfalseを返すこと")
     @SuppressWarnings("unchecked")
     void completeCheckout_Failure_UnservedItemsExist() throws Exception {
         // Arrange
         int tableId = 5;
-        
+
         try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
             mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
-                .thenAnswer(invocation -> {
-                    TransactionExecutor<?> executor = invocation.getArgument(0);
-                    return executor.execute(connection);
-                });
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
 
             // 未提供商品が 2 件ある状態をシミュレート
             when(orderDAO.countUnservedItemsByTable(eq(connection), eq(tableId))).thenReturn(2);
@@ -192,6 +233,71 @@ class OrderServiceImplTest {
             assertFalse(result, "未提供商品がある場合は会計失敗（false）になるべき");
             // update メソッドが呼ばれていないことを確認
             verify(orderDAO, never()).updateOrderItemsStatusForCheckout(any(), anyInt(), anyInt(), anyInt());
+        }
+    }
+
+    @Test
+    @DisplayName("注文失敗: 非公開商品が含まれる場合にfalseを返すこと")
+    @SuppressWarnings("unchecked")
+    void createOrder_Failure_ProductUnavailable() throws Exception {
+        // Arrange
+        int tableId = 1;
+        List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
+
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品が非公開（isAvailable = false）の状態をシミュレート
+            Product unavailableProduct = mock(Product.class);
+            when(unavailableProduct.isAvailable()).thenReturn(false);
+            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(unavailableProduct));
+
+            // Act
+            boolean result = orderService.createOrder(tableId, items);
+
+            // Assert
+            assertFalse(result, "非公開商品がある場合は注文失敗（false）になるべき");
+            // DAO の insert メソッドが呼ばれていないことを確認
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
+        }
+    }
+
+    @Test
+    @DisplayName("注文作成: 既存のアクティブな注文がある場合は再利用すること")
+    @SuppressWarnings("unchecked")
+    void createOrder_ReuseExistingOrder() throws Exception {
+        // Arrange
+        int tableId = 1;
+        int existingOrderId = 500;
+        List<CartItem> items = List.of(new CartItem(1, "Product 1", 100, 2));
+
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            // 商品は利用可能
+            Product p = mock(Product.class);
+            when(p.isAvailable()).thenReturn(true);
+            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+
+            // 既存注文(500)がある状態をシミュレート
+            when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(existingOrderId);
+
+            // Act
+            boolean result = orderService.createOrder(tableId, items);
+
+            // Assert
+            assertTrue(result);
+            // insertOrder が呼ばれず、既存の existingOrderId に対して明細が登録されること
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
+            verify(orderDAO).insertOrderItems(eq(connection), eq(existingOrderId), any(), anyInt());
         }
     }
 }

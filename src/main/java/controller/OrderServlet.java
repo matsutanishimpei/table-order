@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.OrderService;
 import service.ServiceFactory;
 
@@ -22,17 +23,21 @@ import util.AppConstants;
 @WebServlet("/Order")
 public class OrderServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final OrderService orderService;
 
     public OrderServlet() {
         this(ServiceFactory.getOrderService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public OrderServlet(OrderService orderService) {
         this.orderService = orderService;
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AppConstants.ATTR_USER);
         @SuppressWarnings("unchecked")

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * 商品情報を管理するレコードです。
- * 
+ *
  * @param id 商品ID
  * @param categoryId カテゴリーID
  * @param name 商品名
@@ -15,14 +15,14 @@ import java.io.Serializable;
  * @param isAvailable 販売中フラグ
  */
 public record Product(
-    int id,
-    int categoryId,
-    String name,
-    int price,
-    String description,
-    String allergyInfo,
-    String imagePath,
-    boolean isAvailable
+        int id,
+        int categoryId,
+        String name,
+        int price,
+        String description,
+        String allergyInfo,
+        String imagePath,
+        boolean isAvailable
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
 

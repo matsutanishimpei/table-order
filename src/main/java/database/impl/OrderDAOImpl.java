@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 import model.CartItem;
 import model.OrderConstants;
@@ -19,6 +20,7 @@ import model.OrderItemView;
 /**
  * 注文情報のデータベース操作を行うDAO実装クラスです。
  */
+@Slf4j
 public class OrderDAOImpl implements OrderDAO {
 
     /**
@@ -54,7 +56,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems, int status) throws SQLException {
+    public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems,
+            int status) throws SQLException {
         String sqlItem = SqlConstants.ORDER_ITEM_INSERT;
         try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
             cartItems.forEach(item -> {
@@ -79,7 +82,7 @@ public class OrderDAOImpl implements OrderDAO {
         String sql = SqlConstants.ORDER_ITEM_SELECT_ACTIVE;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_ORDERED);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -96,7 +99,7 @@ public class OrderDAOImpl implements OrderDAO {
     public boolean updateItemStatus(int itemId, int status) {
         String sql = SqlConstants.ORDER_ITEM_UPDATE_STATUS;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, status);
             ps.setInt(2, itemId);
             return ps.executeUpdate() > 0;
@@ -111,7 +114,7 @@ public class OrderDAOImpl implements OrderDAO {
         String sql = SqlConstants.ORDER_ITEM_SELECT_ACTIVE;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_COOKING_DONE);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -125,7 +128,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
+    public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus,
+            int conditionStatusLt) throws SQLException {
         String sqlItems = SqlConstants.ORDER_ITEMS_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlItems)) {
             ps.setInt(1, targetStatus);
@@ -136,7 +140,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus, int conditionStatusLt) throws SQLException {
+    public void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus,
+            int conditionStatusLt) throws SQLException {
         String sqlOrders = SqlConstants.ORDER_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlOrders)) {
             ps.setInt(1, targetStatus);
@@ -159,5 +164,37 @@ public class OrderDAOImpl implements OrderDAO {
             }
         }
         return 0;
+    }
+
+    @Override
+    public int findItemStatusById(int itemId) {
+        String sql = SqlConstants.ORDER_ITEM_SELECT_STATUS;
+        try (Connection con = DBManager.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("status");
+                }
+            }
+        } catch (SQLException e) {
+            log.error("明細ステータス取得失敗: itemId={}, reason={}", itemId, e.getMessage());
+        }
+        return -1;
+    }
+
+    @Override
+    public int findActiveOrderIdByTable(Connection con, int tableId) throws SQLException {
+        String sql = SqlConstants.ORDER_SELECT_ACTIVE_ID;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, tableId);
+            ps.setInt(2, OrderConstants.STATUS_PAID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        }
+        return -1;
     }
 }

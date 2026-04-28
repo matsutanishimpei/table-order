@@ -6,12 +6,13 @@ import java.util.Base64;
 /**
  * CSRF対策用のトークン生成・検証ユーティリティです。
  */
-public class CsrfUtil {
-    
+public final class CsrfUtil {
+
     private static final SecureRandom secureRandom = new SecureRandom();
 
     /**
      * 新しいCSRFトークンを生成します。
+     *
      * @return Base64エンコードされたトークン文字列
      */
     public static String generateToken() {
@@ -22,6 +23,7 @@ public class CsrfUtil {
 
     /**
      * リクエストされたトークンとセッションのトークンが一致するか検証します。
+     *
      * @param requestToken リクエストパラメータのトークン
      * @param sessionToken セッションに保存されたトークン
      * @return 一致すれば true
@@ -32,5 +34,9 @@ public class CsrfUtil {
         }
         // タイミング攻撃対策として定数時間比較を行うのがベストプラクティス
         return PasswordUtil.isEqualConstantTime(requestToken, sessionToken);
+    }
+
+    private CsrfUtil() {
+        // インスタンス化防止
     }
 }

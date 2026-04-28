@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.SalesService;
 import service.ServiceFactory;
 
@@ -18,17 +19,21 @@ import util.AppConstants;
 @WebServlet("/Admin/Sales")
 public class SalesAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final SalesService salesService;
 
     public SalesAdminServlet() {
         this(ServiceFactory.getSalesService());
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public SalesAdminServlet(SalesService salesService) {
         this.salesService = salesService;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         request.setAttribute(AppConstants.ATTR_TOTAL_SALES, salesService.getTotalSales());
         request.setAttribute(AppConstants.ATTR_DAILY_SALES, salesService.findDailySales());
         request.setAttribute(AppConstants.ATTR_PRODUCT_RANKING, salesService.findProductSalesRanking());

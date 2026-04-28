@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import service.CategoryService;
 import service.ProductService;
 import service.ServiceFactory;
@@ -28,27 +29,36 @@ import util.ValidationResult;
  */
 @WebServlet("/Admin/Product")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 1, // 1MB
-    maxFileSize = 1024 * 1024 * 10,      // 10MB
-    maxRequestSize = 1024 * 1024 * 15   // 15MB
+        fileSizeThreshold = 1024 * 1024 * 1, // 1MB
+        maxFileSize = 1024 * 1024 * 10,      // 10MB
+        maxRequestSize = 1024 * 1024 * 15   // 15MB
 )
 public class ProductAdminServlet extends BaseServlet {
     private static final long serialVersionUID = 1L;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final ProductService productService;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final CategoryService categoryService;
+
+    @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
     private transient final ImageStorageProvider imageStorageProvider;
 
     public ProductAdminServlet() {
         this(ServiceFactory.getProductService(), ServiceFactory.getCategoryService(), CloudinaryUtil.getInstance());
     }
 
-    public ProductAdminServlet(ProductService productService, CategoryService categoryService, ImageStorageProvider imageStorageProvider) {
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
+    public ProductAdminServlet(ProductService productService, CategoryService categoryService,
+            ImageStorageProvider imageStorageProvider) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.imageStorageProvider = imageStorageProvider;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String action = request.getParameter("action");
         
         if ("edit".equals(action) || "add".equals(action)) {
@@ -77,7 +87,8 @@ public class ProductAdminServlet extends BaseServlet {
         request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCTS).forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), 0);
         Product p;
         boolean isUpdate = (id > 0);
@@ -125,7 +136,8 @@ public class ProductAdminServlet extends BaseServlet {
                 String imageId = imageStorageProvider.upload(filePart);
                 if (imageId != null) {
                     // imagePath を更新した新しい Product インスタンスを生成
-                    p = new Product(p.id(), p.categoryId(), p.name(), p.price(), p.description(), p.allergyInfo(), imageId, p.isAvailable());
+                    p = new Product(p.id(), p.categoryId(), p.name(), p.price(), p.description(),
+                            p.allergyInfo(), imageId, p.isAvailable());
                     if (oldImageId != null && !oldImageId.isEmpty()) {
                         imageStorageProvider.delete(oldImageId);
                     }
@@ -154,7 +166,9 @@ public class ProductAdminServlet extends BaseServlet {
     private void validateImage(Part filePart, boolean imageRequired) {
         if (filePart != null && filePart.getSize() > 0) {
             ValidationResult res = ValidationUtil.validateImage(filePart);
-            if (res.isInvalid()) throw new exception.BusinessException(res.message());
+            if (res.isInvalid()) {
+                throw new exception.BusinessException(res.message());
+            }
         } else if (imageRequired) {
             throw new exception.BusinessException("画像は必須です。");
         }

@@ -11,6 +11,7 @@ public class ValidationUtil {
     
     /**
      * 文字列を安全に整数に変換します。変換できない場合はデフォルト値を返します。
+     *
      * @param str 変換対象の文字列
      * @param defaultValue 変換失敗時のデフォルト値
      * @return 変換後の整数、またはデフォルト値
@@ -33,7 +34,8 @@ public class ValidationUtil {
         return str == null || str.trim().isEmpty();
     }
 
-    private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
+    private static final List<String> ALLOWED_IMAGE_TYPES =
+            Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
 
     /**
      * 必須チェックを行います。
@@ -74,8 +76,10 @@ public class ValidationUtil {
         }
 
         String contentType = filePart.getContentType();
-        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            return ValidationResult.failure("許可されていないファイル形式です。JPEG, PNG, WEBP, GIFのみアップロード可能です。");
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(
+                contentType.toLowerCase(java.util.Locale.ROOT))) {
+            return ValidationResult.failure("許可されていないファイル形式です。"
+                    + "JPEG, PNG, WEBP, GIFのみアップロード可能です。");
         }
 
         return ValidationResult.success();
@@ -89,6 +93,7 @@ public class ValidationUtil {
             return false;
         }
         String contentType = filePart.getContentType();
-        return contentType != null && ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase());
+        return contentType != null && ALLOWED_IMAGE_TYPES.contains(
+                contentType.toLowerCase(java.util.Locale.ROOT));
     }
 }

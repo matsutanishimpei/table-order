@@ -4,17 +4,17 @@ import java.io.Serializable;
 
 /**
  * ユーザー情報を管理するレコードです。
- * 
+ *
  * @param id ユーザーID
  * @param password パスワード（ハッシュ）
  * @param role 権限
  * @param tableId テーブルID（テーブル端末の場合のみ）
  */
 public record User(
-    String id,
-    String password,
-    int role,
-    Integer tableId
+        String id,
+        String password,
+        int role,
+        Integer tableId
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -24,7 +24,7 @@ public class SalesDAOImpl implements SalesDAO {
     public int getTotalSales() {
         String sql = SqlConstants.SALES_SELECT_TOTAL;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -42,14 +42,14 @@ public class SalesDAOImpl implements SalesDAO {
         List<DailySales> list = new ArrayList<>();
         String sql = SqlConstants.SALES_SELECT_DAILY;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(new DailySales(
-                        rs.getDate("sales_date"),
-                        rs.getInt("amount"),
-                        rs.getInt("order_count")
+                            rs.getDate("sales_date"),
+                            rs.getInt("amount"),
+                            rs.getInt("order_count")
                     ));
                 }
             }
@@ -64,14 +64,14 @@ public class SalesDAOImpl implements SalesDAO {
         List<ProductSales> list = new ArrayList<>();
         String sql = SqlConstants.SALES_SELECT_RANKING;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, OrderConstants.STATUS_PAID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(new ProductSales(
-                        rs.getString("name"),
-                        rs.getInt("total_qty"),
-                        rs.getInt("total_amt")
+                            rs.getString("name"),
+                            rs.getInt("total_qty"),
+                            rs.getInt("total_amt")
                     ));
                 }
             }

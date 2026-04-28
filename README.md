@@ -1,6 +1,10 @@
 # Table Order & Store Management System
 
 ![Java CI](https://github.com/matsutanishimpei/table-order/actions/workflows/ci.yml/badge.svg)
+![Checkstyle](https://img.shields.io/badge/Checkstyle-Passed-brightgreen)
+![Spotbugs](https://img.shields.io/badge/Spotbugs-0%20bugs-brightgreen)
+![JUnit 5](https://img.shields.io/badge/JUnit%205-85%20tests%20passed-brightgreen)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-80%25+-brightgreen)
 
 飲食店向けの次世代テーブルオーダー・店舗管理システムです。お客様のモバイル注文から、厨房での調理管理、ホールでの配膳、レジでの精算、そして管理者による経営分析まで、店舗運営の全フローをカバーする統合ソリューションです。
 

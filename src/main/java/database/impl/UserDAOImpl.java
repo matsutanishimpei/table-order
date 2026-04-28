@@ -27,15 +27,15 @@ public class UserDAOImpl implements UserDAO {
         List<User> list = new ArrayList<>();
         String sql = SqlConstants.USER_SELECT_ALL;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(new User(
-                    rs.getString("id"),
-                    null, // パスワードは一覧取得では不要
-                    rs.getInt("role"),
-                    (Integer) rs.getObject("table_id")
+                        rs.getString("id"),
+                        null, // パスワードは一覧取得では不要
+                        rs.getInt("role"),
+                        (Integer) rs.getObject("table_id")
                 ));
             }
         } catch (SQLException e) {
@@ -50,7 +50,7 @@ public class UserDAOImpl implements UserDAO {
         String sql = SqlConstants.USER_SELECT_LOGIN;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, id);
 
@@ -58,14 +58,14 @@ public class UserDAOImpl implements UserDAO {
                 if (rs.next()) {
                     String storedHash = rs.getString("password");
                     String pepper = DBManager.getPepper();
-                    
+
                     // BCrypt による堅牢な認証のみをサポート
                     if (storedHash != null && PasswordUtil.checkBcrypt(password, pepper, storedHash)) {
                         user = new User(
-                            rs.getString("id"),
-                            storedHash,
-                            rs.getInt("role"),
-                            (Integer) rs.getObject("table_id")
+                                rs.getString("id"),
+                                storedHash,
+                                rs.getInt("role"),
+                                (Integer) rs.getObject("table_id")
                         );
                         log.info("ログイン成功: ユーザーID={}", id);
                     } else {
@@ -88,15 +88,15 @@ public class UserDAOImpl implements UserDAO {
         User user = null;
         String sql = SqlConstants.USER_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     user = new User(
-                        rs.getString("id"),
-                        null, // パスワードは不要
-                        rs.getInt("role"),
-                        (Integer) rs.getObject("table_id")
+                            rs.getString("id"),
+                            null, // パスワードは不要
+                            rs.getInt("role"),
+                            (Integer) rs.getObject("table_id")
                     );
                 }
             }
@@ -110,8 +110,8 @@ public class UserDAOImpl implements UserDAO {
     public boolean insert(User user) {
         String sql = SqlConstants.USER_INSERT;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
             String pepper = DBManager.getPepper();
             String hashedPassword = PasswordUtil.hashBcrypt(user.password(), pepper);
 
@@ -119,7 +119,7 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(2, hashedPassword);
             ps.setInt(3, user.role());
             ps.setObject(4, user.tableId());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("ユーザー登録中にエラーが発生しました。ID=" + user.id(), e);
@@ -130,12 +130,12 @@ public class UserDAOImpl implements UserDAO {
     public boolean update(User user) {
         String sql = SqlConstants.USER_UPDATE;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, user.role());
             ps.setObject(2, user.tableId());
             ps.setString(3, user.id());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("ユーザー更新中にエラーが発生しました。ID=" + user.id(), e);
@@ -146,14 +146,14 @@ public class UserDAOImpl implements UserDAO {
     public boolean updatePassword(String id, String newPassword) {
         String sql = SqlConstants.USER_UPDATE_PASSWORD;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
             String pepper = DBManager.getPepper();
             String hashedPassword = PasswordUtil.hashBcrypt(newPassword, pepper);
 
             ps.setString(1, hashedPassword);
             ps.setString(2, id);
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("パスワード更新中にエラーが発生しました。ID=" + id, e);
@@ -164,7 +164,7 @@ public class UserDAOImpl implements UserDAO {
     public boolean delete(String id) {
         String sql = SqlConstants.USER_DELETE;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

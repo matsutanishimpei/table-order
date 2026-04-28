@@ -25,13 +25,13 @@ public class CategoryDAOImpl implements CategoryDAO {
         String sql = SqlConstants.CATEGORY_SELECT_ALL;
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(new Category(
-                    rs.getInt("id"),
-                    rs.getString("name")
+                        rs.getInt("id"),
+                        rs.getString("name")
                 ));
             }
         } catch (SQLException e) {
@@ -44,7 +44,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     public boolean insert(String name) {
         String sql = SqlConstants.CATEGORY_INSERT;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, name);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -56,13 +56,13 @@ public class CategoryDAOImpl implements CategoryDAO {
     public Optional<Category> findById(int id) {
         String sql = SqlConstants.CATEGORY_SELECT_BY_ID;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Category(
-                        rs.getInt("id"),
-                        rs.getString("name")
+                            rs.getInt("id"),
+                            rs.getString("name")
                     ));
                 }
             }
@@ -76,7 +76,7 @@ public class CategoryDAOImpl implements CategoryDAO {
     public boolean update(Category category) {
         String sql = SqlConstants.CATEGORY_UPDATE;
         try (Connection con = DBManager.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, category.name());
             ps.setInt(2, category.id());
             return ps.executeUpdate() > 0;

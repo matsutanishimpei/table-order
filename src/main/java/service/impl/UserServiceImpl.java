@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import database.UserDAO;
 import database.impl.UserDAOImpl;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import model.User;
 import service.UserService;
 
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // テスト・DI用コンストラクタ
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UserServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
@@ -38,6 +40,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(User user) {
         try {
+            // 重複チェック
+            if (userDAO.findById(user.id()).isPresent()) {
+                log.warn("ユーザー登録拒否: 既に存在するIDです。id={}", user.id());
+                return false;
+            }
+
             boolean success = userDAO.insert(user);
             if (success) {
                 log.info("ユーザー登録成功: id={}", user.id());
