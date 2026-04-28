@@ -12,7 +12,7 @@
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-Managed-3448C5?logo=cloudinary&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)
 
-飲食店向けの次世代テーブルオーダー・店舗管理システムです。お客様のモバイル注文から、厨房での調理管理、ホールでの配膳、レジでの精算、そして管理者による経営分析まで、店舗運営の全フローをカバーする統合ソリューションです。
+Java 17 と Jakarta Servlet を基盤とした、堅牢なテーブルオーダー・店舗管理システムです。モバイル注文から厨房管理、売上分析までを網羅し、Cloudinary による画像管理や BCrypt を用いたセキュアな認証を実装しています。 特筆すべきは品質面で、Checkstyle および Spotbugs による静的解析を 100% パスし、100 件以上の JUnit テストにより主要なビジネスロジックを網羅しています。開発効率とメンテナビリティを両立させたプロジェクトです。
 
 ## 🌟 主な機能
 
