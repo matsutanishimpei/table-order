@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean createOrder(int tableId, List<CartItem> cartItems) {
+    public boolean createOrder(int tableId, List<CartItem> cartItems, String operatorId) {
         try {
             return TransactionManager.execute(con -> {
                 // ① 商品の販売状態（is_available）をチェック
@@ -49,17 +49,17 @@ public class OrderServiceImpl implements OrderService {
                 // (SqlConstants.ORDER_SELECT_ACTIVE_ID には FOR UPDATE が含まれているため、ここでロックがかかる)
                 int orderId = orderDAO.findActiveOrderIdByTable(con, tableId);
                 if (orderId == -1) {
-                    orderId = orderDAO.insertOrder(con, tableId, OrderConstants.STATUS_ORDERED);
+                    orderId = orderDAO.insertOrder(con, tableId, OrderConstants.STATUS_ORDERED, operatorId);
                     if (orderId == -1) {
                         throw new SQLException("OrderID generation failed.");
                     }
-                    log.info("新規注文セッション作成: tableId={}, orderId={}", tableId, orderId);
+                    log.info("新規注文セッション作成: tableId={}, orderId={}, operatorId={}", tableId, orderId, operatorId);
                 } else {
                     log.info("既存注文セッション再利用: tableId={}, orderId={}", tableId, orderId);
                 }
 
                 // ③ order_items テーブルへ全商品をバッチ登録
-                orderDAO.insertOrderItems(con, orderId, cartItems, OrderConstants.STATUS_ORDERED);
+                orderDAO.insertOrderItems(con, orderId, cartItems, OrderConstants.STATUS_ORDERED, operatorId);
 
                 log.info("注文登録完了: tableId={}, orderId={}", tableId, orderId);
                 return true;
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean completeCheckout(int tableId) {
+    public boolean completeCheckout(int tableId, String operatorId) {
         try {
             return TransactionManager.execute(con -> {
                 // ① 未提供の商品（status < STATUS_SERVED）がないかチェック
@@ -83,13 +83,13 @@ public class OrderServiceImpl implements OrderService {
 
                 // ② まず order_items を PAID に変更
                 orderDAO.updateOrderItemsStatusForCheckout(con, tableId,
-                        OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
+                        OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID, operatorId);
 
                 // ③ 続いて orders 自身を PAID に変更
                 orderDAO.updateOrderStatusForCheckout(con, tableId,
-                        OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
+                        OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID, operatorId);
 
-                log.info("会計完了処理成功: tableId={}", tableId);
+                log.info("会計完了処理成功: tableId={}, operatorId={}", tableId, operatorId);
                 return true;
             });
         } catch (Exception e) {
@@ -109,7 +109,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean updateItemStatus(int itemId, int status) {
+    public boolean updateItemStatus(int itemId, int status, String operatorId) {
         int currentStatus = orderDAO.findItemStatusById(itemId);
         if (currentStatus == -1) {
             log.warn("ステータス更新失敗: 指定された明細が存在しません。itemId={}", itemId);
@@ -123,6 +123,6 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
 
-        return orderDAO.updateItemStatus(itemId, status);
+        return orderDAO.updateItemStatus(itemId, status, operatorId);
     }
 }

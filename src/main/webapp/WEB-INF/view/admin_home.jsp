@@ -80,7 +80,7 @@
             </a>
 
             <!-- スタッフ用画面へのリンク -->
-            <div class="lg:col-span-2 grid grid-cols-2 gap-8">
+            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <a href="${pageContext.request.contextPath}/Kitchen/Home" class="bg-slate-900 text-white p-10 rounded-4xl group no-underline transition-all hover:bg-slate-950 flex flex-col justify-between">
                     <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 italic">Staff View</div>
                     <div class="space-y-2">
@@ -93,6 +93,13 @@
                     <div class="space-y-2">
                         <h3 class="text-xl font-black tracking-tight">配膳モニター</h3>
                         <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Hall Service Hub</p>
+                    </div>
+                </a>
+                <a href="${pageContext.request.contextPath}/Cashier/Home" class="bg-slate-900 text-white p-10 rounded-4xl group no-underline transition-all hover:bg-slate-950 flex flex-col justify-between">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4 italic">Staff View</div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-black tracking-tight">会計モニター</h3>
+                        <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Cashier Dashboard</p>
                     </div>
                 </a>
             </div>

@@ -22,7 +22,7 @@ public interface OrderDAO {
      * @return データベースで自動生成された order_id
      * @throws SQLException データベースエラーが発生した場合
      */
-    int insertOrder(Connection con, int tableId, int status) throws SQLException;
+    int insertOrder(Connection con, int tableId, int status, String operatorId) throws SQLException;
 
     /**
      * 注文明細を複数一括で登録します。
@@ -34,7 +34,8 @@ public interface OrderDAO {
      * @param status 初期ステータス
      * @throws SQLException データベースエラーが発生した場合
      */
-    void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems, int status) throws SQLException;
+    void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems,
+            int status, String operatorId) throws SQLException;
 
     /**
      * キッチン（厨房）向けに、調理が必要な（未提供の）注文明細をすべて取得します。
@@ -48,9 +49,10 @@ public interface OrderDAO {
      *
      * @param itemId 注文明細ID
      * @param status 更新後のステータス
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      */
-    boolean updateItemStatus(int itemId, int status);
+    boolean updateItemStatus(int itemId, int status, String operatorId);
 
     /**
      * ホール（配膳担当）向けに、調理が完了し配膳を待っている注文明細をすべて取得します。
@@ -67,10 +69,11 @@ public interface OrderDAO {
      * @param tableId 対象の座席ID
      * @param targetStatus 更新後のステータス（通常は「支払い済み」）
      * @param conditionStatusLt 条件となるステータス上限（これより小さいステータスのものを対象とする）
+     * @param operatorId 操作者のユーザーID
      * @throws SQLException データベースエラーが発生した場合
      */
     void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus,
-            int conditionStatusLt) throws SQLException;
+            int conditionStatusLt, String operatorId) throws SQLException;
 
     /**
      * 会計処理の一環として、特定の座席の注文（ヘッダー）ステータスを一括更新します。
@@ -80,10 +83,11 @@ public interface OrderDAO {
      * @param tableId 対象の座席ID
      * @param targetStatus 更新後のステータス（通常は「支払い済み」）
      * @param conditionStatusLt 条件となるステータス上限
+     * @param operatorId 操作者のユーザーID
      * @throws SQLException データベースエラーが発生した場合
      */
     void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus,
-            int conditionStatusLt) throws SQLException;
+            int conditionStatusLt, String operatorId) throws SQLException;
 
     /**
      * 特定の座席において、まだ配膳が完了していない（提供待ち）商品の件数を取得します。

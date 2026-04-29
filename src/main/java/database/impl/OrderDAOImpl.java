@@ -39,11 +39,12 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public int insertOrder(Connection con, int tableId, int status) throws SQLException {
+    public int insertOrder(Connection con, int tableId, int status, String operatorId) throws SQLException {
         String sqlOrder = SqlConstants.ORDER_INSERT;
         try (PreparedStatement psOrder = con.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
             psOrder.setInt(1, tableId);
             psOrder.setInt(2, status);
+            psOrder.setString(3, operatorId);
             psOrder.executeUpdate();
 
             try (ResultSet rs = psOrder.getGeneratedKeys()) {
@@ -57,7 +58,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems,
-            int status) throws SQLException {
+            int status, String operatorId) throws SQLException {
         String sqlItem = SqlConstants.ORDER_ITEM_INSERT;
         try (PreparedStatement psItem = con.prepareStatement(sqlItem)) {
             cartItems.forEach(item -> {
@@ -67,6 +68,7 @@ public class OrderDAOImpl implements OrderDAO {
                     psItem.setInt(3, item.quantity());
                     psItem.setInt(4, item.unitPrice());
                     psItem.setInt(5, status);
+                    psItem.setString(6, operatorId);
                     psItem.addBatch();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -96,12 +98,13 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean updateItemStatus(int itemId, int status) {
+    public boolean updateItemStatus(int itemId, int status, String operatorId) {
         String sql = SqlConstants.ORDER_ITEM_UPDATE_STATUS;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, status);
-            ps.setInt(2, itemId);
+            ps.setString(2, operatorId);
+            ps.setInt(3, itemId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("注文明細のステータス更新中にエラーが発生しました。itemId=" + itemId, e);
@@ -129,24 +132,26 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void updateOrderItemsStatusForCheckout(Connection con, int tableId, int targetStatus,
-            int conditionStatusLt) throws SQLException {
+            int conditionStatusLt, String operatorId) throws SQLException {
         String sqlItems = SqlConstants.ORDER_ITEMS_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlItems)) {
             ps.setInt(1, targetStatus);
-            ps.setInt(2, conditionStatusLt);
-            ps.setInt(3, tableId);
+            ps.setString(2, operatorId);
+            ps.setInt(3, conditionStatusLt);
+            ps.setInt(4, tableId);
             ps.executeUpdate();
         }
     }
 
     @Override
     public void updateOrderStatusForCheckout(Connection con, int tableId, int targetStatus,
-            int conditionStatusLt) throws SQLException {
+            int conditionStatusLt, String operatorId) throws SQLException {
         String sqlOrders = SqlConstants.ORDER_UPDATE_STATUS_FOR_CHECKOUT;
         try (PreparedStatement ps = con.prepareStatement(sqlOrders)) {
             ps.setInt(1, targetStatus);
-            ps.setInt(2, conditionStatusLt);
-            ps.setInt(3, tableId);
+            ps.setString(2, operatorId);
+            ps.setInt(3, conditionStatusLt);
+            ps.setInt(4, tableId);
             ps.executeUpdate();
         }
     }

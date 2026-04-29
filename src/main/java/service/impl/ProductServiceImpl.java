@@ -47,20 +47,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean insert(Product p) {
+    public boolean insert(Product p, String operatorId) {
         validate(p);
-        return productDAO.insert(p);
+        return productDAO.insert(p, operatorId);
     }
 
     @Override
-    public boolean update(Product p) {
+    public boolean update(Product p, String operatorId) {
         validate(p);
-        return productDAO.update(p);
+        return productDAO.update(p, operatorId);
     }
 
     @Override
-    public boolean updateAvailability(int productId, boolean isAvailable) {
-        return productDAO.updateAvailability(productId, isAvailable);
+    public boolean updateAvailability(int productId, boolean isAvailable, String operatorId) {
+        return productDAO.updateAvailability(productId, isAvailable, operatorId);
     }
 
     /**

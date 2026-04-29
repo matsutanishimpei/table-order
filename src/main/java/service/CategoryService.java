@@ -19,10 +19,11 @@ public interface CategoryService {
      * 新しいカテゴリを登録します。
      *
      * @param name カテゴリ名（必須。トリム後の空文字は不可）
+     * @param operatorId 操作者のユーザーID
      * @return 登録に成功した場合は true
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
-    boolean insert(String name);
+    boolean insert(String name, String operatorId);
 
     /**
      * 指定された ID のカテゴリを取得します。
@@ -36,8 +37,9 @@ public interface CategoryService {
      * カテゴリ情報を更新します。
      *
      * @param category 更新するカテゴリ情報（ID必須、名前のトリム後の空文字不可）
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
-    boolean update(model.Category category);
+    boolean update(model.Category category, String operatorId);
 }

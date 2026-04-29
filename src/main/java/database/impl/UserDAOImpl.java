@@ -107,7 +107,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean insert(User user) {
+    public boolean insert(User user, String operatorId) {
         String sql = SqlConstants.USER_INSERT;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -119,6 +119,7 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(2, hashedPassword);
             ps.setInt(3, user.role());
             ps.setObject(4, user.tableId());
+            ps.setString(5, operatorId);
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -127,14 +128,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(User user, String operatorId) {
         String sql = SqlConstants.USER_UPDATE;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, user.role());
             ps.setObject(2, user.tableId());
-            ps.setString(3, user.id());
+            ps.setString(3, operatorId);
+            ps.setString(4, user.id());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -143,7 +145,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean updatePassword(String id, String newPassword) {
+    public boolean updatePassword(String id, String newPassword, String operatorId) {
         String sql = SqlConstants.USER_UPDATE_PASSWORD;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -152,7 +154,8 @@ public class UserDAOImpl implements UserDAO {
             String hashedPassword = PasswordUtil.hashBcrypt(newPassword, pepper);
 
             ps.setString(1, hashedPassword);
-            ps.setString(2, id);
+            ps.setString(2, operatorId);
+            ps.setString(3, id);
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

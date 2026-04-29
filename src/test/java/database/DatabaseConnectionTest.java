@@ -52,7 +52,7 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
 
             try {
                 // 1. Create (Insert)
-                assertTrue(userDAO.insert(newUser), "新規ユーザーの作成に成功すること");
+                assertTrue(userDAO.insert(newUser, "test-system"), "新規ユーザーの作成に成功すること");
 
                 // 2. Login (Authentication)
                 // insert直後はBCryptで保存されているため、ログインが成功するはず
@@ -64,7 +64,7 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
                 // 3. Update (Role変更)
                 // record は不変なため、新しいインスタンスを作成する
                 User updatedUser = new User(loggedIn.id(), null, 2, loggedIn.tableId());
-                assertTrue(userDAO.update(updatedUser), "ユーザー情報の更新に成功すること");
+                assertTrue(userDAO.update(updatedUser, "test-system"), "ユーザー情報の更新に成功すること");
                 Optional<User> updatedOpt = userDAO.findById(testId);
                 assertTrue(updatedOpt.isPresent());
                 assertEquals(2, updatedOpt.get().role(), "更新内容が反映されていること");

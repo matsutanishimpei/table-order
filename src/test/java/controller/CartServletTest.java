@@ -91,21 +91,71 @@ public class CartServletTest {
     }
 
     @Test
-    public void testDoPost_ClearCart() throws ServletException, IOException {
+    public void testDoGet_ForwardsToMenu() throws ServletException, IOException {
         // Arrange
-        List<CartItem> cart = new ArrayList<>();
-        cart.add(new CartItem());
+        jakarta.servlet.RequestDispatcher rd = mock(jakarta.servlet.RequestDispatcher.class);
+        when(request.getRequestDispatcher(util.AppConstants.VIEW_MENU)).thenReturn(rd);
 
+        // Act
+        servlet.doGet(request, response);
+
+        // Assert
+        verify(rd).forward(request, response);
+    }
+
+    @Test
+    public void testDoPost_AddToCart_InvalidParams() throws ServletException, IOException {
+        // Arrange
         when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("cart")).thenReturn(cart);
-        when(request.getParameter("action")).thenReturn("clear");
-        when(request.getParameter("categoryId")).thenReturn(null);
+        when(request.getParameter("action")).thenReturn("add");
+        when(request.getParameter("productId")).thenReturn("-1");
 
         // Act
         servlet.doPost(request, response);
 
         // Assert
+        verify(response).sendRedirect(util.AppConstants.REDIRECT_MENU);
+    }
+
+    @Test
+    public void testDoPost_ClearCart_WithCategoryId() throws ServletException, IOException {
+        // Arrange
+        List<CartItem> cart = new ArrayList<>();
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("cart")).thenReturn(cart);
+        when(request.getParameter("action")).thenReturn("clear");
+        when(request.getParameter("categoryId")).thenReturn("2");
+
+        // Act
+        servlet.doPost(request, response);
+
+        // Assert
+        verify(response).sendRedirect(contains("categoryId=2"));
+    }
+
+    @Test
+    public void testDoPost_NullCartInSession_InitializesCart() throws ServletException, IOException {
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("cart")).thenReturn(null);
+        when(request.getParameter("action")).thenReturn(null);
+
+        servlet.doPost(request, response);
+
+        verify(session).setAttribute(eq("cart"), anyList());
+    }
+
+    @Test
+    public void testDoPost_AddToCart_ProductNotFound() throws ServletException, IOException {
+        List<CartItem> cart = new ArrayList<>();
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("cart")).thenReturn(cart);
+        when(request.getParameter("action")).thenReturn("add");
+        when(request.getParameter("productId")).thenReturn("999");
+        when(request.getParameter("quantity")).thenReturn("1");
+        when(productService.findById(999)).thenReturn(Optional.empty());
+
+        servlet.doPost(request, response);
+
         assertTrue(cart.isEmpty());
-        verify(response).sendRedirect("Menu");
     }
 }

@@ -43,6 +43,13 @@ public class KitchenServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：キッチン権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isKitchen()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
         if (itemId < 0) {
             response.sendRedirect(AppConstants.REDIRECT_HOME);
@@ -51,7 +58,13 @@ public class KitchenServlet extends BaseServlet {
 
         String action = request.getParameter("action");
         if ("complete".equals(action)) {
-            orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_COOKING_DONE);
+            boolean success = orderService.updateItemStatus(itemId,
+                    model.OrderConstants.STATUS_COOKING_DONE, user.id());
+            if (!success) {
+                // UXを優先し画面上にはエラーを出さないが、調査用にログを残す
+                // （リダイレクト後に最新状態が再取得されるため、既に完了済みの場合はリストから消える）
+                System.err.println("[KitchenServlet] Failed to update item status: itemId=" + itemId);
+            }
         }
         response.sendRedirect(AppConstants.REDIRECT_HOME);
     }

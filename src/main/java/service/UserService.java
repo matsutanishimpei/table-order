@@ -29,10 +29,11 @@ public interface UserService {
      * パスワードはサービス層でハッシュ化されて保存されます。
      *
      * @param user 登録するユーザー情報（ID、パスワード、ロールは必須）
+     * @param operatorId 操作者のユーザーID
      * @return 登録に成功した場合は true
      * @throws exception.BusinessException バリデーションエラー（ID重複、入力不正など）が発生した場合
      */
-    boolean register(User user);
+    boolean register(User user, String operatorId);
 
     /**
      * ユーザー情報を更新します。
@@ -40,10 +41,11 @@ public interface UserService {
      *
      * @param user 更新するユーザー情報（IDは必須）
      * @param newPassword 新しいパスワードを設定する場合に指定します。変更しない場合は null または空文字を指定してください。
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
-    boolean update(User user, String newPassword);
+    boolean update(User user, String newPassword, String operatorId);
 
     /**
      * 指定されたユーザーを削除します。

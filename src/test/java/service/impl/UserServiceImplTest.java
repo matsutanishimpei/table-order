@@ -65,15 +65,15 @@ public class UserServiceImplTest {
         // Arrange
         User user = new User("newuser", "pass", 1, null);
         when(userDAO.findById("newuser")).thenReturn(Optional.empty()); // 重複なし
-        when(userDAO.insert(user)).thenReturn(true);
+        when(userDAO.insert(user, "test-user")).thenReturn(true);
  
         // Act
-        boolean result = userService.register(user);
+        boolean result = userService.register(user, "test-user");
  
         // Assert
         assertTrue(result);
         verify(userDAO).findById("newuser");
-        verify(userDAO).insert(user);
+        verify(userDAO).insert(user, "test-user");
     }
 
     @Test
@@ -83,11 +83,11 @@ public class UserServiceImplTest {
         when(userDAO.findById("existinguser")).thenReturn(Optional.of(user)); // 重複あり
 
         // Act
-        boolean result = userService.register(user);
+        boolean result = userService.register(user, "test-user");
 
         // Assert
         assertFalse(result, "既に存在するIDの場合は登録失敗になるべき");
-        verify(userDAO, never()).insert(any());
+        verify(userDAO, never()).insert(any(), anyString());
     }
 
     @Test
@@ -96,41 +96,41 @@ public class UserServiceImplTest {
         User user = new User("user1", null, 1, null);
         String newPassword = "newsecret";
 
-        when(userDAO.update(user)).thenReturn(true);
-        when(userDAO.updatePassword("user1", newPassword)).thenReturn(true);
+        when(userDAO.update(user, "test-user")).thenReturn(true);
+        when(userDAO.updatePassword("user1", newPassword, "test-user")).thenReturn(true);
 
         // Act
-        boolean result = userService.update(user, newPassword);
+        boolean result = userService.update(user, newPassword, "test-user");
 
         // Assert
         assertTrue(result);
-        verify(userDAO).update(user);
-        verify(userDAO).updatePassword("user1", newPassword);
+        verify(userDAO).update(user, "test-user");
+        verify(userDAO).updatePassword("user1", newPassword, "test-user");
     }
 
     @Test
     public void testUpdate_NoPassword() {
         // Arrange
         User user = new User("user1", null, 1, null);
-        when(userDAO.update(user)).thenReturn(true);
+        when(userDAO.update(user, "test-user")).thenReturn(true);
 
         // Act
-        boolean result = userService.update(user, null);
+        boolean result = userService.update(user, null, "test-user");
 
         // Assert
         assertTrue(result);
-        verify(userDAO).update(user);
-        verify(userDAO, never()).updatePassword(anyString(), anyString());
+        verify(userDAO).update(user, "test-user");
+        verify(userDAO, never()).updatePassword(anyString(), anyString(), anyString());
     }
 
     @Test
     public void testUpdate_Failure() {
         // Arrange
         User user = new User("user1", null, 1, null);
-        when(userDAO.update(user)).thenThrow(new RuntimeException("DB Error"));
+        when(userDAO.update(user, "test-user")).thenThrow(new RuntimeException("DB Error"));
 
         // Act
-        boolean result = userService.update(user, "pass");
+        boolean result = userService.update(user, "pass", "test-user");
 
         // Assert
         assertFalse(result);
@@ -143,7 +143,7 @@ public class UserServiceImplTest {
         when(userDAO.findById(anyString())).thenThrow(new RuntimeException("DB Error"));
 
         // Act
-        boolean result = userService.register(user);
+        boolean result = userService.register(user, "test-user");
 
         // Assert
         assertFalse(result);

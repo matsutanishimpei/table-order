@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(User user) {
+    public boolean register(User user, String operatorId) {
         try {
             // 重複チェック
             if (userDAO.findById(user.id()).isPresent()) {
@@ -46,9 +46,9 @@ public class UserServiceImpl implements UserService {
                 return false;
             }
 
-            boolean success = userDAO.insert(user);
+            boolean success = userDAO.insert(user, operatorId);
             if (success) {
-                log.info("ユーザー登録成功: id={}", user.id());
+                log.info("ユーザー登録成功: id={}, operatorId={}", user.id(), operatorId);
             } else {
                 log.warn("ユーザー登録失敗: id={}", user.id());
             }
@@ -60,14 +60,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean update(User user, String newPassword) {
+    public boolean update(User user, String newPassword, String operatorId) {
         try {
-            boolean success = userDAO.update(user);
+            boolean success = userDAO.update(user, operatorId);
             if (success && newPassword != null && !newPassword.isEmpty()) {
-                success = userDAO.updatePassword(user.id(), newPassword);
+                success = userDAO.updatePassword(user.id(), newPassword, operatorId);
             }
             if (success) {
-                log.info("ユーザー更新成功: id={}", user.id());
+                log.info("ユーザー更新成功: id={}, operatorId={}", user.id(), operatorId);
             }
             return success;
         } catch (Exception e) {

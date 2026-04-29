@@ -57,13 +57,13 @@ class OrderServletTest {
 
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(cart);
-        when(orderService.createOrder(eq(1), anyList())).thenReturn(true);
+        when(orderService.createOrder(eq(1), anyList(), anyString())).thenReturn(true);
 
         // Act
         servlet.doPost(request, response);
 
         // Assert
-        verify(orderService).createOrder(eq(1), anyList());
+        verify(orderService).createOrder(eq(1), anyList(), eq("table1"));
         verify(response).sendRedirect(contains("msg=success"));
         assertTrue(cart.isEmpty());
     }
@@ -76,6 +76,64 @@ class OrderServletTest {
         servlet.doPost(request, response);
 
         verify(response).sendRedirect(AppConstants.REDIRECT_MENU);
-        verify(orderService, never()).createOrder(anyInt(), anyList());
+        verify(orderService, never()).createOrder(anyInt(), anyList(), anyString());
+    }
+
+    @Test
+    @DisplayName("注文確定失敗: テーブルID未設定時はエラーメッセージを表示してフォワードされること")
+    void doPost_NoTableId() throws ServletException, IOException {
+        User user = new User("admin", "pass", 1, null); // tableId = null
+        List<CartItem> cart = new ArrayList<>();
+        cart.add(new CartItem(1, "Product 1", 100, 2));
+
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(cart);
+        jakarta.servlet.RequestDispatcher rd = mock(jakarta.servlet.RequestDispatcher.class);
+        when(request.getRequestDispatcher(AppConstants.VIEW_MENU)).thenReturn(rd);
+
+        servlet.doPost(request, response);
+
+        verify(request).setAttribute(eq(AppConstants.ATTR_ERROR), anyString());
+        verify(rd).forward(request, response);
+    }
+
+    @Test
+    @DisplayName("注文確定失敗: サービス層でエラーが発生した場合はエラーメッセージ付きでリダイレクトされること")
+    void doPost_ServiceFailure() throws ServletException, IOException {
+        User user = new User("table1", "pass", 10, 1);
+        List<CartItem> cart = new ArrayList<>();
+        cart.add(new CartItem(1, "Product 1", 100, 2));
+
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(cart);
+        when(orderService.createOrder(anyInt(), anyList(), anyString())).thenReturn(false);
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(contains("msg=error"));
+    }
+
+    @Test
+    @DisplayName("注文確定失敗: カートが空の場合はメニューへリダイレクトされること")
+    void doPost_EmptyCart() throws ServletException, IOException {
+        User user = new User("table1", "pass", 10, 1);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(new ArrayList<>());
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(AppConstants.REDIRECT_MENU);
+    }
+
+    @Test
+    @DisplayName("注文確定失敗: カートがセッションに存在しない場合はメニューへリダイレクトされること")
+    void doPost_NullCart() throws ServletException, IOException {
+        User user = new User("table1", "pass", 10, 1);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(null);
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(AppConstants.REDIRECT_MENU);
     }
 }

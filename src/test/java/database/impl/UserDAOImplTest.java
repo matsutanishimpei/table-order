@@ -43,7 +43,7 @@ public class UserDAOImplTest extends BaseIntegrationTest {
         // 新しくBCryptユーザーを作成
         String userId = "test_bcrypt";
         User user = new User(userId, "password123", 1, null);
-        userDAO.insert(user);
+        userDAO.insert(user, "admin");
 
         // ログイン検証
         Optional<User> loggedInUser = userDAO.login(userId, "password123");
@@ -63,18 +63,18 @@ public class UserDAOImplTest extends BaseIntegrationTest {
         User user = new User(userId, "pass", 1, null);
 
         // Insert
-        assertTrue(userDAO.insert(user));
+        assertTrue(userDAO.insert(user, "admin"));
         assertTrue(userDAO.findById(userId).isPresent());
 
         // Update
         User updatedUser = new User(userId, null, 2, 1);
-        assertTrue(userDAO.update(updatedUser));
+        assertTrue(userDAO.update(updatedUser, "admin"));
         User result = userDAO.findById(userId).get();
         assertEquals(2, result.role());
         assertEquals(1, result.tableId());
 
         // Update Password
-        assertTrue(userDAO.updatePassword(userId, "newpass"));
+        assertTrue(userDAO.updatePassword(userId, "newpass", "admin"));
         assertTrue(userDAO.login(userId, "newpass").isPresent());
 
         // Delete

@@ -41,11 +41,12 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public boolean insert(String name) {
+    public boolean insert(String name, String operatorId) {
         String sql = SqlConstants.CATEGORY_INSERT;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, name);
+            ps.setString(2, operatorId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("カテゴリ登録中にエラーが発生しました。name=" + name, e);
@@ -73,12 +74,13 @@ public class CategoryDAOImpl implements CategoryDAO {
     }
 
     @Override
-    public boolean update(Category category) {
+    public boolean update(Category category, String operatorId) {
         String sql = SqlConstants.CATEGORY_UPDATE;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, category.name());
-            ps.setInt(2, category.id());
+            ps.setString(2, operatorId);
+            ps.setInt(3, category.id());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("カテゴリ更新中にエラーが発生しました。id=" + category.id(), e);

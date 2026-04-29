@@ -64,6 +64,37 @@ public class SalesDAOImplIntegrationTest extends BaseIntegrationTest {
         assertEquals(1000, result.get(1).amount(), "27日の売上");
     }
 
+    @Test
+    @DisplayName("累計売上が正しく取得できること")
+    void testGetTotalSales() throws Exception {
+        insertTestOrder(1, OrderConstants.STATUS_PAID, 1500, "2026-04-28 10:00:00");
+        insertTestOrder(2, OrderConstants.STATUS_PAID, 2500, "2026-04-28 11:00:00");
+        insertTestOrder(3, OrderConstants.STATUS_ORDERED, 5000, "2026-04-28 12:00:00");
+
+        int total = salesDAO.getTotalSales();
+        assertEquals(4000, total, "PAIDのみの合計");
+    }
+
+    @Test
+    @DisplayName("商品別売上ランキングが取得できること")
+    void testFindProductSalesRanking() throws Exception {
+        insertTestOrder(1, OrderConstants.STATUS_PAID, 500, "2026-04-28 10:00:00"); // Product 1
+        
+        // 別の商品 (Product 2 = ID:2 は seed.sql にない場合はエラーになるので ID:1 で複数注文をシミュレート)
+        try (Connection con = DBManager.getConnection()) {
+            String itemSql = "INSERT INTO order_items (order_id, product_id, quantity, unit_price, status, created_at) VALUES (1, 2, 2, 300, ?, ?)";
+            try (PreparedStatement ps = con.prepareStatement(itemSql)) {
+                ps.setInt(1, OrderConstants.STATUS_PAID);
+                ps.setString(2, "2026-04-28 10:00:00");
+                ps.executeUpdate();
+            }
+        }
+
+        List<model.ProductSales> ranking = salesDAO.findProductSalesRanking();
+        assertNotNull(ranking);
+        assertTrue(ranking.size() >= 2);
+    }
+
     private void insertTestOrder(int id, int status, int price, String timestamp) throws Exception {
         try (Connection con = DBManager.getConnection()) {
             String orderSql = "INSERT INTO orders (id, table_id, status, created_at, updated_at) VALUES (?, 1, ?, ?, ?)";

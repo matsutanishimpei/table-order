@@ -37,6 +37,13 @@ public class CategoryAdminServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String action = request.getParameter("action");
         if ("edit".equals(action)) {
             int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
@@ -55,6 +62,13 @@ public class CategoryAdminServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String action = request.getParameter("action");
         String name = request.getParameter("name");
         int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
@@ -66,10 +80,10 @@ public class CategoryAdminServlet extends BaseServlet {
                     return;
                 }
                 Category c = new Category(id, name); // Service 内でトリムとバリデーションが行われる
-                categoryService.update(c);
+                categoryService.update(c, user.id());
             } else {
                 // 新規追加
-                categoryService.insert(name);
+                categoryService.insert(name, user.id());
             }
             response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY + "?msg=success");
 

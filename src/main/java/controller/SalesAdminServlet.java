@@ -34,6 +34,13 @@ public class SalesAdminServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         request.setAttribute(AppConstants.ATTR_TOTAL_SALES, salesService.getTotalSales());
         request.setAttribute(AppConstants.ATTR_DAILY_SALES, salesService.findDailySales());
         request.setAttribute(AppConstants.ATTR_PRODUCT_RANKING, salesService.findProductSalesRanking());

@@ -34,23 +34,26 @@ public record User(
 
     /**
      * キッチン権限を持っているか判定します。
+     * 業務要件：管理者はキッチンの操作も可能とする。
      */
     public boolean isKitchen() {
-        return role == UserConstants.ROLE_KITCHEN;
+        return role == UserConstants.ROLE_KITCHEN || isAdmin();
     }
 
     /**
      * ホール（配膳）権限を持っているか判定します。
+     * 業務要件：管理者は配膳の操作も可能とする。
      */
     public boolean isHall() {
-        return role == UserConstants.ROLE_HALL;
+        return role == UserConstants.ROLE_HALL || isAdmin();
     }
 
     /**
      * 会計権限を持っているか判定します。
+     * 業務要件：管理者は会計の操作も可能とする。
      */
     public boolean isCashier() {
-        return role == UserConstants.ROLE_CASHIER;
+        return role == UserConstants.ROLE_CASHIER || isAdmin();
     }
 
     /**

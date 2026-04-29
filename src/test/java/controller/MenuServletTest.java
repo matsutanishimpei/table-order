@@ -82,4 +82,20 @@ public class MenuServletTest {
         verify(request).setAttribute(util.AppConstants.ATTR_SELECTED_CATEGORY_ID, 2);
         verify(productService).findByCategory(2);
     }
+
+    @Test
+    public void testDoGet_NoCategories() throws ServletException, IOException {
+        // Arrange
+        when(categoryService.findAll()).thenReturn(Arrays.asList());
+        when(request.getParameter("categoryId")).thenReturn(null);
+        when(productService.findByCategory(0)).thenReturn(Arrays.asList());
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+
+        // Act
+        servlet.doGet(request, response);
+
+        // Assert
+        verify(request).setAttribute(util.AppConstants.ATTR_SELECTED_CATEGORY_ID, 0);
+        verify(requestDispatcher).forward(request, response);
+    }
 }

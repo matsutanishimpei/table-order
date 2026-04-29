@@ -41,6 +41,13 @@ public class UserAdminServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String action = request.getParameter("action");
 
         if ("edit".equals(action) || "add".equals(action)) {
@@ -68,6 +75,13 @@ public class UserAdminServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String action = request.getParameter("action");
         String id = request.getParameter("id");
         String password = request.getParameter("password");
@@ -84,11 +98,11 @@ public class UserAdminServlet extends BaseServlet {
             userService.delete(id);
         } else if ("update".equals(action)) {
             User targetUser = new User(id, null, role, tableId);
-            userService.update(targetUser, password);
+            userService.update(targetUser, password, user.id());
         } else {
             // 新規追加
             User targetUser = new User(id, password, role, tableId);
-            userService.register(targetUser);
+            userService.register(targetUser, user.id());
         }
 
         response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);

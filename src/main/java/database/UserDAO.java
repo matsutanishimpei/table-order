@@ -36,17 +36,19 @@ public interface UserDAO {
      * ユーザーを新規登録します。
      *
      * @param user ユーザー情報
+     * @param operatorId 操作者のユーザーID
      * @return 登録成功時は true
      */
-    boolean insert(User user);
+    boolean insert(User user, String operatorId);
 
     /**
      * ユーザー情報を更新します（パスワード以外）。
      *
      * @param user ユーザー情報
+     * @param operatorId 操作者のユーザーID
      * @return 更新成功時は true
      */
-    boolean update(User user);
+    boolean update(User user, String operatorId);
 
     /**
      * ユーザーのパスワードを更新します。
@@ -55,7 +57,7 @@ public interface UserDAO {
      * @param newPassword 新しいパスワード（平文）
      * @return 更新成功時は true
      */
-    boolean updatePassword(String id, String newPassword);
+    boolean updatePassword(String id, String newPassword, String operatorId);
 
     /**
      * ユーザーを削除します。

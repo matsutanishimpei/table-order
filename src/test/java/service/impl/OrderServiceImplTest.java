@@ -65,15 +65,15 @@ class OrderServiceImplTest {
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
-            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(100);
+            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt(), anyString())).thenReturn(100);
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertTrue(result);
-            verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt());
-            verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+            verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt(), eq("test-user"));
+            verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), eq("test-user"));
         }
     }
 
@@ -99,10 +99,10 @@ class OrderServiceImplTest {
 
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
-            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(-1);
+            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt(), anyString())).thenReturn(-1);
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertFalse(result);
@@ -124,12 +124,12 @@ class OrderServiceImplTest {
                     });
 
             // Act
-            boolean result = orderService.completeCheckout(tableId);
+            boolean result = orderService.completeCheckout(tableId, "test-user");
 
             // Assert
             assertTrue(result);
-            verify(orderDAO).updateOrderItemsStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt());
-            verify(orderDAO).updateOrderStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt());
+            verify(orderDAO).updateOrderItemsStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt(), eq("test-user"));
+            verify(orderDAO).updateOrderStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt(), eq("test-user"));
         }
     }
 
@@ -153,8 +153,8 @@ class OrderServiceImplTest {
     @DisplayName("商品ステータス更新: DAOの結果が返ること")
     void updateItemStatus_ReturnsResult() {
         when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_ORDERED);
-        when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE)).thenReturn(true);
-        assertTrue(orderService.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE));
+        when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user")).thenReturn(true);
+        assertTrue(orderService.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user"));
     }
 
     @Test
@@ -164,10 +164,10 @@ class OrderServiceImplTest {
         when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_SERVED);
 
         // 「調理待ち(10)」に戻そうとする
-        boolean result = orderService.updateItemStatus(123, OrderConstants.STATUS_ORDERED);
+        boolean result = orderService.updateItemStatus(123, OrderConstants.STATUS_ORDERED, "test-user");
 
         assertFalse(result, "ステータスの逆行は拒否されるべき");
-        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt());
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyString());
     }
 
     @Test
@@ -193,18 +193,18 @@ class OrderServiceImplTest {
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
             // ① 最初の注文登録は成功
-            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt())).thenReturn(100);
+            when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt(), anyString())).thenReturn(100);
             // ② 続く明細登録で例外発生（DBエラー等を想定）
             doThrow(new RuntimeException("DB Error during items insertion"))
-                    .when(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+                    .when(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), anyString());
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertFalse(result, "例外発生時は false が返るべき");
-            verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt());
-            verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt());
+            verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt(), eq("test-user"));
+            verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), eq("test-user"));
             // TransactionManager 内でロールバックが行われるはず（モック化しているため挙動のみ確認）
         }
     }
@@ -227,12 +227,12 @@ class OrderServiceImplTest {
             when(orderDAO.countUnservedItemsByTable(eq(connection), eq(tableId))).thenReturn(2);
 
             // Act
-            boolean result = orderService.completeCheckout(tableId);
+            boolean result = orderService.completeCheckout(tableId, "test-user");
 
             // Assert
             assertFalse(result, "未提供商品がある場合は会計失敗（false）になるべき");
             // update メソッドが呼ばれていないことを確認
-            verify(orderDAO, never()).updateOrderItemsStatusForCheckout(any(), anyInt(), anyInt(), anyInt());
+            verify(orderDAO, never()).updateOrderItemsStatusForCheckout(any(), anyInt(), anyInt(), anyInt(), anyString());
         }
     }
 
@@ -257,12 +257,12 @@ class OrderServiceImplTest {
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(unavailableProduct));
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertFalse(result, "非公開商品がある場合は注文失敗（false）になるべき");
             // DAO の insert メソッドが呼ばれていないことを確認
-            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt(), anyString());
         }
     }
 
@@ -291,13 +291,13 @@ class OrderServiceImplTest {
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(existingOrderId);
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertTrue(result);
             // insertOrder が呼ばれず、既存の existingOrderId に対して明細が登録されること
-            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
-            verify(orderDAO).insertOrderItems(eq(connection), eq(existingOrderId), any(), anyInt());
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt(), anyString());
+            verify(orderDAO).insertOrderItems(eq(connection), eq(existingOrderId), any(), anyInt(), eq("test-user"));
         }
     }
 
@@ -320,11 +320,11 @@ class OrderServiceImplTest {
             when(productDAO.findById(999)).thenReturn(java.util.Optional.empty());
 
             // Act
-            boolean result = orderService.createOrder(tableId, items);
+            boolean result = orderService.createOrder(tableId, items, "test-user");
 
             // Assert
             assertFalse(result);
-            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt());
+            verify(orderDAO, never()).insertOrder(any(), anyInt(), anyInt(), anyString());
         }
     }
 
@@ -341,7 +341,7 @@ class OrderServiceImplTest {
                     .thenThrow(new RuntimeException("Unexpected DB Error"));
 
             // Act
-            boolean result = orderService.completeCheckout(tableId);
+            boolean result = orderService.completeCheckout(tableId, "test-user");
 
             // Assert
             assertFalse(result, "例外発生時は false が返るべき");
@@ -355,10 +355,10 @@ class OrderServiceImplTest {
         when(orderDAO.findItemStatusById(999)).thenReturn(-1);
 
         // Act
-        boolean result = orderService.updateItemStatus(999, OrderConstants.STATUS_SERVED);
+        boolean result = orderService.updateItemStatus(999, OrderConstants.STATUS_SERVED, "test-user");
 
         // Assert
         assertFalse(result);
-        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt());
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyString());
     }
 }

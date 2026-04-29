@@ -36,26 +36,29 @@ public interface ProductService {
      * 新しい商品を登録します。
      *
      * @param p 登録する商品情報（名前、価格、カテゴリIDは必須）
+     * @param operatorId 操作者のユーザーID
      * @return 登録に成功した場合は true
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
-    boolean insert(Product p);
+    boolean insert(Product p, String operatorId);
 
     /**
      * 商品情報を更新します。
      *
      * @param p 更新する商品情報（IDは必須。名前、価格、カテゴリIDもバリデーション対象）
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
-    boolean update(Product p);
+    boolean update(Product p, String operatorId);
 
     /**
      * 商品の販売可否（品切れ状態など）を更新します。
      *
      * @param productId 商品ID
      * @param isAvailable 販売可能な場合は true、品切れ等の場合は false
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      */
-    boolean updateAvailability(int productId, boolean isAvailable);
+    boolean updateAvailability(int productId, boolean isAvailable, String operatorId);
 }

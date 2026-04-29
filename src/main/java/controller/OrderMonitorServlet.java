@@ -35,6 +35,13 @@ public class OrderMonitorServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         List<model.TableStatusView> tables = tableService.findAllTableStatus();
         request.setAttribute(AppConstants.ATTR_TABLE_LIST, tables);
         request.getRequestDispatcher(AppConstants.VIEW_ADMIN_ORDER_MONITOR).forward(request, response);

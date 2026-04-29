@@ -3,7 +3,10 @@ SET NAMES utf8mb4;
 -- 1. 座席・テーブル情報 (shop_tables)
 CREATE TABLE shop_tables (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    table_name VARCHAR(20) NOT NULL
+    table_name VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20)
 );
 
 -- 2. ユーザー情報 (users)
@@ -13,13 +16,19 @@ CREATE TABLE users (
     salt VARCHAR(100),
     role INT NOT NULL,
     table_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20),
     FOREIGN KEY (table_id) REFERENCES shop_tables(id)
 );
 
 -- 3. カテゴリ情報 (categories)
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20)
 );
 
 -- 4. 商品情報 (products)
@@ -32,6 +41,9 @@ CREATE TABLE products (
     allergy_info TEXT,
     image_path VARCHAR(255),
     is_available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20),
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
@@ -42,6 +54,7 @@ CREATE TABLE orders (
     status INT NOT NULL DEFAULT 10,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20),
     FOREIGN KEY (table_id) REFERENCES shop_tables(id)
 );
 
@@ -54,6 +67,8 @@ CREATE TABLE order_items (
     unit_price INT NOT NULL,
     status INT NOT NULL DEFAULT 10,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(20),
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );

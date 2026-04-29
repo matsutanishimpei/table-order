@@ -59,6 +59,13 @@ public class ProductAdminServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String action = request.getParameter("action");
         
         if ("edit".equals(action) || "add".equals(action)) {
@@ -89,6 +96,13 @@ public class ProductAdminServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：管理者権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isAdmin()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), 0);
         Product p;
         boolean isUpdate = (id > 0);
@@ -148,9 +162,9 @@ public class ProductAdminServlet extends BaseServlet {
 
             // 3. サービス呼び出し（内部で業務バリデーションが実行される）
             if (isUpdate) {
-                productService.update(p);
+                productService.update(p, user.id());
             } else {
-                productService.insert(p);
+                productService.insert(p, user.id());
             }
 
             response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?msg=success");

@@ -34,9 +34,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean insert(String name) {
+    public boolean insert(String name, String operatorId) {
         validateName(name);
-        return categoryDAO.insert(name != null ? name.trim() : null);
+        return categoryDAO.insert(name != null ? name.trim() : null, operatorId);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean update(Category category) {
+    public boolean update(Category category, String operatorId) {
         validateName(category.name());
-        return categoryDAO.update(category);
+        return categoryDAO.update(category, operatorId);
     }
 
     private void validateName(String name) {

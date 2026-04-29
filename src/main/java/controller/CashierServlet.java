@@ -41,6 +41,12 @@ public class CashierServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：レジ権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isCashier()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         // 未精算の座席一覧を取得
         List<TableOrderSummary> tables = tableService.findUnsettledTables();
@@ -60,6 +66,12 @@ public class CashierServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：レジ権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isCashier()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String action = request.getParameter("action");
 
@@ -67,7 +79,7 @@ public class CashierServlet extends BaseServlet {
             // 会計完了処理
             int tableId = util.ValidationUtil.parseIntSafe(request.getParameter("tableId"), 0);
             if (tableId > 0) {
-                boolean success = orderService.completeCheckout(tableId);
+                boolean success = orderService.completeCheckout(tableId, user.id());
                 if (!success) {
                     request.setAttribute(AppConstants.ATTR_ERROR, "会計処理に失敗しました。未提供の商品が残っている可能性があります。");
                     doGet(request, response);

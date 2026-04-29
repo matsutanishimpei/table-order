@@ -18,9 +18,10 @@ public interface CategoryDAO {
      * 新しいカテゴリーをデータベースに登録します。
      *
      * @param name カテゴリ名
+     * @param operatorId 操作者のユーザーID
      * @return 登録に成功した場合は true
      */
-    boolean insert(String name);
+    boolean insert(String name, String operatorId);
     
     /**
      * 指定された ID のカテゴリ情報を取得します。
@@ -34,7 +35,8 @@ public interface CategoryDAO {
      * 既存のカテゴリ情報を更新します。
      *
      * @param category 更新するカテゴリ情報（IDにより対象を特定）
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      */
-    boolean update(model.Category category);
+    boolean update(model.Category category, String operatorId);
 }

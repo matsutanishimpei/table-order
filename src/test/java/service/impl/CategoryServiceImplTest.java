@@ -40,16 +40,16 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("カテゴリ登録: 正常な名前の場合は成功すること")
     void insert_Success() {
-        when(categoryDAO.insert("Drink")).thenReturn(true);
-        assertTrue(categoryService.insert(" Drink ")); // Trim check
-        verify(categoryDAO).insert("Drink");
+        when(categoryDAO.insert("Drink", "test-user")).thenReturn(true);
+        assertTrue(categoryService.insert(" Drink ", "test-user")); // Trim check
+        verify(categoryDAO).insert("Drink", "test-user");
     }
 
     @Test
     @DisplayName("カテゴリ登録エラー: 名前が空の場合は BusinessException を投げること")
     void insert_EmptyName_ThrowsException() {
         assertThrows(BusinessException.class, () -> {
-            categoryService.insert("");
+            categoryService.insert("", "test-user");
         });
     }
 
@@ -57,7 +57,7 @@ class CategoryServiceImplTest {
     @DisplayName("カテゴリ更新: 正常なデータの場合は成功すること")
     void update_Success() {
         Category c = new Category(1, "Dessert");
-        when(categoryDAO.update(c)).thenReturn(true);
-        assertTrue(categoryService.update(c));
+        when(categoryDAO.update(c, "test-user")).thenReturn(true);
+        assertTrue(categoryService.update(c, "test-user"));
     }
 }

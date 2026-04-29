@@ -51,7 +51,7 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
         Product p = new Product(0, 1, "Test Product", 1000, "Desc", "None", null, true);
 
         // Insert
-        assertTrue(productDAO.insert(p));
+        assertTrue(productDAO.insert(p, "admin"));
         
         // 最新のものを取得（findAll の最後にあるはず）
         List<Product> list = productDAO.findAll();
@@ -60,7 +60,7 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
 
         // Update
         Product updateP = new Product(inserted.id(), 1, "Updated Product", 1200, "New Desc", "Peanut", "img.png", false);
-        assertTrue(productDAO.update(updateP));
+        assertTrue(productDAO.update(updateP, "admin"));
         
         Product updated = productDAO.findById(inserted.id()).get();
         assertEquals("Updated Product", updated.name());
@@ -68,7 +68,7 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
         assertFalse(updated.isAvailable());
 
         // Update Availability
-        assertTrue(productDAO.updateAvailability(inserted.id(), true));
+        assertTrue(productDAO.updateAvailability(inserted.id(), true, "admin"));
         assertTrue(productDAO.findById(inserted.id()).get().isAvailable());
     }
 }

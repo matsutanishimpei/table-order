@@ -91,7 +91,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public boolean insert(Product p) {
+    public boolean insert(Product p, String operatorId) {
         String sql = SqlConstants.PRODUCT_INSERT;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -102,6 +102,7 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setString(5, p.allergyInfo());
             ps.setString(6, p.imagePath());
             ps.setBoolean(7, p.isAvailable());
+            ps.setString(8, operatorId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("商品登録中にエラーが発生しました。", e);
@@ -109,7 +110,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public boolean update(Product p) {
+    public boolean update(Product p, String operatorId) {
         String sql = SqlConstants.PRODUCT_UPDATE;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -120,7 +121,8 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setString(5, p.allergyInfo());
             ps.setString(6, p.imagePath());
             ps.setBoolean(7, p.isAvailable());
-            ps.setInt(8, p.id());
+            ps.setString(8, operatorId);
+            ps.setInt(9, p.id());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("商品更新中にエラーが発生しました。ID=" + p.id(), e);
@@ -128,12 +130,13 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public boolean updateAvailability(int productId, boolean isAvailable) {
+    public boolean updateAvailability(int productId, boolean isAvailable, String operatorId) {
         String sql = SqlConstants.PRODUCT_UPDATE_AVAILABILITY;
         try (Connection con = DBManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setBoolean(1, isAvailable);
-            ps.setInt(2, productId);
+            ps.setString(2, operatorId);
+            ps.setInt(3, productId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new exception.DatabaseException("販売状態更新中にエラーが発生しました。ID=" + productId, e);

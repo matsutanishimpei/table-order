@@ -18,17 +18,18 @@ public interface OrderService {
      * @return 登録に成功した場合は true
      * @throws exception.BusinessException 商品が販売不可の場合や、座席が不正な場合に発生します
      */
-    boolean createOrder(int tableId, List<CartItem> cartItems);
+    boolean createOrder(int tableId, List<CartItem> cartItems, String operatorId);
 
     /**
      * 特定の座席の会計（チェックアウト）を完了させます。
      * すべての商品が提供済みであることを確認し、座席を空席状態に戻します。
      *
      * @param tableId 会計対象の座席ID
+     * @param operatorId 操作者のユーザーID
      * @return 会計処理に成功した場合は true
      * @throws exception.BusinessException 未提供の商品が残っている場合などに発生します
      */
-    boolean completeCheckout(int tableId);
+    boolean completeCheckout(int tableId, String operatorId);
 
     /**
      * 厨房（キッチン）向けに、現在調理が必要な、または調理中の注文明細をすべて取得します。
@@ -49,7 +50,8 @@ public interface OrderService {
      *
      * @param itemId 注文明細ID
      * @param status 更新後のステータス（OrderConstants に定義された定数）
+     * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      */
-    boolean updateItemStatus(int itemId, int status);
+    boolean updateItemStatus(int itemId, int status, String operatorId);
 }

@@ -43,6 +43,13 @@ public class HallServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // 権限チェック：ホール権限がない場合は 403 エラー
+        model.User user = (model.User) request.getSession().getAttribute(AppConstants.ATTR_USER);
+        if (user == null || !user.isHall()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int itemId = util.ValidationUtil.parseIntSafe(request.getParameter("itemId"), -1);
         if (itemId < 0) {
             response.sendRedirect(AppConstants.REDIRECT_HOME);
@@ -51,7 +58,11 @@ public class HallServlet extends BaseServlet {
 
         String action = request.getParameter("action");
         if ("serve".equals(action)) {
-            orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED);
+            boolean success = orderService.updateItemStatus(itemId, model.OrderConstants.STATUS_SERVED, user.id());
+            if (!success) {
+                // キッチン同様、UXを優先して画面上にはエラーを出さない
+                System.err.println("[HallServlet] Failed to update item status: itemId=" + itemId);
+            }
         }
         response.sendRedirect(AppConstants.REDIRECT_HOME);
     }
