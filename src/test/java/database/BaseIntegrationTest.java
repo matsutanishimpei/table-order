@@ -2,8 +2,6 @@ package database;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.ext.ScriptUtils;
 import org.testcontainers.jdbc.JdbcDatabaseDelegate;
 
@@ -12,6 +10,7 @@ import org.testcontainers.jdbc.JdbcDatabaseDelegate;
  * 全ての統合テストはこのクラスを継承することで、本物のMySQLコンテナに対してテストを実行できます。
  * シングルトンパターンにより、全テストクラスで1つのコンテナを共有し、高速化を図っています。
  */
+@SuppressWarnings("resource")
 public abstract class BaseIntegrationTest {
 
     protected static final MySQLContainer<?> mysql;

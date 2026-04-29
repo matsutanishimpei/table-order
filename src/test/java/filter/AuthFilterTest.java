@@ -145,4 +145,76 @@ class AuthFilterTest {
 
         verify(chain).doFilter(request, response);
     }
+
+    @Test
+    @DisplayName("認可チェック: ホールパスにホール担当がアクセスした場合は通過すること")
+    void doFilter_HallPath_Success() throws IOException, ServletException {
+        User user = new User("h1", "pass", 3, null); // Hall role
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(request.getServletPath()).thenReturn("/Hall/Home");
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    @DisplayName("認可チェック: レジパスにレジ担当がアクセスした場合は通過すること")
+    void doFilter_CashierPath_Success() throws IOException, ServletException {
+        User user = new User("c1", "pass", 4, null); // Cashier role
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(request.getServletPath()).thenReturn("/Cashier/Home");
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    @DisplayName("認可チェック: キッチン担当がホールパスにアクセスした場合は403エラーになること")
+    void doFilter_HallPath_Forbidden() throws IOException, ServletException {
+        User user = new User("k1", "pass", 2, null); // Kitchen role
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(request.getServletPath()).thenReturn("/Hall/Home");
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(response).sendError(eq(HttpServletResponse.SC_FORBIDDEN), anyString());
+        verify(chain, never()).doFilter(any(), any());
+    }
+
+    @Test
+    @DisplayName("認可チェック: キッチン担当がレジパスにアクセスした場合は403エラーになること")
+    void doFilter_CashierPath_Forbidden() throws IOException, ServletException {
+        User user = new User("k1", "pass", 2, null); // Kitchen role
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(request.getServletPath()).thenReturn("/Cashier/Home");
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(response).sendError(eq(HttpServletResponse.SC_FORBIDDEN), anyString());
+        verify(chain, never()).doFilter(any(), any());
+    }
+
+    @Test
+    @DisplayName("認可チェック: 管理者がキッチンパスにアクセスした場合は通過すること")
+    void doFilter_KitchenPath_AdminSuccess() throws IOException, ServletException {
+        User user = new User("admin", "pass", 1, null); // Admin role
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
+        when(request.getServletPath()).thenReturn("/Kitchen/Orders");
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+    }
 }

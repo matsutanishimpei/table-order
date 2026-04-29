@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * Cloudinaryを使用した画像ストレージの実装クラスです。
  */
 @Slf4j
+@SuppressFBWarnings("EI_EXPOSE_STATIC_REP2")
 public final class CloudinaryUtil implements ImageStorageProvider {
     private static Cloudinary cloudinary;
     private static final CloudinaryUtil INSTANCE = new CloudinaryUtil();
@@ -58,6 +59,16 @@ public final class CloudinaryUtil implements ImageStorageProvider {
     @SuppressFBWarnings("MS_EXPOSE_REP")
     public static CloudinaryUtil getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * テスト用にCloudinaryインスタンスを設定します。
+     *
+     * @param cloudinaryValue Cloudinaryインスタンス
+     */
+    @SuppressFBWarnings("EI_EXPOSE_STATIC_REP2")
+    public static void setCloudinary(Cloudinary cloudinaryValue) {
+        cloudinary = cloudinaryValue;
     }
 
     @Override
@@ -151,7 +162,13 @@ public final class CloudinaryUtil implements ImageStorageProvider {
                 .generate(sourcePath);
     }
 
-    private static String extractPublicId(String identifier) {
+    /**
+     * URLまたは識別子からCloudinaryのpublic_idを抽出します。
+     *
+     * @param identifier 識別子
+     * @return public_id
+     */
+    static String extractPublicId(String identifier) {
         if (identifier == null) {
             return null;
         }
