@@ -21,8 +21,6 @@ import util.AppConstants;
 import util.CloudinaryUtil;
 import util.ImageStorageProvider;
 import util.ValidationUtil;
-
-import util.ValidationResult;
 import util.Validator;
 
 /**
