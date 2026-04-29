@@ -4,28 +4,29 @@
 
 ```mermaid
 erDiagram
-    users ||--o| shop_tables : "identifies (for tables)"
-    categories ||--o{ products : "contains"
-    shop_tables ||--o{ orders : "places"
+    shop_tables ||--o{ orders : "has"
+    categories ||--o{ products : "categorizes"
+    products ||--o{ order_items : "contained in"
     orders ||--o{ order_items : "consists of"
-    products ||--o{ order_items : "ordered as"
-
-    users {
-        string id PK
-        string password
-        string salt
-        int role
-        int table_id FK
-    }
+    users }|--|| shop_tables : "assigned to"
 
     shop_tables {
         int id PK
         string table_name
     }
 
+    users {
+        string id PK
+        string password
+        int role
+        int table_id FK
+        string updated_by
+    }
+
     categories {
         int id PK
         string name
+        string updated_by
     }
 
     products {
@@ -37,14 +38,16 @@ erDiagram
         string allergy_info
         string image_path
         boolean is_available
+        string updated_by
     }
 
     orders {
         int id PK
         int table_id FK
         int status
-        datetime created_at
-        datetime updated_at
+        string updated_by
+        timestamp created_at
+        timestamp updated_at
     }
 
     order_items {
@@ -54,8 +57,9 @@ erDiagram
         int quantity
         int unit_price
         int status
-        datetime created_at
-        datetime updated_at
+        string updated_by
+        timestamp created_at
+        timestamp updated_at
     }
 ```
 
