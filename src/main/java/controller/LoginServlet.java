@@ -69,13 +69,12 @@ public class LoginServlet extends BaseServlet {
         String pw = request.getParameter("pw");
 
         // バリデーション
-        util.ValidationResult vr = util.ValidationUtil.validateRequired(id, "ユーザーID");
-        if (vr.isValid()) {
-            vr = util.ValidationUtil.validateRequired(pw, "パスワード");
-        }
+        util.Validator validator = util.Validator.create()
+            .required(id, "ユーザーIDを入力してください。")
+            .required(pw, "パスワードを入力してください。");
 
-        if (vr.isInvalid()) {
-            request.setAttribute(AppConstants.ATTR_ERROR, vr.message());
+        if (validator.hasErrors()) {
+            request.setAttribute(AppConstants.ATTR_ERROR, String.join(" ", validator.getErrors()));
             request.getRequestDispatcher(AppConstants.VIEW_LOGIN).forward(request, response);
             return;
         }

@@ -7,9 +7,6 @@ import database.impl.CategoryDAOImpl;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import model.Category;
 import service.CategoryService;
-import exception.BusinessException;
-import util.ValidationUtil;
-import util.ValidationResult;
 
 /**
  * カテゴリ情報のビジネスロジックを管理するService実装クラスです。
@@ -51,9 +48,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void validateName(String name) {
-        ValidationResult res = ValidationUtil.validateRequired(name, "カテゴリ名");
-        if (res.isInvalid()) {
-            throw new BusinessException(res.message());
-        }
+        util.Validator.create()
+            .required(name, "カテゴリ名は必須入力です。")
+            .throwOnErrors();
     }
 }

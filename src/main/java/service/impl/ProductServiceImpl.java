@@ -9,8 +9,6 @@ import model.Product;
 import service.ProductService;
 import exception.BusinessException;
 import util.AppConstants;
-import util.ValidationUtil;
-import util.ValidationResult;
 
 /**
  * 商品情報のビジネスロジックを管理するService実装クラスです。
@@ -70,29 +68,16 @@ public class ProductServiceImpl implements ProductService {
      * @throws BusinessException 業務ルール違反がある場合
      */
     private void validate(Product p) {
-        ValidationResult res = ValidationUtil.validateRequired(p.name(), "商品名");
-        if (res.isInvalid()) {
-            throw new BusinessException(res.message());
-        }
-
-        res = ValidationUtil.validateMaxLength(p.name(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名");
-        if (res.isInvalid()) {
-            throw new BusinessException(res.message());
-        }
-
-        res = ValidationUtil.validatePositive(p.categoryId(), "カテゴリ");
-        if (res.isInvalid()) {
-            throw new BusinessException(res.message());
-        }
+        util.Validator.create()
+            .required(p.name(), "商品名は必須です。")
+            .maxLength(p.name(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
+            .greaterThan(p.categoryId(), 0, "カテゴリを選択してください。")
+            .greaterThan(p.price(), 0, "価格は1以上の数値を入力してください。")
+            .throwOnErrors();
 
         // カテゴリの存在チェック
         if (categoryDAO.findAll().stream().noneMatch(c -> c.id() == p.categoryId())) {
             throw new BusinessException("指定されたカテゴリ（ID: " + p.categoryId() + "）は存在しません。");
-        }
-
-        res = ValidationUtil.validatePositive(p.price(), "価格");
-        if (res.isInvalid()) {
-            throw new BusinessException(res.message());
         }
     }
 }

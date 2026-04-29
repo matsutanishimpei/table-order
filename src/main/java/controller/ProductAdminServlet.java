@@ -23,6 +23,7 @@ import util.ImageStorageProvider;
 import util.ValidationUtil;
 
 import util.ValidationResult;
+import util.Validator;
 
 /**
  * 管理者用の商品管理を制御するサーブレットです。
@@ -140,9 +141,20 @@ public class ProductAdminServlet extends BaseServlet {
         );
 
         try {
-            // 1. 画像検証（サーブレット固有の責務）
+            // バリデーションの実行 (Declarative Validation)
             Part filePart = request.getPart("imageFile");
-            validateImage(filePart, !isUpdate);
+            Validator validator = Validator.create()
+                .required(name, "商品名は必須です。")
+                .maxLength(name, AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
+                .greaterThan(categoryId, 0, "カテゴリを選択してください。")
+                .greaterThan(price, 0, "価格は1以上の数値を入力してください。")
+                .isImage(filePart, "許可されていないファイル形式です。JPEG, PNG, WEBP, GIFのみアップロード可能です。");
+            
+            if (!isUpdate) {
+                validator.isImageRequired(filePart, "画像は必須です。");
+            }
+            
+            validator.throwOnErrors();
 
             // 2. 画像のアップロード処理
             if (filePart != null && filePart.getSize() > 0) {
@@ -174,17 +186,6 @@ public class ProductAdminServlet extends BaseServlet {
             request.setAttribute(AppConstants.ATTR_PRODUCT, p);
             request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categoryService.findAll());
             request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT).forward(request, response);
-        }
-    }
-
-    private void validateImage(Part filePart, boolean imageRequired) {
-        if (filePart != null && filePart.getSize() > 0) {
-            ValidationResult res = ValidationUtil.validateImage(filePart);
-            if (res.isInvalid()) {
-                throw new exception.BusinessException(res.message());
-            }
-        } else if (imageRequired) {
-            throw new exception.BusinessException("画像は必須です。");
         }
     }
 

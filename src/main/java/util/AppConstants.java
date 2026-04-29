@@ -68,6 +68,9 @@ public class AppConstants {
     public static final int MAX_PRODUCT_NAME_LENGTH = 50;
     public static final int MAX_CATEGORY_NAME_LENGTH = 20;
     
+    public static final java.util.List<String> ALLOWED_IMAGE_TYPES =
+            java.util.Arrays.asList("image/jpeg", "image/png", "image/webp", "image/gif");
+
     private AppConstants() {
         // インスタンス化防止
     }

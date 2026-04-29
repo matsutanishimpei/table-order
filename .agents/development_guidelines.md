@@ -52,3 +52,11 @@
   - `ResultSet` からオブジェクトへのマッピングには `database.RowMapper` インターフェースを使用し、ロジックの再利用性を高めること。
 - **トランザクション管理**:
   - 複数テーブルにまたがる操作は、`database.TransactionManager.execute` を使用してサービス層で制御すること。その際、DAO メソッドには `java.sql.Connection` を引き渡して処理を継続すること。
+
+## 7. バリデーション戦略
+- **統一されたバリデーション**:
+  - Servlet や Service での入力値検証には、必ず **`util.Validator`** を使用すること（Declarative Validation）。
+  - `if` 文を連ねるのではなく、メソッドチェーン形式で宣言的に検証ルールを記述すること。
+- **エラーハンドリング**:
+  - Service 層では `validator.throwOnErrors()` を使用して、検証エラー時に一貫した `BusinessException` をスローすること。
+  - Servlet 層では `validator.hasErrors()` でチェックし、必要に応じてエラーメッセージを画面に表示すること。
