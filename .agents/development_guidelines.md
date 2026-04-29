@@ -35,3 +35,11 @@
 - **統合テスト**: データベースが絡むテストは `database.BaseIntegrationTest` を継承し、Testcontainers (MySQL) を利用すること。
 - **単体テスト**: 外部依存（Cloudinary 等）がある場合は Mockito を使用して分離すること。
 - **リソース管理**: `MySQLContainer` などの Closeable なリソースを扱う際は、リソースリークの警告が出ないよう適切に管理・抑制（`@SuppressWarnings("resource")`）すること。
+
+## 5. ドキュメントと図の保守
+- **Javadoc**: 
+  - パブリックなクラス・インターフェース・メソッドには必ず Javadoc を付与すること。
+  - `@param`, `@return`, `@throws` などのブロックタグには説明を記述し、その前には空行を入れること（Checkstyle遵守）。
+- **アーキテクチャ図**:
+  - データベーススキーマに変更を加えた場合は、`.agents/architecture.md` の **ER図 (Mermaid)** を必ず更新すること。
+  - クラス構造やレイヤー間の依存関係に大きな変更があった場合は、**クラス図 (Mermaid)** も更新すること。

@@ -16,15 +16,26 @@ import service.OrderService;
  */
 @Slf4j
 public class OrderServiceImpl implements OrderService {
+    /** 注文DAO */
     private final OrderDAO orderDAO;
+    /** 商品DAO */
     private final database.ProductDAO productDAO;
 
-    // プロダクション用コンストラクタ
+    /**
+     * デフォルトコンストラクタ。
+     * 標準の DAO 実装を使用して初期化します。
+     */
     public OrderServiceImpl() {
         this(new OrderDAOImpl(), new database.impl.ProductDAOImpl());
     }
 
-    // テスト・DI用コンストラクタ
+    /**
+     * テスト用コンストラクタ。
+     * モック等の DAO を外部から注入するために使用します。
+     *
+     * @param orderDAO 注文DAO
+     * @param productDAO 商品DAO
+     */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
     public OrderServiceImpl(OrderDAO orderDAO, database.ProductDAO productDAO) {
         this.orderDAO = orderDAO;

@@ -25,6 +25,10 @@ public class OrderDAOImpl implements OrderDAO {
 
     /**
      * ResultSet の現在行から OrderItemView オブジェクトを生成します。
+     *
+     * @param rs 取得結果の ResultSet
+     * @return 変換後の OrderItemView オブジェクト
+     * @throws SQLException マッピング中にエラーが発生した場合
      */
     private OrderItemView mapOrderItemRow(ResultSet rs) throws SQLException {
         return new OrderItemView(
@@ -38,6 +42,16 @@ public class OrderDAOImpl implements OrderDAO {
         );
     }
 
+    /**
+     * 新規注文（セッション）を登録します。
+     *
+     * @param con データベース接続
+     * @param tableId テーブルID
+     * @param status 初期ステータス
+     * @param operatorId 操作者ID
+     * @return 生成された注文ID。失敗時は -1
+     * @throws SQLException 実行中にエラーが発生した場合
+     */
     @Override
     public int insertOrder(Connection con, int tableId, int status, String operatorId) throws SQLException {
         String sqlOrder = SqlConstants.ORDER_INSERT;
@@ -56,6 +70,16 @@ public class OrderDAOImpl implements OrderDAO {
         return -1;
     }
 
+    /**
+     * 注文明細をバッチ登録します。
+     *
+     * @param con データベース接続
+     * @param orderId 注文ID
+     * @param cartItems 登録する商品リスト
+     * @param status 初期ステータス
+     * @param operatorId 操作者ID
+     * @throws SQLException 実行中にエラーが発生した場合
+     */
     @Override
     public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems,
             int status, String operatorId) throws SQLException {
@@ -78,6 +102,11 @@ public class OrderDAOImpl implements OrderDAO {
         }
     }
 
+    /**
+     * キッチン用のアクティブな注文明細を取得します。
+     *
+     * @return 注文明細のリスト
+     */
     @Override
     public List<OrderItemView> findActiveOrderItems() {
         List<OrderItemView> list = new ArrayList<>();

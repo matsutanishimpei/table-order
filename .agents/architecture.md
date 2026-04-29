@@ -46,3 +46,127 @@
 
 - Servletへのマッピングは、アノテーション `@WebServlet("/XXX")` を使用します。
 - 原則として、URLパターンとServletクラス名を一致させます（例：`LoginServlet` は `/Login`）。
+
+## 5. ER図 (Entity Relationship Diagram)
+
+本システムのデータベース構造は以下の通りです。
+
+```mermaid
+erDiagram
+    shop_tables ||--o{ orders : "has"
+    categories ||--o{ products : "categorizes"
+    products ||--o{ order_items : "contained in"
+    orders ||--o{ order_items : "consists of"
+    users }|--|| shop_tables : "assigned to"
+
+    shop_tables {
+        int id PK
+        string table_name
+    }
+
+    users {
+        string id PK
+        string password
+        int role
+        int table_id FK
+        string updated_by
+    }
+
+    categories {
+        int id PK
+        string name
+        string updated_by
+    }
+
+    products {
+        int id PK
+        int category_id FK
+        string name
+        int price
+        string description
+        string allergy_info
+        string image_path
+        boolean is_available
+        string updated_by
+    }
+
+    orders {
+        int id PK
+        int table_id FK
+        int status
+        string updated_by
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    order_items {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        int unit_price
+        int status
+        string updated_by
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+## 6. クラス図 (Class Diagram)
+
+主要なレイヤー構造とインターフェース・実装の関係を示します。
+
+```mermaid
+classDiagram
+    class CategoryService {
+        <<interface>>
+        +findAll() List~Category~
+        +insert(name, opId) boolean
+    }
+    class CategoryServiceImpl {
+        -CategoryDAO categoryDAO
+    }
+    class OrderService {
+        <<interface>>
+        +createOrder(tableId, items, opId) boolean
+        +completeCheckout(tableId, opId) boolean
+    }
+    class OrderServiceImpl {
+        -OrderDAO orderDAO
+        -ProductDAO productDAO
+    }
+
+    CategoryService <|.. CategoryServiceImpl
+    OrderService <|.. OrderServiceImpl
+
+    class CategoryDAO {
+        <<interface>>
+        +findAll() List~Category~
+    }
+    class CategoryDAOImpl {
+    }
+    class OrderDAO {
+        <<interface>>
+        +insertOrder(con, tableId, status, opId) int
+    }
+    class OrderDAOImpl {
+    }
+
+    CategoryDAO <|.. CategoryDAOImpl
+    OrderDAO <|.. OrderDAOImpl
+
+    CategoryServiceImpl --> CategoryDAO : uses
+    OrderServiceImpl --> OrderDAO : uses
+    OrderServiceImpl --> ProductDAO : uses
+
+    class DBManager {
+        +getConnection() Connection
+        +initForTest(...) void
+    }
+    class TransactionManager {
+        +execute(executor) T
+    }
+
+    OrderServiceImpl ..> TransactionManager : uses
+    CategoryServiceImpl ..> TransactionManager : uses
+```

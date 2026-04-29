@@ -22,8 +22,24 @@ import util.CsrfUtil;
 @WebFilter(urlPatterns = {"/Admin/*", "/Kitchen/*", "/Hall/*", "/Cashier/*", "/Order", "/Cart", "/OrderHistory"})
 public class AuthFilter implements Filter {
 
+    /**
+     * フィルターの初期化処理を行います。
+     *
+     * @param fConfig フィルター設定
+     * @throws ServletException 初期化中にエラーが発生した場合
+     */
     public void init(FilterConfig fConfig) throws ServletException { }
 
+    /**
+     * リクエストごとのフィルタリング処理を行います。
+     * ログインチェック、CSRFトークンの生成・検証、および権限チェックを一括して実行します。
+     *
+     * @param request  サーブレットリクエスト
+     * @param response サーブレットレスポンス
+     * @param chain    フィルターチェーン
+     * @throws IOException      入出力エラーが発生した場合
+     * @throws ServletException サーブレットエラーが発生した場合
+     */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         if (!(request instanceof HttpServletRequest req) || !(response instanceof HttpServletResponse res)) {
@@ -83,5 +99,8 @@ public class AuthFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    /**
+     * フィルターの破棄処理を行います。
+     */
     public void destroy() { }
 }
