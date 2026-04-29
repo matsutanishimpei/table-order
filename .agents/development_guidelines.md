@@ -43,3 +43,12 @@
 - **アーキテクチャ図**:
   - データベーススキーマに変更を加えた場合は、`.agents/architecture.md` の **ER図 (Mermaid)** を必ず更新すること。
   - クラス構造やレイヤー間の依存関係に大きな変更があった場合は、**クラス図 (Mermaid)** も更新すること。
+
+## 6. DRY原則とデータベースアクセス
+- **定型処理の排除**: 
+  - JDBC の接続管理、Statement 作成、ResultSet ループ、例外処理などの定型処理を各 DAO に記述しないこと（DRY原則）。
+  - データベース操作には必ず **`database.JdbcExecutor`** を使用し、ボイラープレートコードを最小化すること。
+- **RowMapper の活用**:
+  - `ResultSet` からオブジェクトへのマッピングには `database.RowMapper` インターフェースを使用し、ロジックの再利用性を高めること。
+- **トランザクション管理**:
+  - 複数テーブルにまたがる操作は、`database.TransactionManager.execute` を使用してサービス層で制御すること。その際、DAO メソッドには `java.sql.Connection` を引き渡して処理を継続すること。
