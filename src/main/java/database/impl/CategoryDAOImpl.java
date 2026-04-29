@@ -13,7 +13,7 @@ import model.Category;
 /**
  * カテゴリ情報のデータベース操作を行うDAO実装クラスです。
  */
-public class CategoryDAOImpl implements CategoryDAO {
+public final class CategoryDAOImpl implements CategoryDAO {
 
     private final RowMapper<Category> mapper = rs -> new Category(
             rs.getInt("id"),

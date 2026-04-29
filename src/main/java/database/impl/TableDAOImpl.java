@@ -16,7 +16,7 @@ import model.TableStatusView;
 /**
  * 座席（テーブル）状態に関するデータベース操作を行うDAO実装クラスです。
  */
-public class TableDAOImpl implements TableDAO {
+public final class TableDAOImpl implements TableDAO {
 
     private final RowMapper<TableOrderSummary> summaryMapper = rs -> new TableOrderSummary(
             rs.getInt("id"),

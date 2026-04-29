@@ -40,52 +40,69 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(User user, String operatorId) {
         util.Validator.create()
-            .required(user.id(), "ユーザーIDは必須です。")
-            .maxLength(user.id(), 20, "ユーザーIDは20文字以内で入力してください。")
-            .required(user.password(), "パスワードは必須です。")
-            .throwOnErrors();
+                .required(user.id(), "ユーザーIDは必須です。")
+                .maxLength(user.id(), 20, "ユーザーIDは20文字以内で入力してください。")
+                .required(user.password(), "パスワードは必須です。")
+                .throwOnErrors();
 
-        // 重複チェック
-        if (userDAO.findById(user.id()).isPresent()) {
-            throw new exception.BusinessException("既に存在するIDです。id=" + user.id());
-        }
+        try {
+            // 重複チェック
+            if (userDAO.findById(user.id()).isPresent()) {
+                throw new exception.BusinessException("既に存在するIDです。id=" + user.id());
+            }
 
-        boolean success = userDAO.insert(user, operatorId);
-        if (success) {
-            log.info("ユーザー登録成功: id={}, operatorId={}", user.id(), operatorId);
-        } else {
-            log.warn("ユーザー登録失敗: id={}", user.id());
+            boolean success = userDAO.insert(user, operatorId);
+            if (success) {
+                log.info("ユーザー登録成功: id={}, operatorId={}", user.id(), operatorId);
+            } else {
+                log.warn("ユーザー登録失敗: id={}", user.id());
+            }
+            return success;
+        } catch (exception.BusinessException e) {
+            throw e; // バリデーション例外はそのまま上位へ投げる
+        } catch (Exception e) {
+            log.error("ユーザー登録中にエラーが発生しました: id={}", user.id(), e);
+            return false;
         }
-        return success;
     }
 
     @Override
     public boolean update(User user, String newPassword, String operatorId) {
         util.Validator.create()
-            .required(user.id(), "ユーザーIDは必須です。")
-            .throwOnErrors();
+                .required(user.id(), "ユーザーIDは必須です。")
+                .throwOnErrors();
 
-        boolean success = userDAO.update(user, operatorId);
-        if (success && newPassword != null && !newPassword.isEmpty()) {
-            success = userDAO.updatePassword(user.id(), newPassword, operatorId);
+        try {
+            boolean success = userDAO.update(user, operatorId);
+            if (success && newPassword != null && !newPassword.isEmpty()) {
+                success = userDAO.updatePassword(user.id(), newPassword, operatorId);
+            }
+            if (success) {
+                log.info("ユーザー更新成功: id={}, operatorId={}", user.id(), operatorId);
+            }
+            return success;
+        } catch (Exception e) {
+            log.error("ユーザー更新中にエラーが発生しました: id={}", user.id(), e);
+            return false;
         }
-        if (success) {
-            log.info("ユーザー更新成功: id={}, operatorId={}", user.id(), operatorId);
-        }
-        return success;
     }
 
     @Override
     public boolean delete(String id) {
         util.Validator.create()
-            .required(id, "ユーザーIDは必須です。")
-            .throwOnErrors();
+                .required(id, "ユーザーIDは必須です。")
+                .throwOnErrors();
 
-        boolean success = userDAO.delete(id);
-        if (success) {
-            log.info("ユーザー削除成功: id={}", id);
+        try {
+            boolean success = userDAO.delete(id);
+            if (success) {
+                log.info("ユーザー削除成功: id={}", id);
+            }
+            return success;
+        } catch (Exception e) {
+            log.error("ユーザー削除中にエラーが発生しました: id={}", id, e);
+            return false;
         }
-        return success;
     }
 
     @Override

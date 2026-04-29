@@ -123,7 +123,7 @@ public class LoginServletTest {
         // Assert
         // userService.login() は呼ばれず、バリデーションエラーメッセージがセットされることを確認
         verify(userService, never()).login(anyString(), anyString());
-        verify(request).setAttribute(eq(util.AppConstants.ATTR_ERROR), contains("必須入力"));
+        verify(request).setAttribute(eq(util.AppConstants.ATTR_ERROR), contains("入力してください"));
         verify(requestDispatcher).forward(request, response);
     }
 

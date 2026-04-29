@@ -94,17 +94,25 @@ public class UserAdminServlet extends BaseServlet {
         Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr))
                 ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
 
-        if ("delete".equals(action)) {
-            userService.delete(id);
-        } else if ("update".equals(action)) {
+        try {
+            if ("delete".equals(action)) {
+                userService.delete(id);
+            } else if ("update".equals(action)) {
+                User targetUser = new User(id, null, role, tableId);
+                userService.update(targetUser, password, user.id());
+            } else {
+                // 新規追加
+                User targetUser = new User(id, password, role, tableId);
+                userService.register(targetUser, user.id());
+            }
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
+        } catch (exception.BusinessException e) {
+            request.setAttribute(AppConstants.ATTR_ERROR, e.getMessage());
             User targetUser = new User(id, null, role, tableId);
-            userService.update(targetUser, password, user.id());
-        } else {
-            // 新規追加
-            User targetUser = new User(id, password, role, tableId);
-            userService.register(targetUser, user.id());
+            request.setAttribute("targetUser", targetUser);
+            List<model.TableStatusView> tables = tableService.findAllTableStatus();
+            request.setAttribute(AppConstants.ATTR_TABLE_LIST, tables);
+            request.getRequestDispatcher(AppConstants.VIEW_ADMIN_USER_EDIT).forward(request, response);
         }
-
-        response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
     }
 }

@@ -20,7 +20,7 @@ import model.OrderItemView;
  * 注文情報のデータベース操作を行うDAO実装クラスです。
  */
 @Slf4j
-public class OrderDAOImpl implements OrderDAO {
+public final class OrderDAOImpl implements OrderDAO {
 
     private final RowMapper<OrderItemView> mapper = rs -> new OrderItemView(
             rs.getInt("id"),
@@ -41,7 +41,8 @@ public class OrderDAOImpl implements OrderDAO {
     public void insertOrderItems(Connection con, int orderId, List<CartItem> cartItems,
             int status, String operatorId) throws SQLException {
         List<Object[]> batchParams = cartItems.stream()
-                .map(item -> new Object[]{orderId, item.productId(), item.quantity(), item.unitPrice(), status, operatorId})
+                .map(item -> new Object[]{orderId, item.productId(), item.quantity(), 
+                        item.unitPrice(), status, operatorId})
                 .collect(Collectors.toList());
         JdbcExecutor.batchUpdate(con, SqlConstants.ORDER_ITEM_INSERT, batchParams);
     }

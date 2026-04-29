@@ -180,6 +180,8 @@ public class ProductAdminServletTest {
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0");
         when(request.getParameter("name")).thenReturn("New");
+        when(request.getParameter("categoryId")).thenReturn("1");
+        when(request.getParameter("price")).thenReturn("1000");
         when(request.getPart("imageFile")).thenReturn(filePart);
         when(filePart.getSize()).thenReturn(100L);
         when(filePart.getContentType()).thenReturn("image/png");
@@ -197,6 +199,9 @@ public class ProductAdminServletTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0"); // Insert mode
+        when(request.getParameter("name")).thenReturn("New");
+        when(request.getParameter("categoryId")).thenReturn("1");
+        when(request.getParameter("price")).thenReturn("1000");
         when(request.getPart("imageFile")).thenReturn(null); // No image
         when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT)).thenReturn(requestDispatcher);
 

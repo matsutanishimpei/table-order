@@ -142,11 +142,12 @@ public class ProductAdminServlet extends BaseServlet {
             // バリデーションの実行 (Declarative Validation)
             Part filePart = request.getPart("imageFile");
             Validator validator = Validator.create()
-                .required(name, "商品名は必須です。")
-                .maxLength(name, AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
-                .greaterThan(categoryId, 0, "カテゴリを選択してください。")
-                .greaterThan(price, 0, "価格は1以上の数値を入力してください。")
-                .isImage(filePart, "許可されていないファイル形式です。JPEG, PNG, WEBP, GIFのみアップロード可能です。");
+                    .required(name, "商品名は必須です。")
+                    .maxLength(name, AppConstants.MAX_PRODUCT_NAME_LENGTH, 
+                            "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
+                    .greaterThan(categoryId, 0, "カテゴリを選択してください。")
+                    .greaterThan(price, 0, "価格は1以上の数値を入力してください。")
+                    .isImage(filePart, "許可されていないファイル形式です。JPEG, PNG, WEBP, GIFのみアップロード可能です。");
             
             if (!isUpdate) {
                 validator.isImageRequired(filePart, "画像は必須です。");

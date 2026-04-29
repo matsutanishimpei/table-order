@@ -50,7 +50,7 @@ public final class JdbcExecutor {
      */
     public static <T> Optional<T> queryOne(Connection con, String sql, RowMapper<T> mapper, Object... params) {
         List<T> list = query(con, sql, mapper, params);
-        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+        return list.isEmpty() ? Optional.empty() : Optional.ofNullable(list.get(0));
     }
 
     /**

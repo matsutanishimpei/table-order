@@ -70,8 +70,8 @@ public class LoginServlet extends BaseServlet {
 
         // バリデーション
         util.Validator validator = util.Validator.create()
-            .required(id, "ユーザーIDを入力してください。")
-            .required(pw, "パスワードを入力してください。");
+                .required(id, "ユーザーIDを入力してください。")
+                .required(pw, "パスワードを入力してください。");
 
         if (validator.hasErrors()) {
             request.setAttribute(AppConstants.ATTR_ERROR, String.join(" ", validator.getErrors()));

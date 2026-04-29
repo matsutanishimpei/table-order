@@ -13,7 +13,7 @@ import model.Product;
 /**
  * 商品情報のデータベース操作を行うDAO実装クラスです。
  */
-public class ProductDAOImpl implements ProductDAO {
+public final class ProductDAOImpl implements ProductDAO {
 
     private final RowMapper<Product> mapper = rs -> new Product(
             rs.getInt("id"),

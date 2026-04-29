@@ -17,7 +17,7 @@ import util.PasswordUtil;
  * ユーザー情報のデータベース操作を行うDAO実装クラスです。
  */
 @Slf4j
-public class UserDAOImpl implements UserDAO {
+public final class UserDAOImpl implements UserDAO {
 
     private final RowMapper<User> mapper = rs -> new User(
             rs.getString("id"),

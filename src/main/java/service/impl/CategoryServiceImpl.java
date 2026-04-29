@@ -49,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void validateName(String name) {
         util.Validator.create()
-            .required(name, "カテゴリ名は必須入力です。")
-            .throwOnErrors();
+                .required(name, "カテゴリ名は必須入力です。")
+                .throwOnErrors();
     }
 }

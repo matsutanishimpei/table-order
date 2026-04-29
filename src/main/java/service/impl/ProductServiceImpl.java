@@ -69,11 +69,12 @@ public class ProductServiceImpl implements ProductService {
      */
     private void validate(Product p) {
         util.Validator.create()
-            .required(p.name(), "商品名は必須です。")
-            .maxLength(p.name(), AppConstants.MAX_PRODUCT_NAME_LENGTH, "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
-            .greaterThan(p.categoryId(), 0, "カテゴリを選択してください。")
-            .greaterThan(p.price(), 0, "価格は1以上の数値を入力してください。")
-            .throwOnErrors();
+                .required(p.name(), "商品名は必須です。")
+                .maxLength(p.name(), AppConstants.MAX_PRODUCT_NAME_LENGTH, 
+                        "商品名は" + AppConstants.MAX_PRODUCT_NAME_LENGTH + "文字以内で入力してください。")
+                .greaterThan(p.categoryId(), 0, "カテゴリを選択してください。")
+                .greaterThan(p.price(), 0, "価格は1以上の数値を入力してください。")
+                .throwOnErrors();
 
         // カテゴリの存在チェック
         if (categoryDAO.findAll().stream().noneMatch(c -> c.id() == p.categoryId())) {

@@ -149,7 +149,6 @@ public class ProductServiceImplTest {
     @Test
     public void testInsert_Failure_InvalidPrice() {
         Product p = new Product(0, 1, "Product", 0, "Desc", null, null, true);
-        when(categoryDAO.findAll()).thenReturn(Arrays.asList(new model.Category(1, "Food")));
         assertThrows(exception.BusinessException.class, () -> productService.insert(p, "test-user"));
     }
 

@@ -82,11 +82,11 @@ public class UserServiceImplTest {
         User user = new User("existinguser", "pass", 1, null);
         when(userDAO.findById("existinguser")).thenReturn(Optional.of(user)); // 重複あり
 
-        // Act
-        boolean result = userService.register(user, "test-user");
-
-        // Assert
-        assertFalse(result, "既に存在するIDの場合は登録失敗になるべき");
+        // Act & Assert
+        assertThrows(exception.BusinessException.class, () -> {
+            userService.register(user, "test-user");
+        }, "既に存在するIDの場合はBusinessExceptionがスローされるべき");
+        
         verify(userDAO, never()).insert(any(), anyString());
     }
 
