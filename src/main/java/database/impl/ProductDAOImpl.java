@@ -1,14 +1,10 @@
 package database.impl;
 
-import database.DBManager;
+import database.JdbcExecutor;
+import database.RowMapper;
 import database.SqlConstants;
 import database.ProductDAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +15,7 @@ import model.Product;
  */
 public class ProductDAOImpl implements ProductDAO {
 
-    /**
-     * ResultSet の現在行から Product オブジェクトを生成します。
-     */
-    private Product mapRow(ResultSet rs) throws SQLException {
-        return new Product(
+    private final RowMapper<Product> mapper = rs -> new Product(
             rs.getInt("id"),
             rs.getInt("category_id"),
             rs.getString("name"),
@@ -32,114 +24,39 @@ public class ProductDAOImpl implements ProductDAO {
             rs.getString("allergy_info"),
             rs.getString("image_path"),
             rs.getBoolean("is_available")
-        );
-    }
+    );
 
     @Override
     public List<Product> findAll() {
-        List<Product> list = new ArrayList<>();
-        String sql = SqlConstants.PRODUCT_SELECT_ALL;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("全商品取得中にエラーが発生しました。", e);
-        }
-        return list;
+        return JdbcExecutor.query(SqlConstants.PRODUCT_SELECT_ALL, mapper);
     }
 
     @Override
     public List<Product> findByCategory(int categoryId) {
-        List<Product> list = new ArrayList<>();
-        String sql = SqlConstants.PRODUCT_SELECT_BY_CATEGORY;
-
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, categoryId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    list.add(mapRow(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ別商品取得中にエラーが発生しました。ID=" + categoryId, e);
-        }
-        return list;
+        return JdbcExecutor.query(SqlConstants.PRODUCT_SELECT_BY_CATEGORY, mapper, categoryId);
     }
 
     @Override
     public Optional<Product> findById(int productId) {
-        Product p = null;
-        String sql = SqlConstants.PRODUCT_SELECT_BY_ID;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, productId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    p = mapRow(rs);
-                }
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品取得中にエラーが発生しました。ID=" + productId, e);
-        }
-        return Optional.ofNullable(p);
+        return JdbcExecutor.queryOne(SqlConstants.PRODUCT_SELECT_BY_ID, mapper, productId);
     }
 
     @Override
     public boolean insert(Product p, String operatorId) {
-        String sql = SqlConstants.PRODUCT_INSERT;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.categoryId());
-            ps.setString(2, p.name());
-            ps.setInt(3, p.price());
-            ps.setString(4, p.description());
-            ps.setString(5, p.allergyInfo());
-            ps.setString(6, p.imagePath());
-            ps.setBoolean(7, p.isAvailable());
-            ps.setString(8, operatorId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品登録中にエラーが発生しました。", e);
-        }
+        return JdbcExecutor.update(SqlConstants.PRODUCT_INSERT,
+                p.categoryId(), p.name(), p.price(), p.description(),
+                p.allergyInfo(), p.imagePath(), p.isAvailable(), operatorId) > 0;
     }
 
     @Override
     public boolean update(Product p, String operatorId) {
-        String sql = SqlConstants.PRODUCT_UPDATE;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, p.categoryId());
-            ps.setString(2, p.name());
-            ps.setInt(3, p.price());
-            ps.setString(4, p.description());
-            ps.setString(5, p.allergyInfo());
-            ps.setString(6, p.imagePath());
-            ps.setBoolean(7, p.isAvailable());
-            ps.setString(8, operatorId);
-            ps.setInt(9, p.id());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("商品更新中にエラーが発生しました。ID=" + p.id(), e);
-        }
+        return JdbcExecutor.update(SqlConstants.PRODUCT_UPDATE,
+                p.categoryId(), p.name(), p.price(), p.description(),
+                p.allergyInfo(), p.imagePath(), p.isAvailable(), operatorId, p.id()) > 0;
     }
 
     @Override
     public boolean updateAvailability(int productId, boolean isAvailable, String operatorId) {
-        String sql = SqlConstants.PRODUCT_UPDATE_AVAILABILITY;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setBoolean(1, isAvailable);
-            ps.setString(2, operatorId);
-            ps.setInt(3, productId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("販売状態更新中にエラーが発生しました。ID=" + productId, e);
-        }
+        return JdbcExecutor.update(SqlConstants.PRODUCT_UPDATE_AVAILABILITY, isAvailable, operatorId, productId) > 0;
     }
 }

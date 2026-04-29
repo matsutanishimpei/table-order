@@ -1,14 +1,10 @@
 package database.impl;
 
 import database.CategoryDAO;
-import database.DBManager;
+import database.JdbcExecutor;
+import database.RowMapper;
 import database.SqlConstants;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,71 +15,28 @@ import model.Category;
  */
 public class CategoryDAOImpl implements CategoryDAO {
 
+    private final RowMapper<Category> mapper = rs -> new Category(
+            rs.getInt("id"),
+            rs.getString("name")
+    );
+
     @Override
     public List<Category> findAll() {
-        List<Category> list = new ArrayList<>();
-        String sql = SqlConstants.CATEGORY_SELECT_ALL;
-
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                list.add(new Category(
-                        rs.getInt("id"),
-                        rs.getString("name")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("全カテゴリ取得中にエラーが発生しました。", e);
-        }
-        return list;
+        return JdbcExecutor.query(SqlConstants.CATEGORY_SELECT_ALL, mapper);
     }
 
     @Override
     public boolean insert(String name, String operatorId) {
-        String sql = SqlConstants.CATEGORY_INSERT;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, operatorId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ登録中にエラーが発生しました。name=" + name, e);
-        }
+        return JdbcExecutor.update(SqlConstants.CATEGORY_INSERT, name, operatorId) > 0;
     }
 
     @Override
     public Optional<Category> findById(int id) {
-        String sql = SqlConstants.CATEGORY_SELECT_BY_ID;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(new Category(
-                            rs.getInt("id"),
-                            rs.getString("name")
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ取得中にエラーが発生しました。id=" + id, e);
-        }
-        return Optional.empty();
+        return JdbcExecutor.queryOne(SqlConstants.CATEGORY_SELECT_BY_ID, mapper, id);
     }
 
     @Override
     public boolean update(Category category, String operatorId) {
-        String sql = SqlConstants.CATEGORY_UPDATE;
-        try (Connection con = DBManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, category.name());
-            ps.setString(2, operatorId);
-            ps.setInt(3, category.id());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new exception.DatabaseException("カテゴリ更新中にエラーが発生しました。id=" + category.id(), e);
-        }
+        return JdbcExecutor.update(SqlConstants.CATEGORY_UPDATE, category.name(), operatorId, category.id()) > 0;
     }
 }
