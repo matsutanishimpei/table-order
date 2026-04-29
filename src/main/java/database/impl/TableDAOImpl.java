@@ -5,7 +5,6 @@ import database.RowMapper;
 import database.SqlConstants;
 import database.TableDAO;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 

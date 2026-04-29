@@ -1,6 +1,5 @@
 package database.impl;
 
-import database.DBManager;
 import database.JdbcExecutor;
 import database.RowMapper;
 import database.SqlConstants;
