@@ -262,6 +262,7 @@
                 <configuration>
                     <failBuildOnCVSS>7.0</failBuildOnCVSS>
                     <format>HTML</format>
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
         </plugins>

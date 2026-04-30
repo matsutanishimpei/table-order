@@ -86,7 +86,7 @@
                             <c:choose>
                                 <c:when test="${not empty p.imagePath}">
                                     <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).imagePath(), 400, 300) %>" 
-                                         alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+                                         alt="<c:out value='${p.name}' />" class="w-full h-full object-cover" loading="lazy">
                                 </c:when>
                                 <c:otherwise>
                                     <span class="opacity-80 translate-y-2">🍲</span>
