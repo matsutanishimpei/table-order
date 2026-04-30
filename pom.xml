@@ -246,6 +246,24 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- 4. OWASP Dependency Check: Vulnerability Scanning -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>9.0.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failBuildOnCVSS>7.0</failBuildOnCVSS>
+                    <format>HTML</format>
+                </configuration>
+            </plugin>
         </plugins>
 
         <pluginManagement>

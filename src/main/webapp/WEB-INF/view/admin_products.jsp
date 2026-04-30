@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ page import="util.CloudinaryUtil" %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -64,7 +65,7 @@
                                         <c:choose>
                                             <c:when test="${not empty p.imagePath}">
                                                 <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).imagePath(), 200, 200) %>" 
-                                                     alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+                                                     alt="<c:out value='${p.name}' />" class="w-full h-full object-cover" loading="lazy">
                                             </c:when>
                                             <c:otherwise>🍲</c:otherwise>
                                         </c:choose>
@@ -108,7 +109,7 @@
                                         <a href="Product?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
                                             <span class="text-lg">⚙️</span>
                                         </a>
-                                        <form action="Product" method="post" class="inline" onsubmit="return confirm('「${p.name}」を削除しますか？\\nこの操作は論理削除です。データは保持されます。');">
+                                        <form action="Product" method="post" class="inline" onsubmit="return confirm('「<c:out value="${p.name}" />」を削除しますか？\nこの操作は論理削除です。データは保持されます。');">
                                             <input type="hidden" name="csrf_token" value="${csrf_token}">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="${p.id}">
