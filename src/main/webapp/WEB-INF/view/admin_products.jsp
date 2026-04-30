@@ -103,10 +103,20 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td class="px-10 py-8 text-right space-x-2">
-                                    <a href="Product?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
-                                        <span class="text-lg">⚙️</span>
-                                    </a>
+                                <td class="px-10 py-8 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="Product?action=edit&id=${p.id}" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
+                                            <span class="text-lg">⚙️</span>
+                                        </a>
+                                        <form action="Product" method="post" class="inline" onsubmit="return confirm('「${p.name}」を削除しますか？\\nこの操作は論理削除です。データは保持されます。');">
+                                            <input type="hidden" name="csrf_token" value="${csrf_token}">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="${p.id}">
+                                            <button type="submit" class="inline-flex items-center justify-center p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100" title="削除">
+                                                <span class="text-lg">🗑️</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         </c:forEach>

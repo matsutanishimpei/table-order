@@ -91,6 +91,14 @@
                                             <a href="Category?action=edit&id=${cat.id}" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all no-underline border border-transparent hover:border-emerald-100" title="編集">
                                                 <span class="text-base">⚙️</span>
                                             </a>
+                                            <form action="Category" method="post" class="inline" onsubmit="return confirm('カテゴリ「${cat.name}」を削除しますか？\nこの操作は論理削除です。データは保持されます。');">
+                                                <input type="hidden" name="csrf_token" value="${csrf_token}">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id" value="${cat.id}">
+                                                <button type="submit" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100" title="削除">
+                                                    <span class="text-base">🗑️</span>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

@@ -103,6 +103,15 @@ public class ProductAdminServlet extends BaseServlet {
         }
 
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), 0);
+
+        // 論理削除処理
+        String action = request.getParameter("action");
+        if ("delete".equals(action) && id > 0) {
+            productService.delete(id, user.id());
+            response.sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT + "?msg=success");
+            return;
+        }
+
         Product p;
         boolean isUpdate = (id > 0);
         
@@ -135,7 +144,8 @@ public class ProductAdminServlet extends BaseServlet {
             description,
             allergyInfo,
             p.imagePath(),
-            isAvailable
+            isAvailable,
+            false
         );
 
         try {
@@ -162,7 +172,7 @@ public class ProductAdminServlet extends BaseServlet {
                 if (imageId != null) {
                     // imagePath を更新した新しい Product インスタンスを生成
                     p = new Product(p.id(), p.categoryId(), p.name(), p.price(), p.description(),
-                            p.allergyInfo(), imageId, p.isAvailable());
+                            p.allergyInfo(), imageId, p.isAvailable(), false);
                     if (oldImageId != null && !oldImageId.isEmpty()) {
                         imageStorageProvider.delete(oldImageId);
                     }

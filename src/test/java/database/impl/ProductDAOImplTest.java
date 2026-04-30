@@ -48,7 +48,7 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
 
     @Test
     void testInsertUpdateDelete() {
-        Product p = new Product(0, 1, "Test Product", 1000, "Desc", "None", null, true);
+        Product p = new Product(0, 1, "Test Product", 1000, "Desc", "None", null, true, false);
 
         // Insert
         assertTrue(productDAO.insert(p, "admin"));
@@ -59,7 +59,7 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
         assertEquals("Test Product", inserted.name());
 
         // Update
-        Product updateP = new Product(inserted.id(), 1, "Updated Product", 1200, "New Desc", "Peanut", "img.png", false);
+        Product updateP = new Product(inserted.id(), 1, "Updated Product", 1200, "New Desc", "Peanut", "img.png", false, false);
         assertTrue(productDAO.update(updateP, "admin"));
         
         Product updated = productDAO.findById(inserted.id()).get();

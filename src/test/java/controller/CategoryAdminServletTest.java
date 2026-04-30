@@ -119,7 +119,7 @@ public class CategoryAdminServletTest {
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("edit");
         when(request.getParameter("id")).thenReturn("1");
-        when(categoryService.findById(1)).thenReturn(java.util.Optional.of(new model.Category(1, "cat")));
+        when(categoryService.findById(1)).thenReturn(java.util.Optional.of(new model.Category(1, "cat", false)));
         when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORY_EDIT)).thenReturn(requestDispatcher);
 
         servlet.doGet(request, response);
@@ -188,5 +188,20 @@ public class CategoryAdminServletTest {
 
         verify(request).setAttribute(eq(AppConstants.ATTR_ERROR), eq("Error"));
         verify(requestDispatcher).forward(request, response);
+    }
+
+    @Test
+    public void testDoPost_Delete_Success() throws ServletException, IOException {
+        User admin = new User("admin", "pass", 1, null);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        when(request.getParameter("action")).thenReturn("delete");
+        when(request.getParameter("id")).thenReturn("3");
+        when(request.getParameter("name")).thenReturn(null);
+
+        servlet.doPost(request, response);
+
+        verify(categoryService).delete(3, "admin");
+        verify(response).sendRedirect(contains("success"));
     }
 }

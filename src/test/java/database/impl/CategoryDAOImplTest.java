@@ -51,7 +51,7 @@ class CategoryDAOImplTest extends BaseIntegrationTest {
     @DisplayName("カテゴリ情報が更新できること")
     void testUpdate() {
         // ID:1 は 'ドリンク' (seed.sql)
-        Category category = new Category(1, "飲み物");
+        Category category = new Category(1, "飲み物", false);
         boolean success = dao.update(category, "test-admin");
         assertTrue(success);
 

@@ -47,7 +47,7 @@ public class MenuServletTest {
     @Test
     public void testDoGet_DisplaysMenuWithCategories() throws ServletException, IOException {
         // Arrange
-        Category cat = new Category(1, "Drinks");
+        Category cat = new Category(1, "Drinks", false);
         
         when(categoryService.findAll()).thenReturn(Arrays.asList(cat));
         when(request.getParameter("categoryId")).thenReturn(null); // Default
@@ -67,8 +67,8 @@ public class MenuServletTest {
     @Test
     public void testDoGet_SelectedCategory() throws ServletException, IOException {
         // Arrange
-        Category cat1 = new Category(1, "Cat 1");
-        Category cat2 = new Category(2, "Cat 2");
+        Category cat1 = new Category(1, "Cat 1", false);
+        Category cat2 = new Category(2, "Cat 2", false);
         
         when(categoryService.findAll()).thenReturn(Arrays.asList(cat1, cat2));
         when(request.getParameter("categoryId")).thenReturn("2");

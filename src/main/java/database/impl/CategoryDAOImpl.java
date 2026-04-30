@@ -17,7 +17,8 @@ public final class CategoryDAOImpl implements CategoryDAO {
 
     private final RowMapper<Category> mapper = rs -> new Category(
             rs.getInt("id"),
-            rs.getString("name")
+            rs.getString("name"),
+            rs.getBoolean("is_deleted")
     );
 
     @Override
@@ -38,5 +39,10 @@ public final class CategoryDAOImpl implements CategoryDAO {
     @Override
     public boolean update(Category category, String operatorId) {
         return JdbcExecutor.update(SqlConstants.CATEGORY_UPDATE, category.name(), operatorId, category.id()) > 0;
+    }
+
+    @Override
+    public boolean softDelete(int id, String operatorId) {
+        return JdbcExecutor.update(SqlConstants.CATEGORY_SOFT_DELETE, operatorId, id) > 0;
     }
 }

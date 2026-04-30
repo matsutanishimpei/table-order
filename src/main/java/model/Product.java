@@ -13,6 +13,7 @@ import java.io.Serializable;
  * @param allergyInfo アレルギー情報
  * @param imagePath 画像パス（識別子）
  * @param isAvailable 販売中フラグ
+ * @param isDeleted 論理削除フラグ
  */
 public record Product(
         int id,
@@ -22,14 +23,15 @@ public record Product(
         String description,
         String allergyInfo,
         String imagePath,
-        boolean isAvailable
+        boolean isAvailable,
+        boolean isDeleted
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 新規登録用のコンストラクタ（ID=0）
+     * 新規登録用のコンストラクタ（ID=0、未削除）
      */
     public Product() {
-        this(0, 0, null, 0, null, null, null, true);
+        this(0, 0, null, 0, null, null, null, true, false);
     }
 }

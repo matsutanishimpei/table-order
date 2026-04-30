@@ -23,7 +23,8 @@ public final class ProductDAOImpl implements ProductDAO {
             rs.getString("description"),
             rs.getString("allergy_info"),
             rs.getString("image_path"),
-            rs.getBoolean("is_available")
+            rs.getBoolean("is_available"),
+            rs.getBoolean("is_deleted")
     );
 
     @Override
@@ -58,5 +59,10 @@ public final class ProductDAOImpl implements ProductDAO {
     @Override
     public boolean updateAvailability(int productId, boolean isAvailable, String operatorId) {
         return JdbcExecutor.update(SqlConstants.PRODUCT_UPDATE_AVAILABILITY, isAvailable, operatorId, productId) > 0;
+    }
+
+    @Override
+    public boolean softDelete(int productId, String operatorId) {
+        return JdbcExecutor.update(SqlConstants.PRODUCT_SOFT_DELETE, operatorId, productId) > 0;
     }
 }

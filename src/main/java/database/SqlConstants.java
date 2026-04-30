@@ -17,13 +17,16 @@ public class SqlConstants {
 
     // --- Products ---
     public static final String PRODUCT_SELECT_ALL =
-            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available "
+            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available, is_deleted "
+            + "FROM products WHERE is_deleted = false ORDER BY id";
+    public static final String PRODUCT_SELECT_ALL_INCLUDING_DELETED =
+            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available, is_deleted "
             + "FROM products ORDER BY id";
     public static final String PRODUCT_SELECT_BY_CATEGORY =
-            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available "
-            + "FROM products WHERE category_id = ? AND is_available = true ORDER BY id";
+            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available, is_deleted "
+            + "FROM products WHERE category_id = ? AND is_available = true AND is_deleted = false ORDER BY id";
     public static final String PRODUCT_SELECT_BY_ID =
-            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available "
+            "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available, is_deleted "
             + "FROM products WHERE id = ?";
     public static final String PRODUCT_INSERT =
             "INSERT INTO products (category_id, name, price, description, "
@@ -34,12 +37,20 @@ public class SqlConstants {
             + "image_path = ?, is_available = ?, updated_by = ? WHERE id = ?";
     public static final String PRODUCT_UPDATE_AVAILABILITY =
             "UPDATE products SET is_available = ?, updated_by = ? WHERE id = ?";
+    public static final String PRODUCT_SOFT_DELETE =
+            "UPDATE products SET is_deleted = true, updated_by = ? WHERE id = ?";
 
     // --- Categories ---
-    public static final String CATEGORY_SELECT_ALL = "SELECT id, name FROM categories ORDER BY id";
-    public static final String CATEGORY_SELECT_BY_ID = "SELECT id, name FROM categories WHERE id = ?";
+    public static final String CATEGORY_SELECT_ALL =
+            "SELECT id, name, is_deleted FROM categories WHERE is_deleted = false ORDER BY id";
+    public static final String CATEGORY_SELECT_ALL_INCLUDING_DELETED =
+            "SELECT id, name, is_deleted FROM categories ORDER BY id";
+    public static final String CATEGORY_SELECT_BY_ID =
+            "SELECT id, name, is_deleted FROM categories WHERE id = ?";
     public static final String CATEGORY_INSERT = "INSERT INTO categories (name, updated_by) VALUES (?, ?)";
     public static final String CATEGORY_UPDATE = "UPDATE categories SET name = ?, updated_by = ? WHERE id = ?";
+    public static final String CATEGORY_SOFT_DELETE =
+            "UPDATE categories SET is_deleted = true, updated_by = ? WHERE id = ?";
 
     // --- Orders ---
     public static final String ORDER_INSERT = "INSERT INTO orders (table_id, status, updated_by) VALUES (?, ?, ?)";
@@ -121,6 +132,11 @@ public class SqlConstants {
             + "WHERE oi.status = ? "
             + "GROUP BY p.name "
             + "ORDER BY total_qty DESC";
+
+    // --- Audit Log ---
+    public static final String AUDIT_LOG_INSERT =
+            "INSERT INTO audit_log (table_name, record_id, action, old_value, new_value, operated_by) "
+            + "VALUES (?, ?, ?, ?, ?, ?)";
 
     private SqlConstants() {
         // インスタンス化防止

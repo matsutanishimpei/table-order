@@ -47,7 +47,7 @@ public class CartServletTest {
     public void testDoPost_AddToCart_NewItem() throws ServletException, IOException {
         // Arrange
         List<CartItem> cart = new ArrayList<>();
-        Product p = new Product(101, 1, "Matcha Latte", 500, null, null, null, true);
+        Product p = new Product(101, 1, "Matcha Latte", 500, null, null, null, true, false);
 
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("cart")).thenReturn(cart);

@@ -1,0 +1,3 @@
+-- 論理削除カラムの追加 (Soft Delete)
+ALTER TABLE products ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE categories ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;

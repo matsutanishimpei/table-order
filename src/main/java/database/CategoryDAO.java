@@ -39,4 +39,14 @@ public interface CategoryDAO {
      * @return 更新に成功した場合は true
      */
     boolean update(model.Category category, String operatorId);
+
+    /**
+     * カテゴリを論理削除します。
+     * レコードは物理的に削除されず、is_deleted フラグが true に設定されます。
+     *
+     * @param id カテゴリID
+     * @param operatorId 操作者のユーザーID
+     * @return 削除に成功した場合は true
+     */
+    boolean softDelete(int id, String operatorId);
 }

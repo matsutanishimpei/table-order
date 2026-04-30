@@ -74,12 +74,14 @@ public class CategoryAdminServlet extends BaseServlet {
         int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
 
         try {
-            if ("update".equals(action)) {
+            if ("delete".equals(action) && id > 0) {
+                categoryService.delete(id, user.id());
+            } else if ("update".equals(action)) {
                 if (id <= 0) {
                     response.sendRedirect(AppConstants.REDIRECT_ADMIN_CATEGORY);
                     return;
                 }
-                Category c = new Category(id, name); // Service 内でトリムとバリデーションが行われる
+                Category c = new Category(id, name, false); // Service 内でトリムとバリデーションが行われる
                 categoryService.update(c, user.id());
             } else {
                 // 新規追加
@@ -96,7 +98,7 @@ public class CategoryAdminServlet extends BaseServlet {
             int id, String name, String action) throws ServletException, IOException {
         request.setAttribute(AppConstants.ATTR_ERROR, message);
         if ("update".equals(action) && id > 0) {
-            Category c = new Category(id, name);
+            Category c = new Category(id, name, false);
             request.setAttribute(AppConstants.ATTR_CATEGORY, c);
             request.getRequestDispatcher(AppConstants.VIEW_ADMIN_CATEGORY_EDIT).forward(request, response);
         } else {

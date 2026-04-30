@@ -19,7 +19,8 @@ CREATE TABLE users (
 -- 3. カテゴリ情報 (categories)
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- 4. 商品情報 (products)
@@ -32,6 +33,7 @@ CREATE TABLE products (
     allergy_info TEXT,
     image_path VARCHAR(255),
     is_available BOOLEAN DEFAULT TRUE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
@@ -56,4 +58,16 @@ CREATE TABLE order_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- 7. 監査ログ (audit_log)
+CREATE TABLE audit_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    table_name VARCHAR(50) NOT NULL,
+    record_id VARCHAR(50) NOT NULL,
+    action VARCHAR(20) NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
+    operated_by VARCHAR(20) NOT NULL,
+    operated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

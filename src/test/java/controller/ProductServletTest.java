@@ -44,7 +44,7 @@ public class ProductServletTest {
     public void testDoGet_Success() throws ServletException, IOException {
         // Arrange
         int productId = 101;
-        Product p = new Product(productId, 2, "Test Product", 1000, null, null, null, true);
+        Product p = new Product(productId, 2, "Test Product", 1000, null, null, null, true, false);
 
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
         when(request.getParameter("categoryId")).thenReturn("2");

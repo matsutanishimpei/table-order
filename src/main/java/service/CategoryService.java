@@ -42,4 +42,14 @@ public interface CategoryService {
      * @throws exception.BusinessException バリデーションエラーが発生した場合
      */
     boolean update(model.Category category, String operatorId);
+
+    /**
+     * カテゴリを論理削除します。
+     * 物理削除ではなく is_deleted フラグを true に設定し、データの整合性を保ちます。
+     *
+     * @param id カテゴリID
+     * @param operatorId 操作者のユーザーID
+     * @return 削除に成功した場合は true
+     */
+    boolean delete(int id, String operatorId);
 }

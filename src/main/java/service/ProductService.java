@@ -61,4 +61,14 @@ public interface ProductService {
      * @return 更新に成功した場合は true
      */
     boolean updateAvailability(int productId, boolean isAvailable, String operatorId);
+
+    /**
+     * 商品を論理削除します。
+     * 物理削除ではなく is_deleted フラグを true に設定し、データの整合性を保ちます。
+     *
+     * @param productId 商品ID
+     * @param operatorId 操作者のユーザーID
+     * @return 削除に成功した場合は true
+     */
+    boolean delete(int productId, String operatorId);
 }

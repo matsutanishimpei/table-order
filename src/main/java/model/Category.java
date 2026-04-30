@@ -7,10 +7,12 @@ import java.io.Serializable;
  *
  * @param id カテゴリーID
  * @param name カテゴリー名
+ * @param isDeleted 論理削除フラグ
  */
 public record Category(
         int id,
-        String name
+        String name,
+        boolean isDeleted
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -18,6 +20,6 @@ public record Category(
      * 初期値付きの引数なしコンストラクタ
      */
     public Category() {
-        this(0, null);
+        this(0, null, false);
     }
 }

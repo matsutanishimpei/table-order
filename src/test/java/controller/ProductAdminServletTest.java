@@ -102,9 +102,10 @@ public class ProductAdminServletTest {
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
         int productId = 1;
-        Product existingProduct = new Product(productId, 2, "Old Name", 1000, null, null, "v1/old_image", true);
+        Product existingProduct = new Product(productId, 2, "Old Name", 1000, null, null, "v1/old_image", true, false);
 
         when(request.getParameter("id")).thenReturn(String.valueOf(productId));
+        when(request.getParameter("action")).thenReturn(null);
         when(request.getParameter("name")).thenReturn("New Burger");
         when(request.getParameter("categoryId")).thenReturn("2");
         when(request.getParameter("price")).thenReturn("1200");
@@ -150,7 +151,7 @@ public class ProductAdminServletTest {
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("edit");
         when(request.getParameter("id")).thenReturn("1");
-        when(productService.findById(1)).thenReturn(Optional.of(new Product(1, 1, "p", 100, null, null, null, true)));
+        when(productService.findById(1)).thenReturn(Optional.of(new Product(1, 1, "p", 100, null, null, null, true, false)));
         when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCT_EDIT)).thenReturn(requestDispatcher);
 
         servlet.doGet(request, response);
@@ -179,6 +180,7 @@ public class ProductAdminServletTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0");
+        when(request.getParameter("action")).thenReturn(null);
         when(request.getParameter("name")).thenReturn("New");
         when(request.getParameter("categoryId")).thenReturn("1");
         when(request.getParameter("price")).thenReturn("1000");
@@ -199,6 +201,7 @@ public class ProductAdminServletTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0"); // Insert mode
+        when(request.getParameter("action")).thenReturn(null);
         when(request.getParameter("name")).thenReturn("New");
         when(request.getParameter("categoryId")).thenReturn("1");
         when(request.getParameter("price")).thenReturn("1000");
@@ -217,10 +220,25 @@ public class ProductAdminServletTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("999");
+        when(request.getParameter("action")).thenReturn(null);
         when(productService.findById(999)).thenReturn(Optional.empty());
 
         servlet.doPost(request, response);
 
         verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_PRODUCT);
+    }
+
+    @Test
+    public void testDoPost_Delete_Success() throws ServletException, IOException {
+        User admin = new User("admin", "p", 1, null);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        when(request.getParameter("id")).thenReturn("5");
+        when(request.getParameter("action")).thenReturn("delete");
+
+        servlet.doPost(request, response);
+
+        verify(productService).delete(5, "admin");
+        verify(response).sendRedirect(contains("success"));
     }
 }
