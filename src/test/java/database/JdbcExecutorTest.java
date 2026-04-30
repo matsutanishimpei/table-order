@@ -158,7 +158,7 @@ class JdbcExecutorTest {
         Connection con = mock(Connection.class);
         when(con.prepareStatement(anyString())).thenThrow(new SQLException("Batch update failed"));
         
-        List<Object[]> params = Arrays.asList(new Object[]{"param1"});
+        List<Object[]> params = java.util.Collections.singletonList(new Object[]{"param1"});
         assertThrows(DatabaseException.class, () -> {
             JdbcExecutor.batchUpdate(con, "UPDATE test SET col = ?", params);
         });
