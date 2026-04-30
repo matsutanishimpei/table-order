@@ -25,7 +25,7 @@ public class LoggingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (!(request instanceof HttpServletRequest req)) {
+        if (!(request instanceof HttpServletRequest req) || !(response instanceof HttpServletResponse res)) {
             chain.doFilter(request, response);
             return;
         }
@@ -45,7 +45,7 @@ public class LoggingFilter implements Filter {
             chain.doFilter(request, response);
             
             long duration = System.currentTimeMillis() - startTime;
-            int status = ((HttpServletResponse) response).getStatus();
+            int status = res.getStatus();
             logger.info("Request Finished: {} {} -> status={}, duration={}ms", method, uri, status, duration);
             
         } finally {
