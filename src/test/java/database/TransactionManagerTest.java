@@ -75,4 +75,15 @@ class TransactionManagerTest {
             verify(con).rollback();
         }
     }
+
+    @Test
+    void testExecute_ConnectionFailure() throws SQLException {
+        try (var mockedDb = org.mockito.Mockito.mockStatic(DBManager.class)) {
+            mockedDb.when(DBManager::getConnection).thenThrow(new SQLException("connection failed"));
+
+            assertThrows(DatabaseException.class, () -> {
+                TransactionManager.execute(con -> "ok");
+            });
+        }
+    }
 }
