@@ -85,7 +85,7 @@
                         <div class="aspect-[4/3] bg-slate-100 flex items-center justify-center text-5xl group-hover:scale-105 transition-transform duration-700 overflow-hidden relative">
                             <c:choose>
                                 <c:when test="${not empty p.imagePath}">
-                                    <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).getImagePath(), 400, 300) %>" 
+                                    <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).imagePath(), 400, 300) %>" 
                                          alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
                                 </c:when>
                                 <c:otherwise>

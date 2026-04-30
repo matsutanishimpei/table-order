@@ -21,7 +21,7 @@
             <section class="relative aspect-square rounded-[3rem] overflow-hidden bg-white shadow-2xl shadow-slate-200 group">
                 <c:choose>
                     <c:when test="${not empty product.imagePath}">
-                        <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)request.getAttribute("product")).getImagePath(), 800, 600) %>" 
+                        <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)request.getAttribute("product")).imagePath(), 800, 600) %>" 
                              alt="${product.name}" class="w-full h-full object-cover relative z-10" loading="lazy">
                     </c:when>
                     <c:otherwise>

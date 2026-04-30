@@ -63,7 +63,7 @@
                                     <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden mx-auto flex items-center justify-center text-2xl group-hover:scale-105 transition-transform duration-500">
                                         <c:choose>
                                             <c:when test="${not empty p.imagePath}">
-                                                <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).getImagePath(), 200, 200) %>" 
+                                                <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)pageContext.getAttribute("p")).imagePath(), 200, 200) %>" 
                                                      alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
                                             </c:when>
                                             <c:otherwise>🍲</c:otherwise>
