@@ -78,7 +78,7 @@ public class CartServlet extends BaseServlet {
                 );
                 cart.set(index, newItem);
             } else {
-                productService.findById(productId).ifPresent(p -> {
+                productService.findById(productId).filter(p -> !p.isDeleted()).ifPresent(p -> {
                     cart.add(new CartItem(p.id(), p.name(), p.price(), quantity));
                 });
             }

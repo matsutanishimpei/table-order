@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
                 // ① 商品の販売状態（is_available）をチェック
                 for (CartItem item : cartItems) {
                     java.util.Optional<model.Product> p = productDAO.findById(item.productId());
-                    if (p.isEmpty() || !p.get().isAvailable()) {
+                    if (p.isEmpty() || !p.get().isAvailable() || p.get().isDeleted()) {
                         log.warn("注文を中断しました（商品が利用不可能）: productId={}, name={}", 
                                 item.productId(), item.name());
                         return false;
