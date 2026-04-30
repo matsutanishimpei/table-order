@@ -73,26 +73,26 @@
                                 </td>
                                 <td class="px-6 py-8">
                                     <c:choose>
-                                        <c:when test="${u.admin}">
+                                        <c:when test="${u.isAdmin}">
                                             <span class="px-3 py-1 rounded-lg bg-red-50 text-[10px] font-black text-red-500 uppercase tracking-widest leading-none border border-red-100">Administrator</span>
                                         </c:when>
-                                        <c:when test="${u.kitchen}">
+                                        <c:when test="${u.isKitchen}">
                                             <span class="px-3 py-1 rounded-lg bg-amber-50 text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none border border-amber-100">Kitchen</span>
                                         </c:when>
-                                        <c:when test="${u.hall}">
+                                        <c:when test="${u.isHall}">
                                             <span class="px-3 py-1 rounded-lg bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none border border-emerald-100">Hall Staff</span>
                                         </c:when>
-                                        <c:when test="${u.cashier}">
+                                        <c:when test="${u.isCashier}">
                                             <span class="px-3 py-1 rounded-lg bg-indigo-50 text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none border border-indigo-100">Cashier</span>
                                         </c:when>
-                                        <c:when test="${u.tableTerminal}">
+                                        <c:when test="${u.isTableTerminal}">
                                             <span class="px-3 py-1 rounded-lg bg-slate-100 text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none border border-slate-200">Table Terminal</span>
                                         </c:when>
                                     </c:choose>
                                 </td>
                                 <td class="px-6 py-8">
                                     <c:choose>
-                                        <c:when test="${u.tableTerminal && not empty u.tableId}">
+                                        <c:when test="${u.isTableTerminal && not empty u.tableId}">
                                             <div class="flex items-center gap-2">
                                                 <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
                                                 <span class="text-xs font-black text-slate-600 uppercase italic">Table #${u.tableId}</span>
