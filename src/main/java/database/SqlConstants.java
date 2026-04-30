@@ -6,13 +6,14 @@ package database;
 public class SqlConstants {
 
     // --- Users ---
-    public static final String USER_SELECT_ALL = "SELECT id, role, table_id FROM users ORDER BY id";
-    public static final String USER_SELECT_BY_ID = "SELECT id, role, table_id FROM users WHERE id = ?";
-    public static final String USER_SELECT_LOGIN = "SELECT id, password, role, table_id FROM users WHERE id = ?";
+    public static final String USER_SELECT_ALL = "SELECT id, role, table_id, is_deleted FROM users WHERE is_deleted = false ORDER BY id";
+    public static final String USER_SELECT_BY_ID = "SELECT id, role, table_id, is_deleted FROM users WHERE id = ?";
+    public static final String USER_SELECT_LOGIN = "SELECT id, password, role, table_id, is_deleted FROM users WHERE id = ? AND is_deleted = false";
     public static final String USER_INSERT =
             "INSERT INTO users (id, password, role, table_id, updated_by) VALUES (?, ?, ?, ?, ?)";
     public static final String USER_UPDATE = "UPDATE users SET role = ?, table_id = ?, updated_by = ? WHERE id = ?";
     public static final String USER_UPDATE_PASSWORD = "UPDATE users SET password = ?, updated_by = ? WHERE id = ?";
+    public static final String USER_SOFT_DELETE = "UPDATE users SET is_deleted = true, updated_by = ? WHERE id = ?";
     public static final String USER_DELETE = "DELETE FROM users WHERE id = ?";
 
     // --- Products ---
@@ -103,6 +104,8 @@ public class SqlConstants {
             + "JOIN orders o ON oi.order_id = o.id "
             + "WHERE o.table_id = ? AND oi.status < ?";
 
+    public static final String TABLE_SELECT_ALL =
+            "SELECT id, table_name, is_deleted FROM shop_tables WHERE is_deleted = false ORDER BY id";
     public static final String TABLE_SELECT_ALL_STATUS =
             "SELECT st.id, st.table_name, MIN(oi.status) as min_status, "
             + "COUNT(oi.id) as item_count, SUM(oi.quantity * oi.unit_price) as total_amt, "
@@ -110,8 +113,11 @@ public class SqlConstants {
             + "FROM shop_tables st "
             + "LEFT JOIN orders o ON st.id = o.table_id AND o.status < ? "
             + "LEFT JOIN order_items oi ON o.id = oi.order_id AND oi.status < ? "
+            + "WHERE st.is_deleted = false "
             + "GROUP BY st.id, st.table_name "
             + "ORDER BY st.id";
+    public static final String TABLE_INSERT = "INSERT INTO shop_tables (table_name, updated_by) VALUES (?, ?)";
+    public static final String TABLE_SOFT_DELETE = "UPDATE shop_tables SET is_deleted = true, updated_by = ? WHERE id = ?";
 
     // --- Sales ---
     public static final String SALES_SELECT_TOTAL =

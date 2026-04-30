@@ -2,9 +2,7 @@ package service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import database.AuditLogDAO;
 import database.CategoryDAO;
-import database.impl.AuditLogDAOImpl;
 import database.impl.CategoryDAOImpl;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
@@ -17,24 +15,18 @@ import service.CategoryService;
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryDAO categoryDAO;
-    private final AuditLogDAO auditLogDAO;
+    private final service.AuditLogService auditLogService;
 
     // プロダクション用コンストラクタ
     public CategoryServiceImpl() {
-        this(new CategoryDAOImpl(), new AuditLogDAOImpl());
+        this(new CategoryDAOImpl(), service.ServiceFactory.getAuditLogService());
     }
 
-    // テスト・DI用コンストラクタ（後方互換性）
+    // テスト・DI用コンストラクタ
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public CategoryServiceImpl(CategoryDAO categoryDAO) {
-        this(categoryDAO, new AuditLogDAOImpl());
-    }
-
-    // テスト・DI用コンストラクタ（AuditLogDAO 含む）
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public CategoryServiceImpl(CategoryDAO categoryDAO, AuditLogDAO auditLogDAO) {
+    public CategoryServiceImpl(CategoryDAO categoryDAO, service.AuditLogService auditLogService) {
         this.categoryDAO = categoryDAO;
-        this.auditLogDAO = auditLogDAO;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -47,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
         validateName(name);
         boolean success = categoryDAO.insert(name != null ? name.trim() : null, operatorId);
         if (success) {
-            auditLogDAO.log("categories", "-", "INSERT", null, name, operatorId);
+            auditLogService.log("categories", "-", "INSERT", null, name, operatorId);
         }
         return success;
     }
@@ -67,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         boolean success = categoryDAO.update(category, operatorId);
         if (success) {
-            auditLogDAO.log("categories", String.valueOf(category.id()), "UPDATE",
+            auditLogService.log("categories", String.valueOf(category.id()), "UPDATE",
                     oldValue, category.name(), operatorId);
         }
         return success;
@@ -82,7 +74,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         boolean success = categoryDAO.softDelete(id, operatorId);
         if (success) {
-            auditLogDAO.log("categories", String.valueOf(id), "SOFT_DELETE",
+            auditLogService.log("categories", String.valueOf(id), "SOFT_DELETE",
                     oldValue, null, operatorId);
             log.info("カテゴリを論理削除しました: id={}, operatorId={}", id, operatorId);
         }

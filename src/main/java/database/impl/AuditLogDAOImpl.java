@@ -23,4 +23,16 @@ public final class AuditLogDAOImpl implements AuditLogDAO {
                     tableName, recordId, action, e);
         }
     }
+
+    @Override
+    public void log(java.sql.Connection con, String tableName, String recordId, String action,
+                    String oldValue, String newValue, String operatorId) {
+        try {
+            JdbcExecutor.update(con, SqlConstants.AUDIT_LOG_INSERT,
+                    tableName, recordId, action, oldValue, newValue, operatorId);
+        } catch (Exception e) {
+            log.error("トランザクション内での監査ログの記録に失敗しました: table={}, recordId={}, action={}",
+                    tableName, recordId, action, e);
+        }
+    }
 }

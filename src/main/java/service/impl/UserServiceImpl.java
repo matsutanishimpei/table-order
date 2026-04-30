@@ -15,17 +15,20 @@ import service.UserService;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
+    private final service.AuditLogService auditLogService;
 
     // プロダクション用コンストラクタ
     public UserServiceImpl() {
-        this(new UserDAOImpl());
+        this(new UserDAOImpl(), service.ServiceFactory.getAuditLogService());
     }
 
     // テスト・DI用コンストラクタ
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public UserServiceImpl(UserDAO userDAO) {
+    public UserServiceImpl(UserDAO userDAO, service.AuditLogService auditLogService) {
         this.userDAO = userDAO;
+        this.auditLogService = auditLogService;
     }
+
 
     @Override
     public List<User> findAll() {
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
             boolean success = userDAO.insert(user, operatorId);
             if (success) {
+                auditLogService.log("users", user.id(), "INSERT", null, "role=" + user.role(), operatorId);
                 log.info("ユーザー登録成功: id={}, operatorId={}", user.id(), operatorId);
             } else {
                 log.warn("ユーザー登録失敗: id={}", user.id());
@@ -73,11 +77,14 @@ public class UserServiceImpl implements UserService {
                 .throwOnErrors();
 
         try {
+            String oldRole = userDAO.findById(user.id()).map(u -> String.valueOf(u.role())).orElse("?");
             boolean success = userDAO.update(user, operatorId);
             if (success && newPassword != null && !newPassword.isEmpty()) {
                 success = userDAO.updatePassword(user.id(), newPassword, operatorId);
+                auditLogService.log("users", user.id(), "UPDATE_PASSWORD", null, "******", operatorId);
             }
             if (success) {
+                auditLogService.log("users", user.id(), "UPDATE", "role=" + oldRole, "role=" + user.role(), operatorId);
                 log.info("ユーザー更新成功: id={}, operatorId={}", user.id(), operatorId);
             }
             return success;
@@ -88,15 +95,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean delete(String id) {
+    public boolean delete(String id, String operatorId) {
         util.Validator.create()
                 .required(id, "ユーザーIDは必須です。")
                 .throwOnErrors();
 
         try {
-            boolean success = userDAO.delete(id);
+            boolean success = userDAO.softDelete(id, operatorId);
             if (success) {
-                log.info("ユーザー削除成功: id={}", id);
+                auditLogService.log("users", id, "SOFT_DELETE", null, null, operatorId);
+                log.info("ユーザー削除成功: id={}, operatorId={}", id, operatorId);
             }
             return success;
         } catch (Exception e) {

@@ -33,4 +33,22 @@ public interface TableService {
      * @return テーブルステータス（表示用ビュー）のリスト
      */
     List<TableStatusView> findAllTableStatus();
+
+    /**
+     * 新しい座席を登録します。
+     *
+     * @param tableName 座席名
+     * @param operatorId 操作者ID
+     * @return 成功時は true
+     */
+    boolean register(String tableName, String operatorId);
+
+    /**
+     * 座席を論理削除します。
+     *
+     * @param tableId 座席ID
+     * @param operatorId 操作者ID
+     * @return 成功時は true
+     */
+    boolean softDelete(int tableId, String operatorId);
 }

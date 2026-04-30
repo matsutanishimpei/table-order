@@ -2,9 +2,7 @@ package service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import database.AuditLogDAO;
 import database.ProductDAO;
-import database.impl.AuditLogDAOImpl;
 import database.impl.ProductDAOImpl;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
@@ -20,25 +18,19 @@ import util.AppConstants;
 public class ProductServiceImpl implements ProductService {
     private final ProductDAO productDAO;
     private final database.CategoryDAO categoryDAO;
-    private final AuditLogDAO auditLogDAO;
+    private final service.AuditLogService auditLogService;
 
     // プロダクション用コンストラクタ
     public ProductServiceImpl() {
-        this(new ProductDAOImpl(), new database.impl.CategoryDAOImpl(), new AuditLogDAOImpl());
+        this(new ProductDAOImpl(), new database.impl.CategoryDAOImpl(), service.ServiceFactory.getAuditLogService());
     }
 
     // テスト・DI用コンストラクタ
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public ProductServiceImpl(ProductDAO productDAO, database.CategoryDAO categoryDAO) {
-        this(productDAO, categoryDAO, new AuditLogDAOImpl());
-    }
-
-    // テスト・DI用コンストラクタ（AuditLogDAO 含む）
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public ProductServiceImpl(ProductDAO productDAO, database.CategoryDAO categoryDAO, AuditLogDAO auditLogDAO) {
+    public ProductServiceImpl(ProductDAO productDAO, database.CategoryDAO categoryDAO, service.AuditLogService auditLogService) {
         this.productDAO = productDAO;
         this.categoryDAO = categoryDAO;
-        this.auditLogDAO = auditLogDAO;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -61,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
         validate(p);
         boolean success = productDAO.insert(p, operatorId);
         if (success) {
-            auditLogDAO.log("products", String.valueOf(p.id()), "INSERT",
+            auditLogService.log("products", String.valueOf(p.id()), "INSERT",
                     null, p.name(), operatorId);
         }
         return success;
@@ -78,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         boolean success = productDAO.update(p, operatorId);
         if (success) {
             String newValue = p.name() + " (price=" + p.price() + ")";
-            auditLogDAO.log("products", String.valueOf(p.id()), "UPDATE",
+            auditLogService.log("products", String.valueOf(p.id()), "UPDATE",
                     oldValue, newValue, operatorId);
         }
         return success;
@@ -88,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
     public boolean updateAvailability(int productId, boolean isAvailable, String operatorId) {
         boolean success = productDAO.updateAvailability(productId, isAvailable, operatorId);
         if (success) {
-            auditLogDAO.log("products", String.valueOf(productId), "UPDATE_AVAILABILITY",
+            auditLogService.log("products", String.valueOf(productId), "UPDATE_AVAILABILITY",
                     null, String.valueOf(isAvailable), operatorId);
         }
         return success;
@@ -103,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
 
         boolean success = productDAO.softDelete(productId, operatorId);
         if (success) {
-            auditLogDAO.log("products", String.valueOf(productId), "SOFT_DELETE",
+            auditLogService.log("products", String.valueOf(productId), "SOFT_DELETE",
                     oldValue, null, operatorId);
             log.info("商品を論理削除しました: id={}, operatorId={}", productId, operatorId);
         }

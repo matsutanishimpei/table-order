@@ -14,7 +14,8 @@ public record User(
         String id,
         String password,
         int role,
-        Integer tableId
+        Integer tableId,
+        boolean isDeleted
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -22,7 +23,7 @@ public record User(
      * 初期値付きの引数なしコンストラクタ
      */
     public User() {
-        this(null, null, 0, null);
+        this(null, null, 0, null, false);
     }
 
     /**

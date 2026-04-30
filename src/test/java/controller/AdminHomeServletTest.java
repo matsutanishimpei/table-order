@@ -43,7 +43,7 @@ public class AdminHomeServletTest {
     @Test
     public void testDoGet_DisplaysAdminHome_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null); // role 1 = ADMIN
+        User adminUser = new User("admin", "pass", 1, null, false); // role 1 = ADMIN
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
         when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_HOME)).thenReturn(requestDispatcher);
@@ -58,7 +58,7 @@ public class AdminHomeServletTest {
     @Test
     public void testDoGet_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 

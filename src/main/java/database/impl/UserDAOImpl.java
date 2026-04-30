@@ -23,7 +23,8 @@ public final class UserDAOImpl implements UserDAO {
             rs.getString("id"),
             null, // パスワードは基本モデルには含めない
             rs.getInt("role"),
-            (Integer) rs.getObject("table_id")
+            (Integer) rs.getObject("table_id"),
+            rs.getBoolean("is_deleted")
     );
 
     @Override
@@ -43,7 +44,8 @@ public final class UserDAOImpl implements UserDAO {
                         rs.getString("id"),
                         storedHash,
                         rs.getInt("role"),
-                        (Integer) rs.getObject("table_id")
+                        (Integer) rs.getObject("table_id"),
+                        rs.getBoolean("is_deleted")
                 );
             }
             return null;
@@ -82,6 +84,11 @@ public final class UserDAOImpl implements UserDAO {
         String hashedPassword = PasswordUtil.hashBcrypt(newPassword, pepper);
         return JdbcExecutor.update(SqlConstants.USER_UPDATE_PASSWORD,
                 hashedPassword, operatorId, id) > 0;
+    }
+
+    @Override
+    public boolean softDelete(String id, String operatorId) {
+        return JdbcExecutor.update(SqlConstants.USER_SOFT_DELETE, operatorId, id) > 0;
     }
 
     @Override

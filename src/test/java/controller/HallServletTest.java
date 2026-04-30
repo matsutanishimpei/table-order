@@ -65,7 +65,7 @@ public class HallServletTest {
     @Test
     public void testDoPost_ServeAction_Success() throws ServletException, IOException {
         // Arrange
-        User hallUser = new User("h1", "pass", 3, null); // role 3 = HALL
+        User hallUser = new User("h1", "pass", 3, null, false); // role 3 = HALL
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(hallUser);
 
@@ -84,7 +84,7 @@ public class HallServletTest {
     @Test
     public void testDoPost_AdminCanPerformAction() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -103,7 +103,7 @@ public class HallServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -118,7 +118,7 @@ public class HallServletTest {
     @Test
     public void testDoPost_InvalidId() throws ServletException, IOException {
         // Arrange
-        User hallUser = new User("h1", "pass", 3, null);
+        User hallUser = new User("h1", "pass", 3, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(hallUser);
         when(request.getParameter("itemId")).thenReturn("invalid");

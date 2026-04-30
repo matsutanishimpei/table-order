@@ -81,4 +81,14 @@ public final class TableDAOImpl implements TableDAO {
         return JdbcExecutor.query(SqlConstants.TABLE_SELECT_ALL_STATUS, statusMapper,
                 OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID);
     }
+
+    @Override
+    public boolean insert(String tableName, String operatorId) {
+        return JdbcExecutor.update(SqlConstants.TABLE_INSERT, tableName, operatorId) > 0;
+    }
+
+    @Override
+    public boolean softDelete(int tableId, String operatorId) {
+        return JdbcExecutor.update(SqlConstants.TABLE_SOFT_DELETE, operatorId, tableId) > 0;
+    }
 }

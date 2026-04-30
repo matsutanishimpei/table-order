@@ -50,8 +50,8 @@ class OrderServletTest {
     @DisplayName("注文確定成功: カートがクリアされメニュー画面へリダイレクトされること")
     void doPost_Success() throws ServletException, IOException {
         // Arrange
-        // User record: id, password, role, tableId
-        User user = new User("table1", "pass", 10, 1);
+        // User record: id, password, role, tableId, isDeleted
+        User user = new User("table1", "pass", 10, 1, false);
         List<CartItem> cart = new ArrayList<>();
         cart.add(new CartItem(1, "Product 1", 100, 2));
 
@@ -82,7 +82,7 @@ class OrderServletTest {
     @Test
     @DisplayName("注文確定失敗: テーブルID未設定時はエラーメッセージを表示してフォワードされること")
     void doPost_NoTableId() throws ServletException, IOException {
-        User user = new User("admin", "pass", 1, null); // tableId = null
+        User user = new User("admin", "pass", 1, null, false); // tableId = null
         List<CartItem> cart = new ArrayList<>();
         cart.add(new CartItem(1, "Product 1", 100, 2));
 
@@ -100,7 +100,7 @@ class OrderServletTest {
     @Test
     @DisplayName("注文確定失敗: サービス層でエラーが発生した場合はエラーメッセージ付きでリダイレクトされること")
     void doPost_ServiceFailure() throws ServletException, IOException {
-        User user = new User("table1", "pass", 10, 1);
+        User user = new User("table1", "pass", 10, 1, false);
         List<CartItem> cart = new ArrayList<>();
         cart.add(new CartItem(1, "Product 1", 100, 2));
 
@@ -116,7 +116,7 @@ class OrderServletTest {
     @Test
     @DisplayName("注文確定失敗: カートが空の場合はメニューへリダイレクトされること")
     void doPost_EmptyCart() throws ServletException, IOException {
-        User user = new User("table1", "pass", 10, 1);
+        User user = new User("table1", "pass", 10, 1, false);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(new ArrayList<>());
 
@@ -128,7 +128,7 @@ class OrderServletTest {
     @Test
     @DisplayName("注文確定失敗: カートがセッションに存在しない場合はメニューへリダイレクトされること")
     void doPost_NullCart() throws ServletException, IOException {
-        User user = new User("table1", "pass", 10, 1);
+        User user = new User("table1", "pass", 10, 1, false);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(session.getAttribute(AppConstants.ATTR_CART)).thenReturn(null);
 

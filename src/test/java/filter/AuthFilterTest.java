@@ -69,7 +69,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("ログイン済み(GET): CSRFトークンがリクエストにセットされ通過すること")
     void doFilter_LoggedIn_SetsCsrfToken() throws IOException, ServletException {
-        User user = new User("admin", "pass", 1, null);
+        User user = new User("admin", "pass", 1, null, false);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Admin/Home");
@@ -85,7 +85,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("POSTリクエスト: 有効なCSRFトークンがあれば通過し、トークンが更新されること")
     void doFilter_PostValidCsrf_Passes() throws IOException, ServletException {
-        User user = new User("admin", "pass", 1, null);
+        User user = new User("admin", "pass", 1, null, false);
         String token = "valid-token";
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
@@ -104,7 +104,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("POSTリクエスト: 不正なCSRFトークンの場合は400エラーになること")
     void doFilter_PostInvalidCsrf_Returns400() throws IOException, ServletException {
-        User user = new User("admin", "pass", 1, null);
+        User user = new User("admin", "pass", 1, null, false);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(session.getAttribute(AppConstants.ATTR_CSRF_TOKEN)).thenReturn("session-token");
@@ -120,7 +120,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: 管理者パスに一般ユーザーがアクセスした場合は403エラーになること")
     void doFilter_AdminPath_NoPermission() throws IOException, ServletException {
-        User user = new User("kitchen1", "pass", 2, null); // Kitchen role
+        User user = new User("kitchen1", "pass", 2, null, false); // Kitchen role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Admin/Users");
@@ -135,7 +135,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: キッチンパスにキッチン担当がアクセスした場合は通過すること")
     void doFilter_KitchenPath_Success() throws IOException, ServletException {
-        User user = new User("k1", "pass", 2, null); // Kitchen role
+        User user = new User("k1", "pass", 2, null, false); // Kitchen role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Kitchen/Orders");
@@ -149,7 +149,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: ホールパスにホール担当がアクセスした場合は通過すること")
     void doFilter_HallPath_Success() throws IOException, ServletException {
-        User user = new User("h1", "pass", 3, null); // Hall role
+        User user = new User("h1", "pass", 3, null, false); // Hall role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Hall/Home");
@@ -163,7 +163,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: レジパスにレジ担当がアクセスした場合は通過すること")
     void doFilter_CashierPath_Success() throws IOException, ServletException {
-        User user = new User("c1", "pass", 4, null); // Cashier role
+        User user = new User("c1", "pass", 4, null, false); // Cashier role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Cashier/Home");
@@ -177,7 +177,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: キッチン担当がホールパスにアクセスした場合は403エラーになること")
     void doFilter_HallPath_Forbidden() throws IOException, ServletException {
-        User user = new User("k1", "pass", 2, null); // Kitchen role
+        User user = new User("k1", "pass", 2, null, false); // Kitchen role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Hall/Home");
@@ -192,7 +192,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: キッチン担当がレジパスにアクセスした場合は403エラーになること")
     void doFilter_CashierPath_Forbidden() throws IOException, ServletException {
-        User user = new User("k1", "pass", 2, null); // Kitchen role
+        User user = new User("k1", "pass", 2, null, false); // Kitchen role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Cashier/Home");
@@ -207,7 +207,7 @@ class AuthFilterTest {
     @Test
     @DisplayName("認可チェック: 管理者がキッチンパスにアクセスした場合は通過すること")
     void doFilter_KitchenPath_AdminSuccess() throws IOException, ServletException {
-        User user = new User("admin", "pass", 1, null); // Admin role
+        User user = new User("admin", "pass", 1, null, false); // Admin role
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         when(request.getServletPath()).thenReturn("/Kitchen/Orders");

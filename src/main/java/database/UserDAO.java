@@ -60,7 +60,16 @@ public interface UserDAO {
     boolean updatePassword(String id, String newPassword, String operatorId);
 
     /**
-     * ユーザーを削除します。
+     * ユーザーを論理削除します。
+     *
+     * @param id ユーザーID
+     * @param operatorId 操作者のユーザーID
+     * @return 削除成功時は true
+     */
+    boolean softDelete(String id, String operatorId);
+
+    /**
+     * ユーザーを物理削除します（主にテスト用）。
      *
      * @param id ユーザーID
      * @return 削除成功時は true

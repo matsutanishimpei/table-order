@@ -8,32 +8,32 @@ class ModelTest {
 
     @Test
     void testUserRoles() {
-        User admin = new User("a", "p", UserConstants.ROLE_ADMIN, null);
+        User admin = new User("a", "p", UserConstants.ROLE_ADMIN, null, false);
         assertTrue(admin.isAdmin());
         assertTrue(admin.isKitchen());
         assertTrue(admin.isHall());
         assertTrue(admin.isCashier());
         assertFalse(admin.isTableTerminal());
 
-        User kitchen = new User("k", "p", UserConstants.ROLE_KITCHEN, null);
+        User kitchen = new User("k", "p", UserConstants.ROLE_KITCHEN, null, false);
         assertFalse(kitchen.isAdmin());
         assertTrue(kitchen.isKitchen());
         assertFalse(kitchen.isHall());
         assertFalse(kitchen.isCashier());
 
-        User hall = new User("h", "p", UserConstants.ROLE_HALL, null);
+        User hall = new User("h", "p", UserConstants.ROLE_HALL, null, false);
         assertFalse(hall.isAdmin());
         assertFalse(hall.isKitchen());
         assertTrue(hall.isHall());
         assertFalse(hall.isCashier());
 
-        User cashier = new User("c", "p", UserConstants.ROLE_CASHIER, null);
+        User cashier = new User("c", "p", UserConstants.ROLE_CASHIER, null, false);
         assertFalse(cashier.isAdmin());
         assertFalse(cashier.isKitchen());
         assertFalse(cashier.isHall());
         assertTrue(cashier.isCashier());
 
-        User table = new User("t", "p", UserConstants.ROLE_TABLE_TERMINAL, 1);
+        User table = new User("t", "p", UserConstants.ROLE_TABLE_TERMINAL, 1, false);
         assertFalse(table.isAdmin());
         assertFalse(table.isKitchen());
         assertFalse(table.isHall());
