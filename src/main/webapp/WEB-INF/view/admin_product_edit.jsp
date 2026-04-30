@@ -129,7 +129,7 @@
                             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic leading-none">Catalog Availability Status</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer group">
-                            <input type="checkbox" name="isAvailable" ${product.available ? 'checked' : ''} class="sr-only peer">
+                            <input type="checkbox" name="isAvailable" ${product.isAvailable ? 'checked' : ''} class="sr-only peer">
                             <div class="w-14 h-8 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
                         </label>
                     </div>

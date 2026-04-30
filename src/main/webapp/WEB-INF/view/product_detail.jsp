@@ -31,7 +31,7 @@
                     </c:otherwise>
                 </c:choose>
                 
-                <c:if test="${!product.available}">
+                <c:if test="${!product.isAvailable}">
                     <div class="absolute inset-0 bg-slate-950/70 backdrop-blur-md flex items-center justify-center z-20">
                         <span class="text-xl font-black text-white border-2 border-white/20 px-10 py-4 rounded-full tracking-widest">売り切れ</span>
                     </div>
@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-6 text-base tracking-[0.3em] shadow-2xl shadow-primary-600/30 group" ${!product.available ? 'disabled' : ''}>
+                    <button type="submit" class="btn-primary w-full py-6 text-base tracking-[0.3em] shadow-2xl shadow-primary-600/30 group" ${!product.isAvailable ? 'disabled' : ''}>
                         カートに追加する <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">+</span>
                     </button>
                 </form>

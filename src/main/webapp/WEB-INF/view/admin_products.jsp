@@ -91,7 +91,7 @@
                                 </td>
                                 <td class="px-10 py-8 text-center">
                                     <c:choose>
-                                        <c:when test="${p.available}">
+                                        <c:when test="${p.isAvailable}">
                                             <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest border border-emerald-100 italic">
                                                 <span class="w-1 h-1 bg-emerald-500 rounded-full"></span> Active
                                             </span>

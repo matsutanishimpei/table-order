@@ -75,7 +75,7 @@
             <c:forEach var="p" items="${productList}">
                 <a href="Product?id=${p.id}&categoryId=${selectedCategoryId}" class="group no-underline block">
                     <article class="premium-card bg-white p-0 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border-none relative">
-                        <c:if test="${!p.available}">
+                        <c:if test="${!p.isAvailable}">
                             <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
                                 <span class="px-6 py-2 border border-white/30 rounded-full text-[10px] font-black text-white uppercase tracking-widest">売り切れ</span>
                             </div>
