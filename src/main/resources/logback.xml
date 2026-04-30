@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console Appender (Readable for Local Dev) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %X{request_id} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- JSON Appender (Structured for Cloud/Production) -->
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSZZ</timestampPattern>
+        </encoder>
+    </appender>
+
+    <!-- Default Log Level -->
+    <root level="INFO">
+        <!-- 開発時は CONSOLE、本番環境等は JSON に切り替える運用を想定 -->
+        <!-- ここでは動作確認のため両方出すか、一旦 CONSOLE をデフォルトにします -->
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <!-- 特定パッケージのログレベル設定 -->
+    <logger name="controller" level="DEBUG" />
+    <logger name="service" level="INFO" />
+    <logger name="database" level="INFO" />
+</configuration>
