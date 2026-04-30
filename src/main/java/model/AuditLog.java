@@ -27,4 +27,24 @@ public record AuditLog(
         Timestamp operatedAt
 ) implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * コンストラクタ。可変オブジェクトであるTimestampの防御的コピーを作成します。
+     */
+    public AuditLog {
+        if (operatedAt != null) {
+            operatedAt = new Timestamp(operatedAt.getTime());
+        }
+    }
+
+    /**
+     * @return 操作日時の防御的コピー
+     */
+    @Override
+    public Timestamp operatedAt() {
+        if (this.operatedAt != null) {
+            return new Timestamp(this.operatedAt.getTime());
+        }
+        return null;
+    }
 }
