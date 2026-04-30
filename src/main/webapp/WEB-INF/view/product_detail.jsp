@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>${product.name} | 詳細 | テーブルオーダーシステム</title>
+    <title><c:out value="${product.name}" /> | 詳細 | テーブルオーダーシステム</title>
     <jsp:include page="common/header.jsp" />
 </head>
 <body class="bg-slate-50 font-sans antialiased text-slate-900 min-h-screen">
@@ -22,7 +22,7 @@
                 <c:choose>
                     <c:when test="${not empty product.imagePath}">
                         <img src="<%= util.CloudinaryUtil.staticGetResizedUrl(((model.Product)request.getAttribute("product")).imagePath(), 800, 600) %>" 
-                             alt="${product.name}" class="w-full h-full object-cover relative z-10" loading="lazy">
+                             alt="<c:out value='${product.name}' />" class="w-full h-full object-cover relative z-10" loading="lazy">
                     </c:when>
                     <c:otherwise>
                         <div class="absolute inset-0 flex items-center justify-center text-8xl bg-slate-50">
