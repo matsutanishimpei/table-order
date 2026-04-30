@@ -54,22 +54,34 @@ class DBManagerTest {
     }
 
     @Test
-    void testInitForTest_CloseExistingDataSource() {
-        // We just want to cover the branch where initForTest is called twice
-        // and it attempts to close the existing data source.
-        try {
-            DBManager.initForTest("jdbc:mysql://localhost:3306/dummy", "dummy", "dummy");
-        } catch (Exception e) {
-            // Ignore pool init exception
-        }
+    void testInitForTest_CloseExistingDataSource() throws Exception {
+        // Save the original dataSource
+        java.lang.reflect.Field dsField = DBManager.class.getDeclaredField("dataSource");
+        dsField.setAccessible(true);
+        com.zaxxer.hikari.HikariDataSource originalDs = (com.zaxxer.hikari.HikariDataSource) dsField.get(null);
         
         try {
-            DBManager.initForTest("jdbc:mysql://localhost:3306/dummy2", "dummy", "dummy");
-        } catch (Exception e) {
-            // Ignore pool init exception
+            // Create a dummy HikariDataSource that can be closed
+            com.zaxxer.hikari.HikariConfig dummyConfig = new com.zaxxer.hikari.HikariConfig();
+            dummyConfig.setJdbcUrl("jdbc:h2:mem:dummy_test;DB_CLOSE_DELAY=-1");
+            dummyConfig.setUsername("sa");
+            dummyConfig.setPassword("");
+            com.zaxxer.hikari.HikariDataSource dummyDs = new com.zaxxer.hikari.HikariDataSource(dummyConfig);
+            
+            // Inject dummy
+            dsField.set(null, dummyDs);
+            
+            // Call initForTest (this should close dummyDs and create a new broken one)
+            try {
+                DBManager.initForTest("jdbc:mysql://localhost:3306/dummy", "dummy", "dummy");
+            } catch (Exception e) {
+                // Ignore pool init exception
+            }
+            
+            assertTrue(dummyDs.isClosed());
+        } finally {
+            // Restore the original data source so other tests aren't broken!
+            dsField.set(null, originalDs);
         }
-        
-        // Assert that we don't throw unexpected exceptions
-        assertTrue(true);
     }
 }
