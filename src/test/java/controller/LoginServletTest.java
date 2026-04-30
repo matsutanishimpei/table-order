@@ -63,7 +63,7 @@ public class LoginServletTest {
         String userId = "admin";
         String password = "password";
         String token = "valid-token";
-        User adminUser = new User(userId, null, model.UserConstants.ROLE_ADMIN, null);
+        User adminUser = new User(userId, null, model.UserConstants.ROLE_ADMIN, null, false);
 
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);
@@ -140,7 +140,7 @@ public class LoginServletTest {
 
     @Test
     public void testDoPost_LoginSuccess_Kitchen() throws ServletException, IOException {
-        User kitchenUser = new User("k1", null, model.UserConstants.ROLE_KITCHEN, null);
+        User kitchenUser = new User("k1", null, model.UserConstants.ROLE_KITCHEN, null, false);
         String token = "t";
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);
@@ -157,7 +157,7 @@ public class LoginServletTest {
 
     @Test
     public void testDoPost_LoginSuccess_Hall() throws ServletException, IOException {
-        User hallUser = new User("h1", null, model.UserConstants.ROLE_HALL, null);
+        User hallUser = new User("h1", null, model.UserConstants.ROLE_HALL, null, false);
         String token = "t";
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);
@@ -174,7 +174,7 @@ public class LoginServletTest {
 
     @Test
     public void testDoPost_LoginSuccess_Cashier() throws ServletException, IOException {
-        User cashierUser = new User("c1", null, model.UserConstants.ROLE_CASHIER, null);
+        User cashierUser = new User("c1", null, model.UserConstants.ROLE_CASHIER, null, false);
         String token = "t";
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);
@@ -191,7 +191,7 @@ public class LoginServletTest {
 
     @Test
     public void testDoPost_LoginSuccess_Table() throws ServletException, IOException {
-        User tableUser = new User("t1", null, model.UserConstants.ROLE_TABLE_TERMINAL, 1);
+        User tableUser = new User("t1", null, model.UserConstants.ROLE_TABLE_TERMINAL, 1, false);
         String token = "t";
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("csrf_token")).thenReturn(token);

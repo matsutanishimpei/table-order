@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import database.AuditLogDAO;
+import service.AuditLogService;
 import database.ProductDAO;
 import model.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +29,11 @@ public class ProductServiceImplTest {
     private database.CategoryDAO categoryDAO;
 
     @Mock
-    private AuditLogDAO auditLogDAO;
+    private AuditLogService auditLogService;
 
     @BeforeEach
     public void setUp() {
-        productService = new ProductServiceImpl(productDAO, categoryDAO, auditLogDAO);
+        productService = new ProductServiceImpl(productDAO, categoryDAO, auditLogService);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ProductServiceImplTest {
 
         assertTrue(result);
         verify(productDAO).updateAvailability(productId, isAvailable, "test-user");
-        verify(auditLogDAO).log(eq("products"), eq("1"), eq("UPDATE_AVAILABILITY"),
+        verify(auditLogService).log(eq("products"), eq("1"), eq("UPDATE_AVAILABILITY"),
                 isNull(), eq("false"), eq("test-user"));
     }
 
@@ -100,7 +100,7 @@ public class ProductServiceImplTest {
         assertTrue(result);
         verify(categoryDAO).findAll();
         verify(productDAO).insert(p, "test-user");
-        verify(auditLogDAO).log(eq("products"), anyString(), eq("INSERT"),
+        verify(auditLogService).log(eq("products"), anyString(), eq("INSERT"),
                 isNull(), eq("New Product"), eq("test-user"));
     }
 
@@ -152,7 +152,7 @@ public class ProductServiceImplTest {
 
         assertTrue(productService.update(p, "test-user"));
         verify(productDAO).update(p, "test-user");
-        verify(auditLogDAO).log(eq("products"), eq("1"), eq("UPDATE"),
+        verify(auditLogService).log(eq("products"), eq("1"), eq("UPDATE"),
                 eq("Old (price=800)"), eq("Updated (price=1000)"), eq("test-user"));
     }
 
@@ -167,7 +167,7 @@ public class ProductServiceImplTest {
 
         assertTrue(result);
         verify(productDAO).softDelete(1, "admin");
-        verify(auditLogDAO).log(eq("products"), eq("1"), eq("SOFT_DELETE"),
+        verify(auditLogService).log(eq("products"), eq("1"), eq("SOFT_DELETE"),
                 eq("Target (price=500)"), isNull(), eq("admin"));
     }
 
@@ -178,7 +178,7 @@ public class ProductServiceImplTest {
         when(productDAO.softDelete(999, "admin")).thenReturn(false);
 
         assertFalse(productService.delete(999, "admin"));
-        verify(auditLogDAO, never()).log(anyString(), anyString(), eq("SOFT_DELETE"),
+        verify(auditLogService, never()).log(anyString(), anyString(), eq("SOFT_DELETE"),
                 anyString(), any(), anyString());
     }
 }

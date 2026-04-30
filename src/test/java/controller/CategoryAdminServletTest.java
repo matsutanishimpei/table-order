@@ -48,7 +48,7 @@ public class CategoryAdminServletTest {
     @Test
     public void testDoGet_ListCategories_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -67,7 +67,7 @@ public class CategoryAdminServletTest {
     @Test
     public void testDoGet_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -82,7 +82,7 @@ public class CategoryAdminServletTest {
     @Test
     public void testDoPost_InsertCategory_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -100,7 +100,7 @@ public class CategoryAdminServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -114,7 +114,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoGet_EditForm_Success() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("edit");
@@ -130,7 +130,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoPost_Update_Success() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("update");
@@ -145,7 +145,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoPost_Update_InvalidId() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("update");
@@ -159,7 +159,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoPost_Insert_BusinessException() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("add");
@@ -175,7 +175,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoPost_Update_BusinessException() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("update");
@@ -192,7 +192,7 @@ public class CategoryAdminServletTest {
 
     @Test
     public void testDoPost_Delete_Success() throws ServletException, IOException {
-        User admin = new User("admin", "pass", 1, null);
+        User admin = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("delete");

@@ -52,7 +52,7 @@ public class CashierServletTest {
     @Test
     public void testDoGet_DisplaysCashierHome_Success() throws ServletException, IOException {
         // Arrange
-        User cashierUser = new User("c1", "pass", 4, null); // role 4 = CASHIER
+        User cashierUser = new User("c1", "pass", 4, null, false); // role 4 = CASHIER
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(cashierUser);
 
@@ -70,7 +70,7 @@ public class CashierServletTest {
     @Test
     public void testDoGet_AdminCanAccess() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -88,7 +88,7 @@ public class CashierServletTest {
     @Test
     public void testDoPost_CheckoutAction_Success() throws ServletException, IOException {
         // Arrange
-        User cashierUser = new User("c1", "pass", 4, null);
+        User cashierUser = new User("c1", "pass", 4, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(cashierUser);
 
@@ -107,7 +107,7 @@ public class CashierServletTest {
     @Test
     public void testDoPost_AdminCanPerformAction() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -126,7 +126,7 @@ public class CashierServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 

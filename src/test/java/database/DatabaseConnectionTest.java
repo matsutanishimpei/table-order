@@ -48,7 +48,7 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
             String testId = "jt_" + (System.currentTimeMillis() % 1000000000L);
             String testPass = "test_password_123";
             
-            User newUser = new User(testId, testPass, 3, null);
+            User newUser = new User(testId, testPass, 3, null, false);
 
             try {
                 // 1. Create (Insert)
@@ -63,7 +63,7 @@ public class DatabaseConnectionTest extends BaseIntegrationTest {
 
                 // 3. Update (Role変更)
                 // record は不変なため、新しいインスタンスを作成する
-                User updatedUser = new User(loggedIn.id(), null, 2, loggedIn.tableId());
+                User updatedUser = new User(loggedIn.id(), null, 2, loggedIn.tableId(), false);
                 assertTrue(userDAO.update(updatedUser, "test-system"), "ユーザー情報の更新に成功すること");
                 Optional<User> updatedOpt = userDAO.findById(testId);
                 assertTrue(updatedOpt.isPresent());

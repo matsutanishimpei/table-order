@@ -48,7 +48,7 @@ public class OrderMonitorServletTest {
     @Test
     public void testDoGet_DisplaysMonitor_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -66,7 +66,7 @@ public class OrderMonitorServletTest {
     @Test
     public void testDoGet_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 

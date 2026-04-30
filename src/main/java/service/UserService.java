@@ -48,12 +48,13 @@ public interface UserService {
     boolean update(User user, String newPassword, String operatorId);
 
     /**
-     * 指定されたユーザーを削除します。
+     * 指定されたユーザーを削除します（論理削除）。
      *
      * @param id 削除対象のユーザーID
+     * @param operatorId 操作者のユーザーID
      * @return 削除に成功した場合は true（対象が存在しない場合は false）
      */
-    boolean delete(String id);
+    boolean delete(String id, String operatorId);
 
     /**
      * ユーザーIDとパスワードによるログイン認証を行います。

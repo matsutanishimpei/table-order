@@ -62,7 +62,7 @@ public class ProductAdminServletTest {
     @Test
     public void testDoGet_ListProducts_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -82,7 +82,7 @@ public class ProductAdminServletTest {
     @Test
     public void testDoGet_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -97,7 +97,7 @@ public class ProductAdminServletTest {
     @Test
     public void testDoPost_SuccessWithImageUpload() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -132,7 +132,7 @@ public class ProductAdminServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -146,7 +146,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoGet_EditForm_Success() throws ServletException, IOException {
-        User admin = new User("a", "p", 1, null);
+        User admin = new User("a", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("edit");
@@ -162,7 +162,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoGet_AddForm() throws ServletException, IOException {
-        User admin = new User("a", "p", 1, null);
+        User admin = new User("a", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("add");
@@ -176,7 +176,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoPost_Insert_Success() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0");
@@ -197,7 +197,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoPost_ValidationError_ImageRequired() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("0"); // Insert mode
@@ -216,7 +216,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoPost_Update_NotFound() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("999");
@@ -230,7 +230,7 @@ public class ProductAdminServletTest {
 
     @Test
     public void testDoPost_Delete_Success() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("id")).thenReturn("5");

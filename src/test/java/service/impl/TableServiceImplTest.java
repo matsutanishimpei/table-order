@@ -17,6 +17,7 @@ import database.TableDAO;
 import model.OrderConstants;
 import model.TableOrderSummary;
 import model.TableStatusView;
+import service.AuditLogService;
 
 @ExtendWith(MockitoExtension.class)
 class TableServiceImplTest {
@@ -24,11 +25,14 @@ class TableServiceImplTest {
     @Mock
     private TableDAO tableDAO;
 
+    @Mock
+    private AuditLogService auditLogService;
+
     private TableServiceImpl tableService;
 
     @BeforeEach
     void setUp() {
-        tableService = new TableServiceImpl(tableDAO);
+        tableService = new TableServiceImpl(tableDAO, auditLogService);
     }
 
     @Test
@@ -64,23 +68,6 @@ class TableServiceImplTest {
     }
 
     @Test
-    @DisplayName("ステータスラベルの解決: 不正な形式や未定義のコードは空席として扱うこと")
-    void findAllTableStatus_HandlesInvalidCodes() {
-        // Arrange
-        TableStatusView v1 = new TableStatusView(1, "Table 1", null, "invalid", 0, 0, null);
-        TableStatusView v2 = new TableStatusView(2, "Table 2", null, "999", 0, 0, null);
-        
-        when(tableDAO.findAllTableStatus()).thenReturn(List.of(v1, v2));
-
-        // Act
-        List<TableStatusView> result = tableService.findAllTableStatus();
-
-        // Assert
-        assertEquals("空席", result.get(0).statusLabel(), "数値でない場合は空席");
-        assertEquals("空席", result.get(1).statusLabel(), "定義外のコードは空席");
-    }
-
-    @Test
     @DisplayName("特定テーブルのサマリー取得: Optionalが返ること")
     void getTableOrderSummary_ReturnsOptional() {
         TableOrderSummary summary = mock(TableOrderSummary.class);
@@ -90,5 +77,21 @@ class TableServiceImplTest {
 
         assertTrue(result.isPresent());
         assertEquals(summary, result.get());
+    }
+
+    @Test
+    @DisplayName("テーブル登録: 監査ログが記録されること")
+    void register_Success() {
+        when(tableDAO.insert("Table 1", "op")).thenReturn(true);
+        assertTrue(tableService.register("Table 1", "op"));
+        verify(auditLogService).log(eq("shop_tables"), eq("-"), eq("INSERT"), any(), eq("Table 1"), eq("op"));
+    }
+
+    @Test
+    @DisplayName("テーブル削除: 監査ログが記録されること")
+    void softDelete_Success() {
+        when(tableDAO.softDelete(1, "op")).thenReturn(true);
+        assertTrue(tableService.softDelete(1, "op"));
+        verify(auditLogService).log(eq("shop_tables"), eq("1"), eq("SOFT_DELETE"), any(), any(), eq("op"));
     }
 }

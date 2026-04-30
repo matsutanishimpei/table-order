@@ -23,6 +23,7 @@ import model.CartItem;
 import model.OrderItemView;
 import model.Product;
 import model.OrderConstants;
+import service.AuditLogService;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -34,13 +35,16 @@ class OrderServiceImplTest {
     private ProductDAO productDAO;
 
     @Mock
+    private AuditLogService auditLogService;
+
+    @Mock
     private Connection connection;
 
     private OrderServiceImpl orderService;
 
     @BeforeEach
     void setUp() {
-        orderService = new OrderServiceImpl(orderDAO, productDAO);
+        orderService = new OrderServiceImpl(orderDAO, productDAO, auditLogService);
     }
 
     @Test
@@ -62,6 +66,7 @@ class OrderServiceImplTest {
             // 商品は利用可能として設定
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
+            when(p.isDeleted()).thenReturn(false);
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
@@ -74,6 +79,7 @@ class OrderServiceImplTest {
             assertTrue(result);
             verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt(), eq("test-user"));
             verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), eq("test-user"));
+            verify(auditLogService).log(eq(connection), eq("orders"), anyString(), eq("CREATE_ORDER"), any(), any(), eq("test-user"));
         }
     }
 
@@ -95,6 +101,7 @@ class OrderServiceImplTest {
             // 商品は利用可能
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
+            when(p.isDeleted()).thenReturn(false);
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
 
             // 既存注文なし
@@ -130,6 +137,7 @@ class OrderServiceImplTest {
             assertTrue(result);
             verify(orderDAO).updateOrderItemsStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt(), eq("test-user"));
             verify(orderDAO).updateOrderStatusForCheckout(eq(connection), eq(tableId), anyInt(), anyInt(), eq("test-user"));
+            verify(auditLogService).log(eq(connection), eq("orders"), anyString(), eq("CHECKOUT"), any(), any(), eq("test-user"));
         }
     }
 
@@ -155,6 +163,7 @@ class OrderServiceImplTest {
         when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_ORDERED);
         when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user")).thenReturn(true);
         assertTrue(orderService.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user"));
+        verify(auditLogService).log(eq("order_items"), eq("123"), eq("UPDATE_STATUS"), any(), any(), eq("test-user"));
     }
 
     @Test
@@ -188,6 +197,7 @@ class OrderServiceImplTest {
             // 商品は利用可能
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
+            when(p.isDeleted()).thenReturn(false);
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
 
             // 既存注文なし
@@ -205,7 +215,6 @@ class OrderServiceImplTest {
             assertFalse(result, "例外発生時は false が返るべき");
             verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt(), eq("test-user"));
             verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), eq("test-user"));
-            // TransactionManager 内でロールバックが行われるはず（モック化しているため挙動のみ確認）
         }
     }
 
@@ -285,6 +294,7 @@ class OrderServiceImplTest {
             // 商品は利用可能
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
+            when(p.isDeleted()).thenReturn(false);
             when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
 
             // 既存注文(500)がある状態をシミュレート

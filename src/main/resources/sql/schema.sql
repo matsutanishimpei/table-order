@@ -6,7 +6,8 @@ CREATE TABLE shop_tables (
     table_name VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by VARCHAR(20)
+    updated_by VARCHAR(20),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- 2. ユーザー情報 (users)
@@ -19,6 +20,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by VARCHAR(20),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (table_id) REFERENCES shop_tables(id)
 );
 

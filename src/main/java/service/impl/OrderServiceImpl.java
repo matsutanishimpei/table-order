@@ -20,26 +20,28 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     /** 商品DAO */
     private final database.ProductDAO productDAO;
+    /** 監査ログサービス */
+    private final service.AuditLogService auditLogService;
 
     /**
      * デフォルトコンストラクタ。
-     * 標準の DAO 実装を使用して初期化します。
      */
     public OrderServiceImpl() {
-        this(new OrderDAOImpl(), new database.impl.ProductDAOImpl());
+        this(new OrderDAOImpl(), new database.impl.ProductDAOImpl(), service.ServiceFactory.getAuditLogService());
     }
 
     /**
      * テスト用コンストラクタ。
-     * モック等の DAO を外部から注入するために使用します。
      *
      * @param orderDAO 注文DAO
      * @param productDAO 商品DAO
+     * @param auditLogService 監査ログサービス
      */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public OrderServiceImpl(OrderDAO orderDAO, database.ProductDAO productDAO) {
+    public OrderServiceImpl(OrderDAO orderDAO, database.ProductDAO productDAO, service.AuditLogService auditLogService) {
         this.orderDAO = orderDAO;
         this.productDAO = productDAO;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -72,6 +74,10 @@ public class OrderServiceImpl implements OrderService {
                 // ③ order_items テーブルへ全商品をバッチ登録
                 orderDAO.insertOrderItems(con, orderId, cartItems, OrderConstants.STATUS_ORDERED, operatorId);
 
+                // 監査ログ
+                auditLogService.log(con, "orders", String.valueOf(orderId), "CREATE_ORDER", 
+                        null, "tableId=" + tableId + ", items=" + cartItems.size(), operatorId);
+
                 log.info("注文登録完了: tableId={}, orderId={}", tableId, orderId);
                 return true;
             });
@@ -99,6 +105,10 @@ public class OrderServiceImpl implements OrderService {
                 // ③ 続いて orders 自身を PAID に変更
                 orderDAO.updateOrderStatusForCheckout(con, tableId,
                         OrderConstants.STATUS_PAID, OrderConstants.STATUS_PAID, operatorId);
+
+                // 監査ログ
+                auditLogService.log(con, "orders", "table=" + tableId, "CHECKOUT", 
+                        "STATUS < PAID", "PAID", operatorId);
 
                 log.info("会計完了処理成功: tableId={}, operatorId={}", tableId, operatorId);
                 return true;
@@ -134,6 +144,11 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
 
-        return orderDAO.updateItemStatus(itemId, status, operatorId);
+        boolean success = orderDAO.updateItemStatus(itemId, status, operatorId);
+        if (success) {
+            auditLogService.log("order_items", String.valueOf(itemId), "UPDATE_STATUS",
+                    String.valueOf(currentStatus), String.valueOf(status), operatorId);
+        }
+        return success;
     }
 }

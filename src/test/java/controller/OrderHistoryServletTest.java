@@ -49,7 +49,7 @@ public class OrderHistoryServletTest {
     @Test
     public void testDoGet_DisplaysHistory() throws ServletException, IOException {
         // Arrange
-        User user = new User("test", null, 0, 5); // tableId = 5
+        User user = new User("test", null, 0, 5, false); // tableId = 5
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(user);
         

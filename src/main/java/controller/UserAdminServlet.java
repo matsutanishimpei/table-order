@@ -96,19 +96,19 @@ public class UserAdminServlet extends BaseServlet {
 
         try {
             if ("delete".equals(action)) {
-                userService.delete(id);
+                userService.delete(id, user.id());
             } else if ("update".equals(action)) {
-                User targetUser = new User(id, null, role, tableId);
+                User targetUser = new User(id, null, role, tableId, false);
                 userService.update(targetUser, password, user.id());
             } else {
                 // 新規追加
-                User targetUser = new User(id, password, role, tableId);
+                User targetUser = new User(id, password, role, tableId, false);
                 userService.register(targetUser, user.id());
             }
             response.sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
         } catch (exception.BusinessException e) {
             request.setAttribute(AppConstants.ATTR_ERROR, e.getMessage());
-            User targetUser = new User(id, null, role, tableId);
+            User targetUser = new User(id, null, role, tableId, false);
             request.setAttribute("targetUser", targetUser);
             List<model.TableStatusView> tables = tableService.findAllTableStatus();
             request.setAttribute(AppConstants.ATTR_TABLE_LIST, tables);

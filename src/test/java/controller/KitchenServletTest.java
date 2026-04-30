@@ -65,7 +65,7 @@ public class KitchenServletTest {
     @Test
     public void testDoPost_CompleteAction_Success() throws ServletException, IOException {
         // Arrange
-        User kitchenUser = new User("k1", "pass", 2, null); // role 2 = KITCHEN
+        User kitchenUser = new User("k1", "pass", 2, null, false); // role 2 = KITCHEN
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(kitchenUser);
         
@@ -84,7 +84,7 @@ public class KitchenServletTest {
     @Test
     public void testDoPost_AdminCanPerformAction() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null); // role 1 = ADMIN
+        User adminUser = new User("admin", "pass", 1, null, false); // role 1 = ADMIN
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -103,7 +103,7 @@ public class KitchenServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null); // role 10 = TABLE_TERMINAL
+        User normalUser = new User("u1", "pass", 10, null, false); // role 10 = TABLE_TERMINAL
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -118,7 +118,7 @@ public class KitchenServletTest {
     @Test
     public void testDoPost_InvalidId() throws ServletException, IOException {
         // Arrange
-        User kitchenUser = new User("k1", "pass", 2, null);
+        User kitchenUser = new User("k1", "pass", 2, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(kitchenUser);
         when(request.getParameter("itemId")).thenReturn("invalid");

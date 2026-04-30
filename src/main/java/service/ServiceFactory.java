@@ -1,6 +1,7 @@
 package service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import service.impl.AuditLogServiceImpl;
 import service.impl.CategoryServiceImpl;
 import service.impl.OrderServiceImpl;
 import service.impl.ProductServiceImpl;
@@ -20,6 +21,7 @@ public final class ServiceFactory {
     private static final TableService tableService = new TableServiceImpl();
     private static final UserService userService = new UserServiceImpl();
     private static final SalesService salesService = new SalesServiceImpl();
+    private static final AuditLogService auditLogService = new AuditLogServiceImpl();
 
     /**
      * CategoryService の実装を返します。
@@ -79,6 +81,16 @@ public final class ServiceFactory {
     @SuppressFBWarnings("MS_EXPOSE_REP")
     public static SalesService getSalesService() {
         return salesService;
+    }
+
+    /**
+     * AuditLogService の実装を返します。
+     *
+     * @return 監査ログサービス
+     */
+    @SuppressFBWarnings("MS_EXPOSE_REP")
+    public static AuditLogService getAuditLogService() {
+        return auditLogService;
     }
 
     private ServiceFactory() {

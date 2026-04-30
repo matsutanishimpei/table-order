@@ -52,7 +52,7 @@ public class UserAdminServletTest {
     @Test
     public void testDoGet_ListUsers_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -71,7 +71,7 @@ public class UserAdminServletTest {
     @Test
     public void testDoGet_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -86,7 +86,7 @@ public class UserAdminServletTest {
     @Test
     public void testDoPost_RegisterUser_Success() throws ServletException, IOException {
         // Arrange
-        User adminUser = new User("admin", "pass", 1, null);
+        User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
 
@@ -106,7 +106,7 @@ public class UserAdminServletTest {
     @Test
     public void testDoPost_NoPermission() throws ServletException, IOException {
         // Arrange
-        User normalUser = new User("u1", "pass", 10, null);
+        User normalUser = new User("u1", "pass", 10, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(normalUser);
 
@@ -120,12 +120,12 @@ public class UserAdminServletTest {
 
     @Test
     public void testDoGet_EditForm_Success() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("edit");
         when(request.getParameter("id")).thenReturn("u1");
-        when(userService.findById("u1")).thenReturn(java.util.Optional.of(new User("u1", null, 10, null)));
+        when(userService.findById("u1")).thenReturn(java.util.Optional.of(new User("u1", null, 10, null, false)));
         when(tableService.findAllTableStatus()).thenReturn(new java.util.ArrayList<>());
         when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_USER_EDIT)).thenReturn(requestDispatcher);
 
@@ -137,7 +137,7 @@ public class UserAdminServletTest {
 
     @Test
     public void testDoPost_Update_Success() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("update");
@@ -154,7 +154,7 @@ public class UserAdminServletTest {
 
     @Test
     public void testDoPost_Delete_Success() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("action")).thenReturn("delete");
@@ -165,13 +165,13 @@ public class UserAdminServletTest {
 
         servlet.doPost(request, response);
 
-        verify(userService).delete("u1");
+        verify(userService).delete("u1", "admin");
         verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
     }
 
     @Test
     public void testDoPost_InvalidRole() throws ServletException, IOException {
-        User admin = new User("admin", "p", 1, null);
+        User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
         when(request.getParameter("role")).thenReturn("-1");

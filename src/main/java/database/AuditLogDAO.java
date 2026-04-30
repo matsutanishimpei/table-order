@@ -18,4 +18,18 @@ public interface AuditLogDAO {
      */
     void log(String tableName, String recordId, String action,
              String oldValue, String newValue, String operatorId);
+
+    /**
+     * トランザクション内で監査ログを記録します。
+     *
+     * @param con データベース接続
+     * @param tableName 対象テーブル名
+     * @param recordId 対象レコードのID
+     * @param action 操作種別
+     * @param oldValue 変更前の値
+     * @param newValue 変更後の値
+     * @param operatorId 操作者のユーザーID
+     */
+    void log(java.sql.Connection con, String tableName, String recordId, String action,
+             String oldValue, String newValue, String operatorId);
 }

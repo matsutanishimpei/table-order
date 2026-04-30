@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import database.AuditLogDAO;
+import service.AuditLogService;
 import database.CategoryDAO;
 import exception.BusinessException;
 import model.Category;
@@ -25,13 +25,13 @@ class CategoryServiceImplTest {
     private CategoryDAO categoryDAO;
 
     @Mock
-    private AuditLogDAO auditLogDAO;
+    private AuditLogService auditLogService;
 
     private CategoryServiceImpl categoryService;
 
     @BeforeEach
     void setUp() {
-        categoryService = new CategoryServiceImpl(categoryDAO, auditLogDAO);
+        categoryService = new CategoryServiceImpl(categoryDAO, auditLogService);
     }
 
     @Test
@@ -48,7 +48,7 @@ class CategoryServiceImplTest {
         when(categoryDAO.insert("Drink", "test-user")).thenReturn(true);
         assertTrue(categoryService.insert(" Drink ", "test-user")); // Trim check
         verify(categoryDAO).insert("Drink", "test-user");
-        verify(auditLogDAO).log(eq("categories"), eq("-"), eq("INSERT"),
+        verify(auditLogService).log(eq("categories"), eq("-"), eq("INSERT"),
                 isNull(), eq(" Drink "), eq("test-user"));
     }
 
@@ -67,7 +67,7 @@ class CategoryServiceImplTest {
         when(categoryDAO.findById(1)).thenReturn(Optional.of(new Category(1, "Food", false)));
         when(categoryDAO.update(c, "test-user")).thenReturn(true);
         assertTrue(categoryService.update(c, "test-user"));
-        verify(auditLogDAO).log(eq("categories"), eq("1"), eq("UPDATE"),
+        verify(auditLogService).log(eq("categories"), eq("1"), eq("UPDATE"),
                 eq("Food"), eq("Dessert"), eq("test-user"));
     }
 
@@ -79,7 +79,7 @@ class CategoryServiceImplTest {
 
         assertTrue(categoryService.delete(1, "admin"));
         verify(categoryDAO).softDelete(1, "admin");
-        verify(auditLogDAO).log(eq("categories"), eq("1"), eq("SOFT_DELETE"),
+        verify(auditLogService).log(eq("categories"), eq("1"), eq("SOFT_DELETE"),
                 eq("Food"), isNull(), eq("admin"));
     }
 
@@ -90,7 +90,7 @@ class CategoryServiceImplTest {
         when(categoryDAO.softDelete(999, "admin")).thenReturn(false);
 
         assertFalse(categoryService.delete(999, "admin"));
-        verify(auditLogDAO, never()).log(anyString(), anyString(), eq("SOFT_DELETE"),
+        verify(auditLogService, never()).log(anyString(), anyString(), eq("SOFT_DELETE"),
                 anyString(), any(), anyString());
     }
 }

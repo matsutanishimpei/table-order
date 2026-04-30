@@ -3,6 +3,7 @@ package service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import database.TableDAO;
 import database.impl.TableDAOImpl;
 import model.OrderConstants;
@@ -15,15 +16,18 @@ import service.TableService;
  */
 public class TableServiceImpl implements TableService {
     private final TableDAO tableDAO;
+    private final service.AuditLogService auditLogService;
 
     // プロダクション用コンストラクタ
     public TableServiceImpl() {
-        this(new TableDAOImpl());
+        this(new TableDAOImpl(), service.ServiceFactory.getAuditLogService());
     }
 
     // テスト・DI用コンストラクタ
-    public TableServiceImpl(TableDAO tableDAO) {
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
+    public TableServiceImpl(TableDAO tableDAO, service.AuditLogService auditLogService) {
         this.tableDAO = tableDAO;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -75,5 +79,23 @@ public class TableServiceImpl implements TableService {
             return "食事中";
         }
         return "空席";
+    }
+
+    @Override
+    public boolean register(String tableName, String operatorId) {
+        boolean success = tableDAO.insert(tableName, operatorId);
+        if (success) {
+            auditLogService.log("shop_tables", "-", "INSERT", null, tableName, operatorId);
+        }
+        return success;
+    }
+
+    @Override
+    public boolean softDelete(int tableId, String operatorId) {
+        boolean success = tableDAO.softDelete(tableId, operatorId);
+        if (success) {
+            auditLogService.log("shop_tables", String.valueOf(tableId), "SOFT_DELETE", null, null, operatorId);
+        }
+        return success;
     }
 }
