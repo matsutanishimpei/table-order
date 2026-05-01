@@ -170,18 +170,55 @@ public class UserAdminServletTest {
     }
 
     @Test
-    public void testDoPost_InvalidRole() throws ServletException, IOException {
+    public void testDoPost_InvalidRoleFormat() throws ServletException, IOException {
         User admin = new User("admin", "p", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
-        when(request.getParameter("role")).thenReturn("-1");
-        when(request.getParameter("action")).thenReturn("add");
-        when(request.getParameter("id")).thenReturn("u1");
-        when(request.getParameter("password")).thenReturn(null);
+        lenient().when(request.getParameter("action")).thenReturn("add");
+        lenient().when(request.getParameter("id")).thenReturn("u1");
+        lenient().when(request.getParameter("password")).thenReturn(null);
+        lenient().when(request.getParameter("role")).thenReturn("abc"); // Invalid
 
         servlet.doPost(request, response);
 
         verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
-        verify(userService, never()).update(any(), any(), anyString());
+        verify(userService, never()).register(any(), anyString());
+    }
+
+    @Test
+    public void testDoPost_InvalidTableIdFormat() throws ServletException, IOException {
+        User admin = new User("admin", "p", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        when(request.getParameter("action")).thenReturn("update");
+        when(request.getParameter("id")).thenReturn("u1");
+        when(request.getParameter("role")).thenReturn("10");
+        when(request.getParameter("tableId")).thenReturn("xyz"); // Invalid
+        when(request.getParameter("password")).thenReturn(null);
+
+        servlet.doPost(request, response);
+
+        // ValidationUtil.parseIntSafe("xyz", 0) returns 0. 
+        // Servlet logic: (parsedTableId <= 0) ? null : parsedTableId;
+        // So "xyz" results in tableId = null
+        verify(userService).update(argThat(u -> u.tableId() == null), any(), eq("admin"));
+        verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
+    }
+
+    @Test
+    public void testDoPost_MissingParameters() throws ServletException, IOException {
+        User admin = new User("admin", "p", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        
+        lenient().when(request.getParameter("action")).thenReturn("add");
+        lenient().when(request.getParameter("id")).thenReturn("u1");
+        lenient().when(request.getParameter("password")).thenReturn(null);
+        // Missing role returns -1 default, leading to redirect
+        lenient().when(request.getParameter("role")).thenReturn(null);
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
     }
 }

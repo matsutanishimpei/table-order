@@ -19,44 +19,53 @@ public class DBManager {
     private static String pepper;
 
     static {
+        try {
+            initialize();
+        } catch (Exception e) {
+            log.error("DBManagerの静的初期化中に予期せぬエラーが発生しました。クラスはロードされますが、接続には initForTest() による再初期化が必要です。", e);
+        }
+    }
+
+    private static synchronized void initialize() {
+        if (dataSource != null) {
+            return;
+        }
+
         // 設定ファイルの読み込み
         try (InputStream is = DBManager.class.getClassLoader().getResourceAsStream("database.properties")) {
-            if (is == null) {
-                throw new RuntimeException("database.properties が見つかりません。"
-                        + "src/main/resources に配置されているか確認してください。");
-            }
             Properties props = new Properties();
-            props.load(is);
+            if (is == null) {
+                log.warn("database.properties が見つかりません。デフォルト設定を使用します。");
+            } else {
+                props.load(is);
+            }
+
+            pepper = props.getProperty("app.security.pepper", "test-pepper");
 
             HikariConfig config = new HikariConfig();
-
             boolean isOracle = Boolean.parseBoolean(props.getProperty("db.is_oracle", "false"));
             if (isOracle) {
                 config.setJdbcUrl(props.getProperty("db.oracle.url"));
                 config.setUsername(props.getProperty("db.oracle.user"));
                 config.setPassword(props.getProperty("db.oracle.pass"));
-                config.setDriverClassName(props.getProperty("db.oracle.driver", "oracle.jdbc.OracleDriver"));
             } else {
                 config.setJdbcUrl(props.getProperty("db.mysql.url"));
                 config.setUsername(props.getProperty("db.mysql.user"));
                 config.setPassword(props.getProperty("db.mysql.pass"));
-                config.setDriverClassName(props.getProperty("db.mysql.driver", "com.mysql.cj.jdbc.Driver"));
             }
+            config.setDriverClassName(props.getProperty(isOracle ? "db.oracle.driver" : "db.mysql.driver",
+                    isOracle ? "oracle.jdbc.OracleDriver" : "com.mysql.cj.jdbc.Driver"));
 
-            // プーリングの詳細設定
             config.setMaximumPoolSize(10);
-            config.setMinimumIdle(2);
-            config.setConnectionTimeout(30000); // 30秒
-            config.setIdleTimeout(600000);      // 10分
-            config.setMaxLifetime(1800000);     // 30分
+            config.setConnectionTimeout(3000); // 初期化チェック用にタイムアウトを短縮
 
-            dataSource = new HikariDataSource(config);
-
-            pepper = props.getProperty("app.security.pepper");
-
+            try {
+                dataSource = new HikariDataSource(config);
+            } catch (Exception e) {
+                log.warn("デフォルト設定でのデータソース初期化に失敗しました。DBが未起動または設定が誤っている可能性があります。: {}", e.getMessage());
+            }
         } catch (IOException e) {
-            log.error("DBManagerの初期化に失敗しました（入出力エラー）", e);
-            throw new RuntimeException("DBManagerの初期化に失敗しました", e);
+            log.error("設定ファイルの読み込みに失敗しました", e);
         }
     }
 

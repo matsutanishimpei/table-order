@@ -241,4 +241,46 @@ public class ProductAdminServletTest {
         verify(productService).delete(5, "admin");
         verify(response).sendRedirect(contains("success"));
     }
+
+    @Test
+    public void testDoPost_InvalidIdFormat() throws ServletException, IOException {
+        User admin = new User("admin", "p", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        
+        // Invalid ID "abc" results in id=0 (Insert mode)
+        when(request.getParameter("id")).thenReturn("abc");
+        when(request.getParameter("action")).thenReturn(null);
+        when(request.getParameter("name")).thenReturn("New");
+        when(request.getParameter("categoryId")).thenReturn("1");
+        when(request.getParameter("price")).thenReturn("1000");
+        when(request.getPart("imageFile")).thenReturn(filePart);
+        when(filePart.getSize()).thenReturn(100L);
+        when(filePart.getContentType()).thenReturn("image/png");
+        when(imageStorageProvider.upload(any())).thenReturn("path");
+
+        servlet.doPost(request, response);
+
+        // Should be treated as insert (id=0)
+        verify(productService).insert(any(), eq("admin"));
+    }
+
+    @Test
+    public void testDoGet_InvalidIdFormat_Edit() throws ServletException, IOException {
+        User admin = new User("a", "p", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        
+        when(request.getParameter("action")).thenReturn("edit");
+        when(request.getParameter("id")).thenReturn("abc"); // Invalid
+        
+        when(productService.findAll()).thenReturn(Collections.emptyList());
+        when(categoryService.findAll()).thenReturn(Collections.emptyList());
+        when(request.getRequestDispatcher(AppConstants.VIEW_ADMIN_PRODUCTS)).thenReturn(requestDispatcher);
+
+        servlet.doGet(request, response);
+
+        // Should fall back to list view
+        verify(requestDispatcher).forward(request, response);
+    }
 }

@@ -91,8 +91,8 @@ public class UserAdminServlet extends BaseServlet {
             return;
         }
         String tableIdStr = request.getParameter("tableId");
-        Integer tableId = (tableIdStr == null || tableIdStr.isEmpty() || "0".equals(tableIdStr))
-                ? null : Integer.valueOf(util.ValidationUtil.parseIntSafe(tableIdStr, 0));
+        int parsedTableId = util.ValidationUtil.parseIntSafe(tableIdStr, 0);
+        Integer tableId = (parsedTableId <= 0) ? null : parsedTableId;
 
         try {
             if ("delete".equals(action)) {
