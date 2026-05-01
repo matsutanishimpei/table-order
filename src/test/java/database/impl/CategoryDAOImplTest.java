@@ -66,4 +66,23 @@ class CategoryDAOImplTest extends BaseIntegrationTest {
         Optional<Category> found = dao.findById(999);
         assertFalse(found.isPresent());
     }
+
+    @Test
+    @DisplayName("論理削除されたカテゴリが一覧に含まれないこと")
+    void testSoftDelete_Visibility() {
+        String name = "削除用カテゴリ";
+        dao.insert(name, "test-user");
+
+        Category inserted = dao.findAll().stream()
+                .filter(c -> name.equals(c.name()))
+                .findFirst()
+                .orElseThrow();
+
+        // 論理削除
+        assertTrue(dao.softDelete(inserted.id(), "test-user"));
+
+        // findAll から除外されていること
+        List<Category> allCategories = dao.findAll();
+        assertFalse(allCategories.stream().anyMatch(c -> c.id() == inserted.id()));
+    }
 }

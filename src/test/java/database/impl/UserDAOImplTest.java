@@ -81,4 +81,24 @@ public class UserDAOImplTest extends BaseIntegrationTest {
         assertTrue(userDAO.delete(userId));
         assertFalse(userDAO.findById(userId).isPresent());
     }
+
+    @Test
+    void testSoftDelete_Visibility() {
+        String userId = "deleted_user";
+        User user = new User(userId, "pass", 1, null, false);
+        userDAO.insert(user, "admin");
+
+        // 論理削除実行
+        assertTrue(userDAO.softDelete(userId, "admin"));
+
+        // findById では取得できる（管理画面等での参照用）
+        Optional<User> found = userDAO.findById(userId);
+        assertTrue(found.isPresent());
+        assertTrue(found.get().isDeleted());
+
+        // findAll では除外されていることを確認
+        List<User> allUsers = userDAO.findAll();
+        boolean exists = allUsers.stream().anyMatch(u -> u.id().equals(userId));
+        assertFalse(exists, "論理削除されたユーザーが一覧に含まれています");
+    }
 }
