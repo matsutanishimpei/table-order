@@ -172,7 +172,7 @@ class JdbcExecutorTest {
             PreparedStatement ps = mock(PreparedStatement.class);
             ResultSet rs = mock(ResultSet.class);
             
-            mockedDb.when(DBManager::getConnection).thenReturn(con);
+            mockedDb.when(() -> DBManager.getConnection()).thenReturn(con);
             when(con.prepareStatement(anyString())).thenReturn(ps);
             when(ps.executeQuery()).thenReturn(rs);
             when(rs.next()).thenReturn(true, false);
@@ -187,7 +187,7 @@ class JdbcExecutorTest {
     @Test
     void testQueryWithAutoConnection_ThrowsException() throws SQLException {
         try (var mockedDb = mockStatic(DBManager.class)) {
-            mockedDb.when(DBManager::getConnection).thenThrow(new SQLException("Connection error"));
+            mockedDb.when(() -> DBManager.getConnection()).thenThrow(new SQLException("Connection error"));
             
             assertThrows(DatabaseException.class, () -> {
                 JdbcExecutor.query("SELECT * FROM test", rs -> "test");
@@ -202,7 +202,7 @@ class JdbcExecutorTest {
             PreparedStatement ps = mock(PreparedStatement.class);
             ResultSet rs = mock(ResultSet.class);
             
-            mockedDb.when(DBManager::getConnection).thenReturn(con);
+            mockedDb.when(() -> DBManager.getConnection()).thenReturn(con);
             when(con.prepareStatement(anyString())).thenReturn(ps);
             when(ps.executeQuery()).thenReturn(rs);
             when(rs.next()).thenReturn(true, false);
@@ -217,7 +217,7 @@ class JdbcExecutorTest {
     @Test
     void testQueryOneWithAutoConnection_ThrowsException() throws SQLException {
         try (var mockedDb = mockStatic(DBManager.class)) {
-            mockedDb.when(DBManager::getConnection).thenThrow(new SQLException("Connection error"));
+            mockedDb.when(() -> DBManager.getConnection()).thenThrow(new SQLException("Connection error"));
             
             assertThrows(DatabaseException.class, () -> {
                 JdbcExecutor.queryOne("SELECT * FROM test", rs -> "test");
@@ -231,7 +231,7 @@ class JdbcExecutorTest {
             Connection con = mock(Connection.class);
             PreparedStatement ps = mock(PreparedStatement.class);
             
-            mockedDb.when(DBManager::getConnection).thenReturn(con);
+            mockedDb.when(() -> DBManager.getConnection()).thenReturn(con);
             when(con.prepareStatement(anyString())).thenReturn(ps);
             when(ps.executeUpdate()).thenReturn(1);
             
@@ -243,7 +243,7 @@ class JdbcExecutorTest {
     @Test
     void testUpdateWithAutoConnection_ThrowsException() throws SQLException {
         try (var mockedDb = mockStatic(DBManager.class)) {
-            mockedDb.when(DBManager::getConnection).thenThrow(new SQLException("Connection error"));
+            mockedDb.when(() -> DBManager.getConnection()).thenThrow(new SQLException("Connection error"));
             
             assertThrows(DatabaseException.class, () -> {
                 JdbcExecutor.update("UPDATE test SET col = 1");

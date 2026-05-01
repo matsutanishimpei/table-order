@@ -64,7 +64,7 @@ class TransactionManagerTest {
     void testExecute_RollbackFailure() throws SQLException {
         try (var mockedDb = org.mockito.Mockito.mockStatic(DBManager.class)) {
             Connection con = mock(Connection.class);
-            mockedDb.when(DBManager::getConnection).thenReturn(con);
+            mockedDb.when(() -> DBManager.getConnection()).thenReturn(con);
             doThrow(new SQLException("rollback failed")).when(con).rollback();
 
             assertThrows(DatabaseException.class, () -> {
@@ -79,7 +79,7 @@ class TransactionManagerTest {
     @Test
     void testExecute_ConnectionFailure() throws SQLException {
         try (var mockedDb = org.mockito.Mockito.mockStatic(DBManager.class)) {
-            mockedDb.when(DBManager::getConnection).thenThrow(new SQLException("connection failed"));
+            mockedDb.when(() -> DBManager.getConnection()).thenThrow(new SQLException("connection failed"));
 
             assertThrows(DatabaseException.class, () -> {
                 TransactionManager.execute(con -> "ok");
