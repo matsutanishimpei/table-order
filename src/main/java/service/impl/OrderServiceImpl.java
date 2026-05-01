@@ -38,7 +38,8 @@ public class OrderServiceImpl implements OrderService {
      * @param auditLogService 監査ログサービス
      */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public OrderServiceImpl(OrderDAO orderDAO, database.ProductDAO productDAO, service.AuditLogService auditLogService) {
+    public OrderServiceImpl(OrderDAO orderDAO, database.ProductDAO productDAO,
+            service.AuditLogService auditLogService) {
         this.orderDAO = orderDAO;
         this.productDAO = productDAO;
         this.auditLogService = auditLogService;

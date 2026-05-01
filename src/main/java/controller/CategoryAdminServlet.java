@@ -45,6 +45,12 @@ public class CategoryAdminServlet extends BaseServlet {
         }
 
         String action = request.getParameter("action");
+        
+        // CSRF トークンの生成（セッションにない場合）
+        if (request.getSession().getAttribute(AppConstants.ATTR_CSRF_TOKEN) == null) {
+            request.getSession().setAttribute(AppConstants.ATTR_CSRF_TOKEN, util.CsrfUtil.generateToken());
+        }
+
         if ("edit".equals(action)) {
             int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
             Optional<Category> categoryOpt = categoryService.findById(id);
@@ -69,8 +75,14 @@ public class CategoryAdminServlet extends BaseServlet {
             return;
         }
 
+        // CSRF チェック
+        if (!isCsrfTokenValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "不正なリクエストです。");
+            return;
+        }
+
         String action = request.getParameter("action");
-        String name = request.getParameter("name");
+        String name = util.ValidationUtil.sanitize(request.getParameter("name"));
         int id = util.ValidationUtil.parseIntSafe(request.getParameter("id"), -1);
 
         try {

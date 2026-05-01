@@ -41,6 +41,11 @@ public class CartServletTest {
     @BeforeEach
     public void setUp() {
         servlet = new CartServlet(productService);
+        
+        // デフォルトで CSRF チェックをパスするように設定
+        lenient().when(request.getSession()).thenReturn(session);
+        lenient().when(request.getParameter(util.AppConstants.PARAM_CSRF_TOKEN)).thenReturn("valid_token");
+        lenient().when(session.getAttribute(util.AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
     }
 
     @Test
@@ -157,5 +162,16 @@ public class CartServletTest {
         servlet.doPost(request, response);
 
         assertTrue(cart.isEmpty());
+    }
+
+    @Test
+    public void testDoPost_CsrfFailure() throws ServletException, IOException {
+        // CSRF トークン不一致
+        when(request.getParameter(util.AppConstants.PARAM_CSRF_TOKEN)).thenReturn("wrong_token");
+        when(session.getAttribute(util.AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
+
+        servlet.doPost(request, response);
+
+        verify(response).sendError(eq(HttpServletResponse.SC_FORBIDDEN), anyString());
     }
 }

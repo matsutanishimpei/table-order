@@ -1,6 +1,11 @@
 package filter;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,13 +33,13 @@ public class SecurityHeaderFilter implements Filter {
 
             // Content Security Policy (CSP): 許可されたソースのみからスクリプト等の読み込みを許可する
             // インラインスクリプト（style等）や外部フォント（Google Fonts）の使用に合わせて調整
-            httpResponse.setHeader("Content-Security-Policy", 
-                "default-src 'self'; " +
-                "script-src 'self' 'unsafe-inline'; " + // JSP内でのインラインスクリプト許可（本来は排除が望ましい）
-                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                "font-src 'self' https://fonts.gstatic.com; " +
-                "img-src 'self' data: https://res.cloudinary.com; " + // Cloudinary 許可
-                "frame-ancestors 'self';");
+            httpResponse.setHeader("Content-Security-Policy",
+                    "default-src 'self'; "
+                    + "script-src 'self' 'unsafe-inline'; " // JSP内でのインラインスクリプト許可（本来は排除が望ましい）
+                    + "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                    + "font-src 'self' https://fonts.gstatic.com; "
+                    + "img-src 'self' data: https://res.cloudinary.com; " // Cloudinary 許可
+                    + "frame-ancestors 'self';");
 
             // Referrer-Policy: 外部サイトへ遷移する際のリファラ情報を制御
             httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -47,8 +52,8 @@ public class SecurityHeaderFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException { }
 
     @Override
-    public void destroy() {}
+    public void destroy() { }
 }

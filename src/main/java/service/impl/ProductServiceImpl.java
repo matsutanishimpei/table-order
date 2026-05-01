@@ -27,7 +27,8 @@ public class ProductServiceImpl implements ProductService {
 
     // テスト・DI用コンストラクタ
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public ProductServiceImpl(ProductDAO productDAO, database.CategoryDAO categoryDAO, service.AuditLogService auditLogService) {
+    public ProductServiceImpl(ProductDAO productDAO, database.CategoryDAO categoryDAO,
+            service.AuditLogService auditLogService) {
         this.productDAO = productDAO;
         this.categoryDAO = categoryDAO;
         this.auditLogService = auditLogService;

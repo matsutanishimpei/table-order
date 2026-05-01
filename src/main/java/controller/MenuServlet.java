@@ -41,6 +41,11 @@ public class MenuServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // CSRF トークンの生成（セッションにない場合）
+        if (request.getSession().getAttribute(AppConstants.ATTR_CSRF_TOKEN) == null) {
+            request.getSession().setAttribute(AppConstants.ATTR_CSRF_TOKEN, util.CsrfUtil.generateToken());
+        }
+
         // カテゴリ一覧の取得
         List<Category> categories = categoryService.findAll();
         request.setAttribute(AppConstants.ATTR_CATEGORY_LIST, categories);

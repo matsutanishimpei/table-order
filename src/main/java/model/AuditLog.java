@@ -38,6 +38,8 @@ public record AuditLog(
     }
 
     /**
+     * 操作日時のコピーを取得します。
+     *
      * @return 操作日時の防御的コピー
      */
     @Override

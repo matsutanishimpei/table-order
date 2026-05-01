@@ -57,6 +57,17 @@ public class ProductAdminServletTest {
     @BeforeEach
     public void setUp() {
         servlet = new ProductAdminServlet(productService, categoryService, imageStorageProvider);
+        
+        // デフォルトで CSRF チェックをパスするように設定
+        lenient().when(request.getParameter(util.AppConstants.PARAM_CSRF_TOKEN)).thenReturn("valid_token");
+        lenient().when(session.getAttribute(util.AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
+        lenient().when(request.getSession()).thenReturn(session);
+    }
+
+    private void setupCsrf() {
+        String token = "valid_token";
+        when(request.getParameter(AppConstants.PARAM_CSRF_TOKEN)).thenReturn(token);
+        when(session.getAttribute(AppConstants.ATTR_CSRF_TOKEN)).thenReturn(token);
     }
 
     @Test
@@ -100,6 +111,7 @@ public class ProductAdminServletTest {
         User adminUser = new User("admin", "pass", 1, null, false);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
+        setupCsrf();
 
         int productId = 1;
         Product existingProduct = new Product(productId, 2, "Old Name", 1000, null, null, "v1/old_image", true, false);
@@ -282,5 +294,24 @@ public class ProductAdminServletTest {
 
         // Should fall back to list view
         verify(requestDispatcher).forward(request, response);
+    }
+
+    @Test
+    public void testDoPost_CsrfFailure() throws ServletException, IOException {
+        // Arrange
+        User adminUser = new User("admin", "pass", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(adminUser);
+        
+        // CSRF トークンが不一致
+        when(request.getParameter(AppConstants.PARAM_CSRF_TOKEN)).thenReturn("wrong_token");
+        when(session.getAttribute(AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
+
+        // Act
+        servlet.doPost(request, response);
+
+        // Assert
+        verify(response).sendError(eq(HttpServletResponse.SC_FORBIDDEN), anyString());
+        verify(productService, never()).update(any(), anyString());
     }
 }

@@ -67,6 +67,11 @@ public class ProductAdminServlet extends BaseServlet {
 
         String action = request.getParameter("action");
         
+        // CSRF トークンの生成（セッションにない場合）
+        if (request.getSession().getAttribute(AppConstants.ATTR_CSRF_TOKEN) == null) {
+            request.getSession().setAttribute(AppConstants.ATTR_CSRF_TOKEN, util.CsrfUtil.generateToken());
+        }
+
         if ("edit".equals(action) || "add".equals(action)) {
             Product product;
             if ("edit".equals(action)) {
@@ -102,6 +107,12 @@ public class ProductAdminServlet extends BaseServlet {
             return;
         }
 
+        // CSRF チェック
+        if (!isCsrfTokenValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "不正なリクエストです。");
+            return;
+        }
+
         int id = ValidationUtil.parseIntSafe(request.getParameter("id"), 0);
 
         // 論理削除処理
@@ -126,12 +137,12 @@ public class ProductAdminServlet extends BaseServlet {
             p = new Product();
         }
 
-        // リクエストパラメータの取得
-        String name = request.getParameter("name");
+        // リクエストパラメータの取得とサニタイズ
+        String name = ValidationUtil.sanitize(request.getParameter("name"));
         int categoryId = ValidationUtil.parseIntSafe(request.getParameter("categoryId"), 0);
         int price = ValidationUtil.parseIntSafe(request.getParameter("price"), 0);
-        String description = request.getParameter("description");
-        String allergyInfo = request.getParameter("allergyInfo");
+        String description = ValidationUtil.sanitize(request.getParameter("description"));
+        String allergyInfo = ValidationUtil.sanitize(request.getParameter("allergyInfo"));
         boolean isAvailable = request.getParameter("isAvailable") != null;
 
         // 一時的な Product オブジェクトの作成（バリデーション用）

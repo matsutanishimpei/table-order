@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import util.AppConstants;
+import util.CsrfUtil;
 
 /**
  * すべてのサーブレットの基底クラスです。
@@ -44,5 +45,17 @@ public abstract class BaseServlet extends HttpServlet {
                 throw new ServletException(e);
             }
         }
+    }
+
+    /**
+     * リクエストに含まれる CSRF トークンが有効か検証します。
+     *
+     * @param request HTTPリクエスト
+     * @return 有効な場合は true、それ以外は false
+     */
+    protected boolean isCsrfTokenValid(HttpServletRequest request) {
+        String requestToken = request.getParameter(AppConstants.PARAM_CSRF_TOKEN);
+        String sessionToken = (String) request.getSession().getAttribute(AppConstants.ATTR_CSRF_TOKEN);
+        return CsrfUtil.validateToken(requestToken, sessionToken);
     }
 }

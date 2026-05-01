@@ -6,9 +6,11 @@ package database;
 public class SqlConstants {
 
     // --- Users ---
-    public static final String USER_SELECT_ALL = "SELECT id, role, table_id, is_deleted FROM users WHERE is_deleted = false ORDER BY id";
+    public static final String USER_SELECT_ALL =
+            "SELECT id, role, table_id, is_deleted FROM users WHERE is_deleted = false ORDER BY id";
     public static final String USER_SELECT_BY_ID = "SELECT id, role, table_id, is_deleted FROM users WHERE id = ?";
-    public static final String USER_SELECT_LOGIN = "SELECT id, password, role, table_id, is_deleted FROM users WHERE id = ? AND is_deleted = false";
+    public static final String USER_SELECT_LOGIN =
+            "SELECT id, password, role, table_id, is_deleted FROM users WHERE id = ? AND is_deleted = false";
     public static final String USER_INSERT =
             "INSERT INTO users (id, password, role, table_id, updated_by) VALUES (?, ?, ?, ?, ?)";
     public static final String USER_UPDATE = "UPDATE users SET role = ?, table_id = ?, updated_by = ? WHERE id = ?";
@@ -117,7 +119,8 @@ public class SqlConstants {
             + "GROUP BY st.id, st.table_name "
             + "ORDER BY st.id";
     public static final String TABLE_INSERT = "INSERT INTO shop_tables (table_name, updated_by) VALUES (?, ?)";
-    public static final String TABLE_SOFT_DELETE = "UPDATE shop_tables SET is_deleted = true, updated_by = ? WHERE id = ?";
+    public static final String TABLE_SOFT_DELETE =
+            "UPDATE shop_tables SET is_deleted = true, updated_by = ? WHERE id = ?";
 
     // --- Sales ---
     public static final String SALES_SELECT_TOTAL =

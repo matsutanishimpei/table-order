@@ -47,6 +47,11 @@ public class UserAdminServletTest {
     @BeforeEach
     public void setUp() {
         servlet = new UserAdminServlet(userService, tableService);
+        
+        // デフォルトで CSRF チェックをパスするように設定
+        lenient().when(request.getParameter(util.AppConstants.PARAM_CSRF_TOKEN)).thenReturn("valid_token");
+        lenient().when(session.getAttribute(util.AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
+        lenient().when(request.getSession()).thenReturn(session);
     }
 
     @Test
@@ -220,5 +225,20 @@ public class UserAdminServletTest {
         servlet.doPost(request, response);
 
         verify(response).sendRedirect(AppConstants.REDIRECT_ADMIN_USER);
+    }
+
+    @Test
+    public void testDoPost_CsrfFailure() throws ServletException, IOException {
+        User admin = new User("admin", "p", 1, null, false);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute(AppConstants.ATTR_USER)).thenReturn(admin);
+        
+        // CSRF トークン不一致
+        when(request.getParameter(AppConstants.PARAM_CSRF_TOKEN)).thenReturn("wrong_token");
+        when(session.getAttribute(AppConstants.ATTR_CSRF_TOKEN)).thenReturn("valid_token");
+
+        servlet.doPost(request, response);
+
+        verify(response).sendError(eq(HttpServletResponse.SC_FORBIDDEN), anyString());
     }
 }
