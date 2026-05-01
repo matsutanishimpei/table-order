@@ -56,4 +56,23 @@ class TableDAOImplTest extends BaseIntegrationTest {
         assertNotNull(unsettled);
         assertEquals(0, unsettled.size());
     }
+
+    @Test
+    @DisplayName("論理削除されたテーブルが一覧に含まれないこと")
+    void testSoftDelete_Visibility() {
+        String name = "削除用テーブル";
+        dao.insert(name, "test-user");
+
+        TableStatusView inserted = dao.findAllTableStatus().stream()
+                .filter(t -> name.equals(t.tableName()))
+                .findFirst()
+                .orElseThrow();
+
+        // 論理削除
+        assertTrue(dao.softDelete(inserted.tableId(), "test-user"));
+
+        // findAllTableStatus から除外されていること
+        List<TableStatusView> allStatuses = dao.findAllTableStatus();
+        assertFalse(allStatuses.stream().anyMatch(t -> t.tableId() == inserted.tableId()));
+    }
 }

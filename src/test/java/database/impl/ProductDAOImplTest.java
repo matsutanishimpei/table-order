@@ -71,4 +71,27 @@ public class ProductDAOImplTest extends BaseIntegrationTest {
         assertTrue(productDAO.updateAvailability(inserted.id(), true, "admin"));
         assertTrue(productDAO.findById(inserted.id()).get().isAvailable());
     }
+
+    @Test
+    void testSoftDelete_Visibility() {
+        Product p = new Product(0, 1, "Deleted Product", 1000, "Desc", "None", null, true, false);
+        assertTrue(productDAO.insert(p, "admin"));
+
+        // 最新のものを取得
+        List<Product> list = productDAO.findAll();
+        Product inserted = list.stream()
+                .filter(item -> "Deleted Product".equals(item.name()))
+                .findFirst().get();
+
+        // 論理削除
+        assertTrue(productDAO.softDelete(inserted.id(), "admin"));
+
+        // findAll から除外されていること
+        List<Product> allProducts = productDAO.findAll();
+        assertFalse(allProducts.stream().anyMatch(item -> item.id() == inserted.id()));
+
+        // findByCategory からも除外されていること
+        List<Product> categoryProducts = productDAO.findByCategory(1);
+        assertFalse(categoryProducts.stream().anyMatch(item -> item.id() == inserted.id()));
+    }
 }
