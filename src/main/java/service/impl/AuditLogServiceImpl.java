@@ -21,12 +21,14 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
-    public void log(String tableName, String recordId, String action, String oldValue, String newValue, String operatorId) {
+    public void log(String tableName, String recordId, String action, String oldValue, String newValue,
+            String operatorId) {
         auditLogDAO.log(tableName, recordId, action, oldValue, newValue, operatorId);
     }
 
     @Override
-    public void log(java.sql.Connection con, String tableName, String recordId, String action, String oldValue, String newValue, String operatorId) {
+    public void log(java.sql.Connection con, String tableName, String recordId, String action, String oldValue,
+            String newValue, String operatorId) {
         auditLogDAO.log(con, tableName, recordId, action, oldValue, newValue, operatorId);
     }
 }

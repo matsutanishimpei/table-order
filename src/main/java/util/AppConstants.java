@@ -34,6 +34,7 @@ public class AppConstants {
     public static final String ATTR_EXCEPTION = "exception";
     public static final String ATTR_MESSAGE = "message";
     public static final String ATTR_CSRF_TOKEN = "csrf_token";
+    public static final String PARAM_CSRF_TOKEN = "csrf_token";
     
     public static final String ATTR_CATEGORY_LIST = "categoryList";
     public static final String ATTR_PRODUCT_LIST = "productList";

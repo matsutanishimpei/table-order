@@ -96,4 +96,21 @@ public class ValidationUtil {
         return contentType != null && ALLOWED_IMAGE_TYPES.contains(
                 contentType.toLowerCase(java.util.Locale.ROOT));
     }
+
+    /**
+     * 文字列中の HTML 特殊文字をエスケープし、XSS を防止します。
+     *
+     * @param input 入力文字列
+     * @return エスケープ後の文字列
+     */
+    public static String sanitize(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&#39;");
+    }
 }

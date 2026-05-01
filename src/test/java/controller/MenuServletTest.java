@@ -39,9 +39,13 @@ public class MenuServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
 
+    @Mock
+    private jakarta.servlet.http.HttpSession session;
+
     @BeforeEach
     public void setUp() {
         servlet = new MenuServlet(categoryService, productService);
+        lenient().when(request.getSession()).thenReturn(session);
     }
 
     @Test

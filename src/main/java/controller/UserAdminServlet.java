@@ -49,6 +49,11 @@ public class UserAdminServlet extends BaseServlet {
         }
 
         String action = request.getParameter("action");
+        
+        // CSRF トークンの生成（セッションにない場合）
+        if (request.getSession().getAttribute(AppConstants.ATTR_CSRF_TOKEN) == null) {
+            request.getSession().setAttribute(AppConstants.ATTR_CSRF_TOKEN, util.CsrfUtil.generateToken());
+        }
 
         if ("edit".equals(action) || "add".equals(action)) {
             // 編集または新規登録画面
@@ -82,8 +87,14 @@ public class UserAdminServlet extends BaseServlet {
             return;
         }
 
+        // CSRF チェック
+        if (!isCsrfTokenValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "不正なリクエストです。");
+            return;
+        }
+
         String action = request.getParameter("action");
-        String id = request.getParameter("id");
+        String id = util.ValidationUtil.sanitize(request.getParameter("id"));
         String password = request.getParameter("password");
         int role = util.ValidationUtil.parseIntSafe(request.getParameter("role"), -1);
         if (role < 0) {

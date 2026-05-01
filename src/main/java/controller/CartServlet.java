@@ -44,6 +44,12 @@ public class CartServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // CSRF チェック
+        if (!isCsrfTokenValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "不正なリクエストです。");
+            return;
+        }
+
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
         List<CartItem> sessionCart = (List<CartItem>) session.getAttribute(AppConstants.ATTR_CART);

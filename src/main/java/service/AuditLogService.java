@@ -27,5 +27,6 @@ public interface AuditLogService {
      * @param newValue 変更後の値
      * @param operatorId 操作実行者ID
      */
-    void log(java.sql.Connection con, String tableName, String recordId, String action, String oldValue, String newValue, String operatorId);
+    void log(java.sql.Connection con, String tableName, String recordId, String action, String oldValue,
+            String newValue, String operatorId);
 }
