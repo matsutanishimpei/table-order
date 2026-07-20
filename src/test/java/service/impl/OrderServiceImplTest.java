@@ -64,9 +64,7 @@ class OrderServiceImplTest {
                     });
 
             // 商品は利用可能として設定
-            Product p = mock(Product.class);
-            when(p.isAvailable()).thenReturn(true);
-            when(p.isDeleted()).thenReturn(false);
+            Product p = availableProduct(1, "Product 1", 100);
             when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
                     .thenReturn(java.util.Optional.of(p));
             // 既存注文なし
@@ -81,6 +79,33 @@ class OrderServiceImplTest {
             verify(orderDAO).insertOrder(eq(connection), eq(tableId), anyInt(), eq("test-user"));
             verify(orderDAO).insertOrderItems(eq(connection), eq(100), eq(items), anyInt(), eq("test-user"));
             verify(auditLogService).log(eq(connection), eq("orders"), anyString(), eq("CREATE_ORDER"), any(), any(), eq("test-user"));
+        }
+    }
+
+    @Test
+    @DisplayName("注文作成: カート内価格ではなくDBの最新価格を保存すること")
+    @SuppressWarnings("unchecked")
+    void createOrder_UsesLatestDatabasePrice() throws Exception {
+        int tableId = 1;
+        List<CartItem> cartItems = List.of(new CartItem(1, "Coffee", 300, 2));
+        List<CartItem> expectedItems = List.of(new CartItem(1, "Coffee", 350, 2));
+
+        try (MockedStatic<TransactionManager> mockedStatic = mockStatic(TransactionManager.class)) {
+            mockedStatic.when(() -> TransactionManager.execute(any(TransactionExecutor.class)))
+                    .thenAnswer(invocation -> {
+                        TransactionExecutor<?> executor = invocation.getArgument(0);
+                        return executor.execute(connection);
+                    });
+
+            when(productDAO.findByIdForUpdate(connection, 1))
+                    .thenReturn(java.util.Optional.of(availableProduct(1, "Coffee", 350)));
+            when(orderDAO.findActiveOrderIdByTable(connection, tableId)).thenReturn(100);
+
+            boolean result = orderService.createOrder(tableId, cartItems, "test-user");
+
+            assertTrue(result);
+            verify(orderDAO).insertOrderItems(
+                    connection, 100, expectedItems, OrderConstants.STATUS_ORDERED, "test-user");
         }
     }
 
@@ -100,9 +125,7 @@ class OrderServiceImplTest {
                     });
 
             // 商品は利用可能
-            Product p = mock(Product.class);
-            when(p.isAvailable()).thenReturn(true);
-            when(p.isDeleted()).thenReturn(false);
+            Product p = availableProduct(1, "Product 1", 100);
             when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
                     .thenReturn(java.util.Optional.of(p));
 
@@ -198,9 +221,7 @@ class OrderServiceImplTest {
                     });
 
             // 商品は利用可能
-            Product p = mock(Product.class);
-            when(p.isAvailable()).thenReturn(true);
-            when(p.isDeleted()).thenReturn(false);
+            Product p = availableProduct(1, "Product 1", 100);
             when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
                     .thenReturn(java.util.Optional.of(p));
 
@@ -297,9 +318,7 @@ class OrderServiceImplTest {
                     });
 
             // 商品は利用可能
-            Product p = mock(Product.class);
-            when(p.isAvailable()).thenReturn(true);
-            when(p.isDeleted()).thenReturn(false);
+            Product p = availableProduct(1, "Product 1", 100);
             when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
                     .thenReturn(java.util.Optional.of(p));
 
@@ -377,5 +396,9 @@ class OrderServiceImplTest {
         // Assert
         assertFalse(result);
         verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyInt(), anyString());
+    }
+
+    private Product availableProduct(int id, String name, int price) {
+        return new Product(id, 1, name, price, null, null, null, true, false);
     }
 }

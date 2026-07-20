@@ -1,6 +1,7 @@
 package service.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import database.OrderDAO;
@@ -49,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
     public boolean createOrder(int tableId, List<CartItem> cartItems, String operatorId) {
         try {
             return TransactionManager.execute(con -> {
-                // ① 商品の販売状態（is_available）をチェック
+                // ① 商品の販売状態を確認し、DB上の最新の商品情報で注文明細を組み直す
+                List<CartItem> validatedItems = new ArrayList<>();
                 for (CartItem item : cartItems) {
                     java.util.Optional<model.Product> p = productDAO.findByIdForUpdate(con, item.productId());
                     if (p.isEmpty() || !p.get().isAvailable() || p.get().isDeleted()) {
@@ -57,6 +59,10 @@ public class OrderServiceImpl implements OrderService {
                                 item.productId(), item.name());
                         return false;
                     }
+
+                    model.Product product = p.get();
+                    validatedItems.add(new CartItem(
+                            product.id(), product.name(), product.price(), item.quantity()));
                 }
 
                 // ② アクティブな注文（セッション）があるか確認。なければ作成。
@@ -73,11 +79,12 @@ public class OrderServiceImpl implements OrderService {
                 }
 
                 // ③ order_items テーブルへ全商品をバッチ登録
-                orderDAO.insertOrderItems(con, orderId, cartItems, OrderConstants.STATUS_ORDERED, operatorId);
+                orderDAO.insertOrderItems(
+                        con, orderId, validatedItems, OrderConstants.STATUS_ORDERED, operatorId);
 
                 // 監査ログ
                 auditLogService.log(con, "orders", String.valueOf(orderId), "CREATE_ORDER", 
-                        null, "tableId=" + tableId + ", items=" + cartItems.size(), operatorId);
+                        null, "tableId=" + tableId + ", items=" + validatedItems.size(), operatorId);
 
                 log.info("注文登録完了: tableId={}, orderId={}", tableId, orderId);
                 return true;
