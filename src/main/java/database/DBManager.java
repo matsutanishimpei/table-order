@@ -56,6 +56,9 @@ public class DBManager {
 
             try {
                 dataSource = new HikariDataSource(config);
+                if (!isOracle) {
+                    DatabaseMigration.migrate(dataSource);
+                }
             } catch (Exception e) {
                 log.warn("デフォルト設定でのデータソース初期化に失敗しました。DBが未起動または設定が誤っている可能性があります。: {}", e.getMessage());
             }
@@ -86,6 +89,7 @@ public class DBManager {
         config.setConnectionTimeout(30000);
 
         dataSource = new HikariDataSource(config);
+        DatabaseMigration.migrate(dataSource);
 
         // Pepperが未設定の場合はデフォルト値を設定
         if (pepper == null) {
