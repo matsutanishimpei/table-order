@@ -67,7 +67,8 @@ class OrderServiceImplTest {
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
             when(p.isDeleted()).thenReturn(false);
-            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+            when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
+                    .thenReturn(java.util.Optional.of(p));
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
             when(orderDAO.insertOrder(eq(connection), eq(tableId), anyInt(), anyString())).thenReturn(100);
@@ -102,7 +103,8 @@ class OrderServiceImplTest {
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
             when(p.isDeleted()).thenReturn(false);
-            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+            when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
+                    .thenReturn(java.util.Optional.of(p));
 
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
@@ -161,7 +163,8 @@ class OrderServiceImplTest {
     @DisplayName("商品ステータス更新: DAOの結果が返ること")
     void updateItemStatus_ReturnsResult() {
         when(orderDAO.findItemStatusById(123)).thenReturn(OrderConstants.STATUS_ORDERED);
-        when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user")).thenReturn(true);
+        when(orderDAO.updateItemStatus(123, OrderConstants.STATUS_ORDERED,
+                OrderConstants.STATUS_COOKING_DONE, "test-user")).thenReturn(true);
         assertTrue(orderService.updateItemStatus(123, OrderConstants.STATUS_COOKING_DONE, "test-user"));
         verify(auditLogService).log(eq("order_items"), eq("123"), eq("UPDATE_STATUS"), any(), any(), eq("test-user"));
     }
@@ -176,7 +179,7 @@ class OrderServiceImplTest {
         boolean result = orderService.updateItemStatus(123, OrderConstants.STATUS_ORDERED, "test-user");
 
         assertFalse(result, "ステータスの逆行は拒否されるべき");
-        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyString());
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyInt(), anyString());
     }
 
     @Test
@@ -198,7 +201,8 @@ class OrderServiceImplTest {
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
             when(p.isDeleted()).thenReturn(false);
-            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+            when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
+                    .thenReturn(java.util.Optional.of(p));
 
             // 既存注文なし
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(-1);
@@ -263,7 +267,8 @@ class OrderServiceImplTest {
             // 商品が非公開（isAvailable = false）の状態をシミュレート
             Product unavailableProduct = mock(Product.class);
             when(unavailableProduct.isAvailable()).thenReturn(false);
-            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(unavailableProduct));
+            when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
+                    .thenReturn(java.util.Optional.of(unavailableProduct));
 
             // Act
             boolean result = orderService.createOrder(tableId, items, "test-user");
@@ -295,7 +300,8 @@ class OrderServiceImplTest {
             Product p = mock(Product.class);
             when(p.isAvailable()).thenReturn(true);
             when(p.isDeleted()).thenReturn(false);
-            when(productDAO.findById(anyInt())).thenReturn(java.util.Optional.of(p));
+            when(productDAO.findByIdForUpdate(eq(connection), anyInt()))
+                    .thenReturn(java.util.Optional.of(p));
 
             // 既存注文(500)がある状態をシミュレート
             when(orderDAO.findActiveOrderIdByTable(eq(connection), eq(tableId))).thenReturn(existingOrderId);
@@ -327,7 +333,8 @@ class OrderServiceImplTest {
                     });
 
             // 商品が見つからない（Optional.empty）状態をシミュレート
-            when(productDAO.findById(999)).thenReturn(java.util.Optional.empty());
+            when(productDAO.findByIdForUpdate(eq(connection), eq(999)))
+                    .thenReturn(java.util.Optional.empty());
 
             // Act
             boolean result = orderService.createOrder(tableId, items, "test-user");
@@ -369,6 +376,6 @@ class OrderServiceImplTest {
 
         // Assert
         assertFalse(result);
-        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyString());
+        verify(orderDAO, never()).updateItemStatus(anyInt(), anyInt(), anyInt(), anyString());
     }
 }

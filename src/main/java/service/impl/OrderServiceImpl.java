@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
             return TransactionManager.execute(con -> {
                 // ① 商品の販売状態（is_available）をチェック
                 for (CartItem item : cartItems) {
-                    java.util.Optional<model.Product> p = productDAO.findById(item.productId());
+                    java.util.Optional<model.Product> p = productDAO.findByIdForUpdate(con, item.productId());
                     if (p.isEmpty() || !p.get().isAvailable() || p.get().isDeleted()) {
                         log.warn("注文を中断しました（商品が利用不可能）: productId={}, name={}", 
                                 item.productId(), item.name());
@@ -138,18 +138,24 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
 
-        // ステータスの逆行を防止（例: 配膳済み(30) -> 調理中(10) は不可）
-        if (status < currentStatus) {
-            log.warn("ステータス更新拒否: 過去の状態への変更は許可されていません。itemId={}, current={}, target={}",
+        if (!isAllowedStatusTransition(currentStatus, status)) {
+            log.warn("ステータス更新拒否: 許可されていない状態遷移です。itemId={}, current={}, target={}",
                     itemId, currentStatus, status);
             return false;
         }
 
-        boolean success = orderDAO.updateItemStatus(itemId, status, operatorId);
+        boolean success = orderDAO.updateItemStatus(itemId, currentStatus, status, operatorId);
         if (success) {
             auditLogService.log("order_items", String.valueOf(itemId), "UPDATE_STATUS",
                     String.valueOf(currentStatus), String.valueOf(status), operatorId);
         }
         return success;
+    }
+
+    private boolean isAllowedStatusTransition(int currentStatus, int targetStatus) {
+        return (currentStatus == OrderConstants.STATUS_ORDERED
+                && targetStatus == OrderConstants.STATUS_COOKING_DONE)
+                || (currentStatus == OrderConstants.STATUS_COOKING_DONE
+                && targetStatus == OrderConstants.STATUS_SERVED);
     }
 }

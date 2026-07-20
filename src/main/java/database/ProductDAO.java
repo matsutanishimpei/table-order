@@ -1,5 +1,7 @@
 package database;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import model.Product;
@@ -24,6 +26,16 @@ public interface ProductDAO {
      * @return 商品情報を含む Optional インスタンス
      */
     Optional<Product> findById(int id);
+
+    /**
+     * トランザクション内で、指定されたIDの商品情報をロックして取得します。
+     *
+     * @param con トランザクションで使用しているデータベース接続
+     * @param id 商品ID
+     * @return 商品情報。存在しない場合は空のOptional
+     * @throws SQLException データベースアクセスに失敗した場合
+     */
+    Optional<Product> findByIdForUpdate(Connection con, int id) throws SQLException;
 
     /**
      * システムに登録されているすべての商品情報を取得します（管理用）。

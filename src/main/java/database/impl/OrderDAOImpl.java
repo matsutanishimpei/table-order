@@ -53,8 +53,9 @@ public final class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean updateItemStatus(int itemId, int status, String operatorId) {
-        return JdbcExecutor.update(SqlConstants.ORDER_ITEM_UPDATE_STATUS, status, operatorId, itemId) > 0;
+    public boolean updateItemStatus(int itemId, int currentStatus, int status, String operatorId) {
+        return JdbcExecutor.update(
+                SqlConstants.ORDER_ITEM_UPDATE_STATUS, status, operatorId, itemId, currentStatus) > 0;
     }
 
     @Override
