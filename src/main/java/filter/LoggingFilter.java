@@ -25,6 +25,7 @@ public class LoggingFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
     private static final String REQUEST_ID = "request_id";
+    private static final String REQUEST_ID_HEADER = "X-Request-ID";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -38,6 +39,8 @@ public class LoggingFilter implements Filter {
         // リクエストIDの発行（既存のヘッダーがあればそれを引き継ぐことも検討可能）
         String requestId = UUID.randomUUID().toString().substring(0, 8);
         MDC.put(REQUEST_ID, requestId);
+        // 利用者からの問い合わせとサーバーログを同じIDで突き合わせられるようにする
+        res.setHeader(REQUEST_ID_HEADER, requestId);
 
         long startTime = System.currentTimeMillis();
         String method = req.getMethod();
