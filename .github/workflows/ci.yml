@@ -49,5 +49,5 @@ jobs:
         cloudinary.api_secret=test_secret
         EOF
 
-    - name: Build and Test with Maven
-      run: mvn clean test
+    - name: Build, Test, and Run Quality Checks
+      run: mvn clean verify
