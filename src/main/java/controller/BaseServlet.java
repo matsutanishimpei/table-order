@@ -37,8 +37,8 @@ public abstract class BaseServlet extends HttpServlet {
             
             // レスポンスが既にコミットされているか確認
             if (!resp.isCommitted()) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 req.setAttribute(AppConstants.ATTR_ERROR_MESSAGE, "サーバー内部でエラーが発生しました。時間をおいて再度お試しください。");
-                req.setAttribute(AppConstants.ATTR_EXCEPTION, e);
                 req.getRequestDispatcher(AppConstants.VIEW_ERROR).forward(req, resp);
             } else {
                 // 既に書き込みが始まっている場合は、標準のエラー処理に任せるか、単にスローする

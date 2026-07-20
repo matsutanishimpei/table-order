@@ -36,15 +36,6 @@
                         </p>
                     </div>
 
-                    <c:if test="${not empty exception}">
-                        <div class="space-y-4">
-                            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Debug Trace</h2>
-                            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 overflow-x-auto">
-                                <code class="text-[10px] font-mono text-slate-400 whitespace-pre"><c:out value="${exception}" /></code>
-                            </div>
-                        </div>
-                    </c:if>
-
                     <footer class="pt-8 flex gap-4">
                         <a href="${pageContext.request.contextPath}/Menu" class="btn-primary bg-slate-950 hover:bg-slate-800 flex-grow py-5 text-xs tracking-widest shadow-xl">
                             メニューへ戻る
@@ -57,7 +48,7 @@
             </main>
             
             <p class="mt-12 text-center text-[10px] font-bold text-slate-300 uppercase tracking-[0.5em] italic">
-                Ref: <c:out value="${exception.getClass().simpleName}" /> / Table Order System v1.0
+                Table Order System v1.0
             </p>
         </div>
     </div>
