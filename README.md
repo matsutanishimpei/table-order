@@ -9,6 +9,10 @@
 
 Java 17 と Jakarta Servlet を基盤とした、テーブルオーダー・店舗管理システムです。モバイル注文から厨房管理、売上分析までを題材に、Cloudinary による画像管理や BCrypt を用いた認証を実装しています。CI では JUnit、Checkstyle、SpotBugs、JaCoCo、OWASP Dependency-Check を実行し、テストと静的解析の結果を継続的に確認します。
 
+## 📘 学習者向けガイド
+
+MVC と Java Servlet の基礎を学び終えた方は、[コードリーディング学習ロードマップ](docs/学習ロードマップ.md)から始めてください。ログインから注文、厨房、配膳、会計までを実際のコードに沿って1周し、Controller・Service・DAO・DBのつながりを段階的に理解できる構成です。
+
 ## 🌟 主な機能
 
 ### 1. お客様用モバイル注文 (Menu & Details)
