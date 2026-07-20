@@ -1,5 +1,6 @@
-# データベース接続設定のひな形
-# 新しく環境を作る際は、このファイルを「database.properties」にコピーし、パスワードを入力して利用します。
+# ローカル開発用の設定ひな形です。
+# 本番環境では、このファイルへ秘密情報を書かず、対応する環境変数を使用してください。
+# 例: db.mysql.pass は DB_MYSQL_PASS、app.security.pepper は APP_SECURITY_PEPPER
 
 db.is_oracle=false
 

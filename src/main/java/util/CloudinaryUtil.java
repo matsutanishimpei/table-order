@@ -9,7 +9,6 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
@@ -24,28 +23,21 @@ public final class CloudinaryUtil implements ImageStorageProvider {
     private static final CloudinaryUtil INSTANCE = new CloudinaryUtil();
 
     static {
-        try (InputStream is = CloudinaryUtil.class.getClassLoader().getResourceAsStream("database.properties")) {
-            Properties props = new Properties();
-            if (is != null) {
-                props.load(is);
+        try {
+            Properties props = AppConfig.loadProperties();
+            String cloudName = AppConfig.get(props, "cloudinary.cloud_name", null);
+            String apiKey = AppConfig.get(props, "cloudinary.api_key", null);
+            String apiSecret = AppConfig.get(props, "cloudinary.api_secret", null);
 
-                String cloudName = props.getProperty("cloudinary.cloud_name");
-                String apiKey = props.getProperty("cloudinary.api_key");
-                String apiSecret = props.getProperty("cloudinary.api_secret");
-
-                if (cloudName != null && apiKey != null && apiSecret != null) {
-                    cloudinary = new Cloudinary(ObjectUtils.asMap(
-                            "cloud_name", cloudName,
-                            "api_key", apiKey,
-                            "api_secret", apiSecret,
-                            "secure", true
-                    ));
-                } else {
-                    log.warn("Cloudinary properties are missing in database.properties. "
-                            + "Image features will be disabled.");
-                }
+            if (cloudName != null && apiKey != null && apiSecret != null) {
+                cloudinary = new Cloudinary(ObjectUtils.asMap(
+                        "cloud_name", cloudName,
+                        "api_key", apiKey,
+                        "api_secret", apiSecret,
+                        "secure", true
+                ));
             } else {
-                log.warn("database.properties not found. Cloudinary will not be initialized.");
+                log.warn("Cloudinary settings are missing. Image features will be disabled.");
             }
         } catch (IOException e) {
             log.error("Cloudinary initialization failed due to I/O error", e);

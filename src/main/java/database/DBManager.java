@@ -3,11 +3,11 @@ package database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import util.AppConfig;
 
 /**
  * データベース接続を管理するクラスです。
@@ -31,30 +31,25 @@ public class DBManager {
             return;
         }
 
-        // 設定ファイルの読み込み
-        try (InputStream is = DBManager.class.getClassLoader().getResourceAsStream("database.properties")) {
-            Properties props = new Properties();
-            if (is == null) {
-                log.warn("database.properties が見つかりません。デフォルト設定を使用します。");
-            } else {
-                props.load(is);
-            }
-
-            pepper = props.getProperty("app.security.pepper", "test-pepper");
+        // 環境変数を優先し、未設定の場合のみdatabase.propertiesを使用する
+        try {
+            Properties props = AppConfig.loadProperties();
+            pepper = AppConfig.get(props, "app.security.pepper", "test-pepper");
 
             HikariConfig config = new HikariConfig();
-            boolean isOracle = Boolean.parseBoolean(props.getProperty("db.is_oracle", "false"));
+            boolean isOracle = Boolean.parseBoolean(AppConfig.get(props, "db.is_oracle", "false"));
             if (isOracle) {
-                config.setJdbcUrl(props.getProperty("db.oracle.url"));
-                config.setUsername(props.getProperty("db.oracle.user"));
-                config.setPassword(props.getProperty("db.oracle.pass"));
+                config.setJdbcUrl(AppConfig.get(props, "db.oracle.url", null));
+                config.setUsername(AppConfig.get(props, "db.oracle.user", null));
+                config.setPassword(AppConfig.get(props, "db.oracle.pass", null));
             } else {
-                config.setJdbcUrl(props.getProperty("db.mysql.url"));
-                config.setUsername(props.getProperty("db.mysql.user"));
-                config.setPassword(props.getProperty("db.mysql.pass"));
+                config.setJdbcUrl(AppConfig.get(props, "db.mysql.url", null));
+                config.setUsername(AppConfig.get(props, "db.mysql.user", null));
+                config.setPassword(AppConfig.get(props, "db.mysql.pass", null));
             }
-            config.setDriverClassName(props.getProperty(isOracle ? "db.oracle.driver" : "db.mysql.driver",
-                    isOracle ? "oracle.jdbc.OracleDriver" : "com.mysql.cj.jdbc.Driver"));
+            String driverKey = isOracle ? "db.oracle.driver" : "db.mysql.driver";
+            String defaultDriver = isOracle ? "oracle.jdbc.OracleDriver" : "com.mysql.cj.jdbc.Driver";
+            config.setDriverClassName(AppConfig.get(props, driverKey, defaultDriver));
 
             config.setMaximumPoolSize(10);
             config.setConnectionTimeout(3000); // 初期化チェック用にタイムアウトを短縮
