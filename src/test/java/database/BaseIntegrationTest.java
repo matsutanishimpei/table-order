@@ -51,6 +51,6 @@ public abstract class BaseIntegrationTest {
         }
 
         JdbcDatabaseDelegate delegate = new JdbcDatabaseDelegate(mysql, "");
-        ScriptUtils.runInitScript(delegate, "sql/seed.sql");
+        ScriptUtils.runInitScript(delegate, "db/migration/V2__seed_learning_data.sql");
     }
 }
