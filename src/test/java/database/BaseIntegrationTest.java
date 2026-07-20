@@ -26,27 +26,19 @@ public abstract class BaseIntegrationTest {
         Runtime.getRuntime().addShutdownHook(new Thread(mysql::stop));
     }
 
-    private static boolean schemaInitialized = false;
-
     @BeforeAll
     static void setUpDatabase() {
-        // DBManagerをコンテナの接続情報で初期化
+        // DBManager初期化時にFlywayがスキーマと初期データを適用する
         DBManager.initForTest(
             mysql.getJdbcUrl(),
             mysql.getUsername(),
             mysql.getPassword()
         );
 
-        JdbcDatabaseDelegate containerDelegate = new JdbcDatabaseDelegate(mysql, "");
-        if (!schemaInitialized) {
-            // スキーマ作成は最初の1回だけ
-            ScriptUtils.runInitScript(containerDelegate, "sql/schema.sql");
-            schemaInitialized = true;
-        }
-        // データ（seed）は各クラスごとに初期状態に戻す（または各テストで制御）
-        // 重複挿入を避けるため、一旦全テーブルをクリアしてから seed を流す
+        // 各テストクラスを同じ初期データから開始できるように戻す
         try (java.sql.Connection con = DBManager.getConnection()) {
             con.createStatement().execute("SET FOREIGN_KEY_CHECKS = 0");
+            con.createStatement().execute("TRUNCATE TABLE audit_log");
             con.createStatement().execute("TRUNCATE TABLE order_items");
             con.createStatement().execute("TRUNCATE TABLE orders");
             con.createStatement().execute("TRUNCATE TABLE products");
@@ -57,6 +49,8 @@ public abstract class BaseIntegrationTest {
         } catch (java.sql.SQLException e) {
             throw new RuntimeException(e);
         }
-        ScriptUtils.runInitScript(containerDelegate, "sql/seed.sql");
+
+        JdbcDatabaseDelegate delegate = new JdbcDatabaseDelegate(mysql, "");
+        ScriptUtils.runInitScript(delegate, "db/migration/V2__seed_learning_data.sql");
     }
 }

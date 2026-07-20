@@ -9,6 +9,16 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      DB_IS_ORACLE: "false"
+      DB_MYSQL_DRIVER: com.mysql.cj.jdbc.Driver
+      DB_MYSQL_URL: jdbc:mysql://127.0.0.1:3306/table_order?useSSL=false&serverTimezone=UTC
+      DB_MYSQL_USER: root
+      DB_MYSQL_PASS: password
+      APP_SECURITY_PEPPER: test_pepper
+      CLOUDINARY_CLOUD_NAME: test_cloud
+      CLOUDINARY_API_KEY: test_key
+      CLOUDINARY_API_SECRET: test_secret
 
     services:
       mysql:
@@ -29,25 +39,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-
-    - name: Setup Database
-      run: |
-        mysql -h 127.0.0.1 -u root -ppassword table_order < src/main/webapp/sql/schema.sql
-        mysql -h 127.0.0.1 -u root -ppassword table_order < src/main/webapp/sql/seed.sql
-
-    - name: Prepare database.properties
-      run: |
-        cat <<EOF > src/main/resources/database.properties
-        db.is_oracle=false
-        db.mysql.driver=com.mysql.cj.jdbc.Driver
-        db.mysql.url=jdbc:mysql://127.0.0.1:3306/table_order?useSSL=false&serverTimezone=UTC
-        db.mysql.user=root
-        db.mysql.pass=password
-        app.security.pepper=test_pepper
-        cloudinary.cloud_name=test_cloud
-        cloudinary.api_key=test_key
-        cloudinary.api_secret=test_secret
-        EOF
 
     - name: Build, Test, and Run Quality Checks
       run: mvn clean verify
