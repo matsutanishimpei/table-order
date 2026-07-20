@@ -56,8 +56,9 @@ public class BaseServletTest {
         servlet.service(request, response);
 
         // Assert
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(request).setAttribute(eq(AppConstants.ATTR_ERROR_MESSAGE), anyString());
-        verify(request).setAttribute(eq(AppConstants.ATTR_EXCEPTION), any(RuntimeException.class));
+        verify(request, never()).setAttribute(eq(AppConstants.ATTR_EXCEPTION), any());
         verify(requestDispatcher).forward(request, response);
     }
 

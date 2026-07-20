@@ -5,6 +5,8 @@ import database.RowMapper;
 import database.SqlConstants;
 import database.ProductDAO;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +42,11 @@ public final class ProductDAOImpl implements ProductDAO {
     @Override
     public Optional<Product> findById(int productId) {
         return JdbcExecutor.queryOne(SqlConstants.PRODUCT_SELECT_BY_ID, mapper, productId);
+    }
+
+    @Override
+    public Optional<Product> findByIdForUpdate(Connection con, int productId) throws SQLException {
+        return JdbcExecutor.queryOne(con, SqlConstants.PRODUCT_SELECT_BY_ID_FOR_UPDATE, mapper, productId);
     }
 
     @Override

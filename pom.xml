@@ -194,7 +194,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.25</minimum>
+                                            <minimum>0.80</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -212,7 +212,7 @@
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>false</failsOnError>
+                    <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
                 </configuration>
                 <executions>
@@ -234,7 +234,7 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                 </configuration>
                 <executions>
                     <execution>

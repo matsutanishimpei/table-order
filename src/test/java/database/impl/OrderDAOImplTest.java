@@ -82,7 +82,8 @@ class OrderDAOImplTest extends BaseIntegrationTest {
                 int itemId = active.get(0).orderItemId();
 
                 // ステータス更新: 注文済み -> 調理完了
-                boolean success = dao.updateItemStatus(itemId, OrderConstants.STATUS_COOKING_DONE, "kitchen-user");
+                boolean success = dao.updateItemStatus(itemId, OrderConstants.STATUS_ORDERED,
+                        OrderConstants.STATUS_COOKING_DONE, "kitchen-user");
                 assertTrue(success);
 
                 // 検証: 配膳待ち(Ready)リストに含まれるか

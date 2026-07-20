@@ -31,6 +31,7 @@ public class SqlConstants {
     public static final String PRODUCT_SELECT_BY_ID =
             "SELECT id, category_id, name, price, description, allergy_info, image_path, is_available, is_deleted "
             + "FROM products WHERE id = ?";
+    public static final String PRODUCT_SELECT_BY_ID_FOR_UPDATE = PRODUCT_SELECT_BY_ID + " FOR UPDATE";
     public static final String PRODUCT_INSERT =
             "INSERT INTO products (category_id, name, price, description, "
             + "allergy_info, image_path, is_available, updated_by) "
@@ -72,7 +73,8 @@ public class SqlConstants {
     public static final String ORDER_ITEM_SELECT_ACTIVE =
             ORDER_ITEM_SELECT_VIEW_BASE + "WHERE oi.status = ? ORDER BY oi.created_at ASC";
     public static final String ORDER_ITEM_UPDATE_STATUS =
-            "UPDATE order_items SET status = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+            "UPDATE order_items SET status = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP "
+            + "WHERE id = ? AND status = ?";
     public static final String ORDER_ITEM_SELECT_STATUS = "SELECT status FROM order_items WHERE id = ?";
     public static final String ORDER_ITEMS_UPDATE_STATUS_FOR_CHECKOUT =
             "UPDATE order_items SET status = ?, updated_by = ? WHERE status < ? "

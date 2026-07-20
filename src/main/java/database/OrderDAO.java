@@ -52,7 +52,7 @@ public interface OrderDAO {
      * @param operatorId 操作者のユーザーID
      * @return 更新に成功した場合は true
      */
-    boolean updateItemStatus(int itemId, int status, String operatorId);
+    boolean updateItemStatus(int itemId, int currentStatus, int status, String operatorId);
 
     /**
      * ホール（配膳担当）向けに、調理が完了し配膳を待っている注文明細をすべて取得します。
