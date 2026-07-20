@@ -83,7 +83,7 @@ class AuthFilterTest {
     }
 
     @Test
-    @DisplayName("POSTリクエスト: 有効なCSRFトークンがあれば通過し、トークンが更新されること")
+    @DisplayName("POSTリクエスト: 有効なCSRFトークンがあれば同じトークンで通過すること")
     void doFilter_PostValidCsrf_Passes() throws IOException, ServletException {
         User user = new User("admin", "pass", 1, null, false);
         String token = "valid-token";
@@ -96,8 +96,8 @@ class AuthFilterTest {
 
         filter.doFilter(request, response, chain);
 
-        // トークンがセット（初期セットと更新用セットの2回以上呼ばれるはず）
-        verify(session, atLeast(1)).setAttribute(eq(AppConstants.ATTR_CSRF_TOKEN), anyString());
+        // 後続のServletでも同じトークンを検証するため、Filter内では更新しない
+        verify(session, never()).setAttribute(eq(AppConstants.ATTR_CSRF_TOKEN), anyString());
         verify(chain).doFilter(request, response);
     }
 
